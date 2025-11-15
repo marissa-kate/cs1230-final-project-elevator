@@ -265,6 +265,7 @@ void Realtime::resizeGL(int w, int h) {
 
 void Realtime::sceneChanged() {
     std::string filepath = settings.sceneFilePath;
+    m_renderData.lights.clear();
     //error
     if (!m_parser.parse(filepath, m_renderData)) {
         std::cerr << "Error parsing scene: " << filepath << std::endl;
