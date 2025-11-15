@@ -167,3 +167,4 @@ struct SceneNode {
     std::vector<SceneLight*> lights;
     std::vector<SceneNode*> children;
 };
+
