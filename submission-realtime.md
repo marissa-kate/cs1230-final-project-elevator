@@ -58,7 +58,11 @@ https://github.com/BrownCSCI1230/projects_realtime_template/assets/45575415/710f
 ##### Your Output
 
 <!---
-Paste your output on top of this comment!
+
+
+https://github.com/user-attachments/assets/3e65702f-3dab-40d5-b671-dac4b3a30403
+
+
 -->
 
 #### Camera Rotation
@@ -67,12 +71,19 @@ _Instructions:_ Load `chess.json`. Take a look around!
 
 ##### Expected Output
 
-https://github.com/BrownCSCI1230/projects_realtime_template/assets/45575415/a14f4d32-88ee-4f5f-9843-74dd5c89b9dd
+
 
 ##### Your Output
 
 <!---
-Paste your output on top of this comment!
+
+
+
+
+https://github.com/user-attachments/assets/601b44e9-e652-4077-8eaa-0738ea4e4932
+
+
+
 -->
 
 ### Design Choices
