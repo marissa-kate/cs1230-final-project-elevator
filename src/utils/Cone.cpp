@@ -79,14 +79,9 @@ void Cone::makeSlopeTile(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4,
     glm::vec3 n1, n2, n3, n4;
     float epsilon = 0.0001f;
 
-    float theta_avg = (theta_start + theta_end) / 2.0f;
-
-    glm::vec3 tipNormal = glm::normalize(glm::vec3(2.0f * glm::cos(theta_avg), 1.0f, 2.0f * glm::sin(theta_avg)));
-
-
 
     if (v1.y >= 0.5f - epsilon) {
-        n1 = tipNormal;
+        n1 = glm::normalize(glm::vec3(2.0f * glm::cos(theta_start), 1.0f, 2.0f * glm::sin(theta_start)));
     } else {
         float xNorm = 2.0f * v1.x;
         float yNorm = 0.25f * (1.0f - 2.0f * v1.y); // (0.25 - 0.5y)
@@ -96,7 +91,7 @@ void Cone::makeSlopeTile(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 v4,
 
 
     if (v2.y >= 0.5f - epsilon) {
-        n2 = tipNormal;
+        n2 = glm::normalize(glm::vec3(2.0f * glm::cos(theta_end), 1.0f, 2.0f * glm::sin(theta_end)));
     } else {
         float xNorm = 2.0f * v2.x;
         float yNorm = 0.25f * (1.0f - 2.0f * v2.y);

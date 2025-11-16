@@ -186,7 +186,7 @@ void Realtime::paintGL() {
     //B:View Matrix setting
     glm::mat4 view = glm::lookAt(
         glm::vec3(m_renderData.cameraData.pos),
-        glm::vec3(m_renderData.cameraData.look),
+        glm::vec3(m_renderData.cameraData.look)+ glm::vec3(m_renderData.cameraData.pos),//center = eye + look direction
         glm::vec3(m_renderData.cameraData.up)
         );
 
@@ -216,6 +216,9 @@ void Realtime::paintGL() {
         glUniform3fv(glGetUniformLocation(m_shader_program, (prefix + "function").c_str()), 1, &m_renderData.lights[i].function[0]);
         glUniform4fv(glGetUniformLocation(m_shader_program, (prefix + "pos").c_str()), 1, &m_renderData.lights[i].pos[0]);
         glUniform4fv(glGetUniformLocation(m_shader_program, (prefix + "dir").c_str()), 1, &m_renderData.lights[i].dir[0]);
+        //spot lights
+        glUniform1f(glGetUniformLocation(m_shader_program, (prefix + "penumbra").c_str()), m_renderData.lights[i].penumbra);
+        glUniform1f(glGetUniformLocation(m_shader_program, (prefix + "angle").c_str()), m_renderData.lights[i].angle);
     }
 
     GLint modelLoc = glGetUniformLocation(m_shader_program, "u_model");
@@ -319,7 +322,7 @@ void Realtime::mouseMoveEvent(QMouseEvent *event) {
         glm::vec3 up   = glm::vec3(m_renderData.cameraData.up);
 
         //2.sens
-        float sensitivity = 0.1f;
+        float sensitivity = 0.2f;
 
         //3.rotation angle
         float yawAngle = glm::radians(-sensitivity * deltaX);
@@ -363,14 +366,14 @@ void Realtime::timerEvent(QTimerEvent *event) {
     glm::vec3 right = glm::normalize(glm::cross(look, up));
 
     //3. speed
-    float speed = 5.0f;
+    float speed = 1.0f;
 
     // 4. new pos by key
     if (m_keyMap[Qt::Key_W]) {
-        pos += look * speed * deltaTime;
+        pos += glm::normalize(look) * speed * deltaTime;
     }
     if (m_keyMap[Qt::Key_S]) {
-        pos -= look * speed * deltaTime;
+        pos -= glm::normalize(look) * speed * deltaTime;
     }
     if (m_keyMap[Qt::Key_D]) {
         pos += right * speed * deltaTime;

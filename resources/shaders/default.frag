@@ -20,6 +20,8 @@ struct SceneLightData {
     vec3 function;
     vec4 pos;
     vec4 dir;
+    float penumbra;
+   float angle;
 };
 
 uniform SceneLightData u_lights[10]; //max 10 for now
@@ -40,14 +42,27 @@ uniform vec3 u_camPos;
 vec3 calculateLight(SceneLightData light, vec3 N, vec3 V) {
     vec3 L;
     float atten = 1.0;
+    float spot_atten = 1.0;
 
     if (light.type == 0) { // Point Light
         L = normalize(light.pos.xyz - v_worldPos);
         float dist = length(light.pos.xyz - v_worldPos);
         atten = 1.0 / (light.function.x + light.function.y * dist + light.function.z * dist * dist);
-    } else { // Directional Light
+    } else if (light.type ==1) { // Directional Light
         L = normalize(-light.dir.xyz);
         atten = 1.0;
+    } else if (light.type ==2){
+      L = normalize(light.pos.xyz - v_worldPos);
+      //same as point
+      float dist = length(light.pos.xyz - v_worldPos);
+      atten = 1.0 / (light.function.x + light.function.y * dist + light.function.z * dist * dist);
+      //spot
+      vec3 S = normalize(light.dir.xyz);
+      float cos_theta = dot(-L, S);
+      float cos_inner = cos(light.penumbra);
+      float cos_outer = cos(light.angle);
+      //make it smooth
+      spot_atten = smoothstep(cos_outer, cos_inner, cos_theta);
     }
 
     // Diffuse
@@ -56,10 +71,10 @@ vec3 calculateLight(SceneLightData light, vec3 N, vec3 V) {
 
     // Specular
     vec3 R = reflect(-L, N);
-    float RdotV = max(dot(R, V), 0.0);
+    float RdotV = max(dot(R, V), 0.0000001);
     vec3 specular = u_global.ks * u_material.cSpecular.rgb * pow(RdotV, u_material.shininess);
 
-    return atten * light.color.rgb * (diffuse + specular);
+    return atten * spot_atten * light.color.rgb * (diffuse + specular);
 }
 
 
