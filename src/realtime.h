@@ -71,6 +71,8 @@ private:
 
     //for making projection matrix
     glm::mat4 makePerspectiveMatrix(float fovY, float aspect, float near, float far);
+    glm::mat4 makeViewMatrix(const glm::vec3& eye, const glm::vec3& center, const glm::vec3& up);
+    glm::mat4 makeRotationMatrix(float angle, const glm::vec3& axis);
 
     //save instance of primitive class as member
     std::map<PrimitiveType, GLuint> m_vertex_count_map;

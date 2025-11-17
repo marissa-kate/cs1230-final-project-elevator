@@ -27,6 +27,84 @@ glm::mat4 Realtime::makePerspectiveMatrix(float fovY, float aspect, float near, 
     return proj;
 }
 
+glm::mat4 Realtime::makeViewMatrix(const glm::vec3& eye, const glm::vec3& center, const glm::vec3& up) {
+
+    glm::vec3 z_axis = glm::normalize(eye - center);
+
+    glm::vec3 x_axis = glm::normalize(glm::cross(up, z_axis));
+
+
+    glm::vec3 y_axis = glm::cross(z_axis, x_axis);
+
+
+    glm::mat4 R = glm::mat4(
+        x_axis.x, y_axis.x, z_axis.x, 0.0f,
+        x_axis.y, y_axis.y, z_axis.y, 0.0f,
+        x_axis.z, y_axis.z, z_axis.z, 0.0f,
+        0.0f,     0.0f,     0.0f,     1.0f
+        );
+
+    glm::mat4 T = glm::mat4(
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        -eye.x, -eye.y, -eye.z, 1.0f
+        );
+
+
+    glm::mat4 viewMatrix(1.0f);
+    viewMatrix[0][0] = x_axis.x;
+    viewMatrix[1][0] = x_axis.y;
+    viewMatrix[2][0] = x_axis.z;
+    viewMatrix[0][1] = y_axis.x;
+    viewMatrix[1][1] = y_axis.y;
+    viewMatrix[2][1] = y_axis.z;
+    viewMatrix[0][2] = z_axis.x;
+    viewMatrix[1][2] = z_axis.y;
+    viewMatrix[2][2] = z_axis.z;
+    viewMatrix[3][0] = -glm::dot(x_axis, eye);
+    viewMatrix[3][1] = -glm::dot(y_axis, eye);
+    viewMatrix[3][2] = -glm::dot(z_axis, eye);
+
+    return viewMatrix;
+}
+
+glm::mat4 Realtime::makeRotationMatrix(float angle, const glm::vec3& axis) {
+    float c = cos(angle);
+    float s = sin(angle);
+    float t = 1.0f - c;
+
+
+    glm::vec3 norm_axis = glm::normalize(axis);
+    float x = norm_axis.x;
+    float y = norm_axis.y;
+    float z = norm_axis.z;
+
+
+    glm::mat4 rotationMatrix;
+    rotationMatrix[0][0] = t*x*x + c;
+    rotationMatrix[0][1] = t*x*y + s*z;
+    rotationMatrix[0][2] = t*x*z - s*y;
+    rotationMatrix[0][3] = 0.0f;
+
+    rotationMatrix[1][0] = t*x*y - s*z;
+    rotationMatrix[1][1] = t*y*y + c;
+    rotationMatrix[1][2] = t*y*z + s*x;
+    rotationMatrix[1][3] = 0.0f;
+
+    rotationMatrix[2][0] = t*x*z + s*y;
+    rotationMatrix[2][1] = t*y*z - s*x;
+    rotationMatrix[2][2] = t*z*z + c;
+    rotationMatrix[2][3] = 0.0f;
+
+    rotationMatrix[3][0] = 0.0f;
+    rotationMatrix[3][1] = 0.0f;
+    rotationMatrix[3][2] = 0.0f;
+    rotationMatrix[3][3] = 1.0f;
+
+    return rotationMatrix;
+}
+
 //creating VBO/VAO for primitives
 void Realtime::setupShapeVAO(PrimitiveType type) {
     GLuint vbo_id;
@@ -53,6 +131,30 @@ void Realtime::setupShapeVAO(PrimitiveType type) {
 void Realtime::updateAllShapeTessellations() {
     int param1 = settings.shapeParameter1;
     int param2 = settings.shapeParameter2;
+
+    if (settings.extraCredit1) {//extra credit 1
+        int numObjects = m_renderData.shapes.size();
+
+        //default
+        int maxParam1 = 25;
+        int maxParam2 = 25;
+
+        //border
+        if (numObjects > 100) {
+            maxParam1 = 5;
+            maxParam2 = 5;
+        } else if (numObjects > 50) {
+            maxParam1 = 10;
+            maxParam2 = 10;
+        } else if (numObjects > 20) {
+            maxParam1 = 15;
+            maxParam2 = 15;
+        }
+
+        // 2. Consider slider
+        param1 = std::min(param1, maxParam1);
+        param2 = std::min(param2, maxParam2);
+    }
 
     // ------ Cube ------
     m_cube.updateParams(param1);
@@ -184,11 +286,10 @@ void Realtime::paintGL() {
     glm::mat4 proj = makePerspectiveMatrix(fovY, aspectRatio, nearPlane, farPlane);
 
     //B:View Matrix setting
-    glm::mat4 view = glm::lookAt(
-        glm::vec3(m_renderData.cameraData.pos),
-        glm::vec3(m_renderData.cameraData.look)+ glm::vec3(m_renderData.cameraData.pos),//center = eye + look direction
-        glm::vec3(m_renderData.cameraData.up)
-        );
+    glm::vec3 eye = glm::vec3(m_renderData.cameraData.pos);
+    glm::vec3 center = eye + glm::vec3(m_renderData.cameraData.look);
+    glm::vec3 up = glm::vec3(m_renderData.cameraData.up);
+    glm::mat4 view = makeViewMatrix(eye, center, up);
 
     //C:Send the shared matrixes to shaders
     //c.1:lighting global setting
@@ -329,13 +430,13 @@ void Realtime::mouseMoveEvent(QMouseEvent *event) {
         float pitchAngle = glm::radians(-sensitivity * deltaY);
 
         // 4. Yaw
-        glm::mat4 yawRot = glm::rotate(glm::mat4(1.0f), yawAngle, glm::vec3(0, 1, 0));
+        glm::mat4 yawRot = makeRotationMatrix(yawAngle, glm::vec3(0, 1, 0));
         look = glm::vec3(yawRot * glm::vec4(look, 0.0f));
         up   = glm::vec3(yawRot * glm::vec4(up, 0.0f));
 
         // 5. Pitch
         glm::vec3 right = glm::normalize(glm::cross(look, up));
-        glm::mat4 pitchRot = glm::rotate(glm::mat4(1.0f), pitchAngle, right);
+        glm::mat4 pitchRot = makeRotationMatrix(pitchAngle, right);
         look = glm::vec3(pitchRot * glm::vec4(look, 0.0f));
         up   = glm::vec3(pitchRot * glm::vec4(up, 0.0f));
 
