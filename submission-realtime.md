@@ -97,4 +97,14 @@ I used Geminmi heavily for conceptual questions, and I made sure I was on the ri
 none
 
 ### Extra Credit
-none
+I made my own scenefile! It's at the extra credit folder of lights camera.
+<img width="824" height="965" alt="image" src="https://github.com/user-attachments/assets/ea7dc0df-9050-43ce-a210-37b6c472e1e7" />
+
+I also implemented the adaptive level to numbers of primitives in scene, by adding a if statement in realtime.cpp. The following is a video to prove it works.
+
+
+
+https://github.com/user-attachments/assets/3362f819-38c9-4041-a42d-434afe8d1f5f
+
+
+
