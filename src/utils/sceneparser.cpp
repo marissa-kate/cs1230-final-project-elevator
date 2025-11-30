@@ -97,6 +97,18 @@ void SceneParser::dfsTraversal(SceneNode* node, glm::mat4 ctm, RenderData &rende
         renderData.lights.push_back(lightData);
     }
 
+    for (SceneParticleEmitter* emitter : node->particles) {
+        glm::vec4 worldPos = finalCtm * glm::vec4(emitter->position, 1.0f);
+
+        // save to renderdata
+        SceneParticleEmitter dataCopy = *emitter;
+        dataCopy.position = glm::vec3(worldPos);
+
+        renderData.particles.push_back(dataCopy);
+    }
+
+
+
     //do the function for the next child
     for (SceneNode* child : node->children){
         dfsTraversal(child, finalCtm, renderData);
@@ -121,6 +133,7 @@ bool SceneParser::parse(std::string filepath, RenderData &renderData) {
     //         This will involve traversing the scene graph, and we recommend you
     //         create a helper function to do so!
     renderData.shapes.clear();
+    renderData.particles.clear();
 
     SceneNode* root = fileReader.getRootNode();
     if (root) {

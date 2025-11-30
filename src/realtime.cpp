@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "utils/Triangle.h"
+#include "particlesystem.h"
 #include "utils/sceneparser.h"
 
 
@@ -69,6 +70,10 @@ glm::mat4 Realtime::makeViewMatrix(const glm::vec3& eye, const glm::vec3& center
     return viewMatrix;
 }
 
+inline float frand() {
+    return (float)rand() / RAND_MAX; // 0.0 〜 1.0
+}
+
 glm::mat4 Realtime::makeRotationMatrix(float angle, const glm::vec3& axis) {
     float c = cos(angle);
     float s = sin(angle);
@@ -104,6 +109,8 @@ glm::mat4 Realtime::makeRotationMatrix(float angle, const glm::vec3& axis) {
 
     return rotationMatrix;
 }
+
+
 
 //creating VBO/VAO for primitives
 void Realtime::setupShapeVAO(PrimitiveType type) {
@@ -253,6 +260,9 @@ void Realtime::initializeGL() {
 
     m_shader_program = ShaderLoader::createShaderProgram("resources/shaders/default.vert",
                                                          "resources/shaders/default.frag");
+    //different vert and frag for particles
+    m_particle_shader = ShaderLoader::createShaderProgram("resources/shaders/particle.vert",
+                                                          "resources/shaders/particle.frag");
 
     //setting up VAO and VBO for all primitives
     setupShapeVAO(PrimitiveType::PRIMITIVE_CUBE);
@@ -262,12 +272,22 @@ void Realtime::initializeGL() {
 
     updateAllShapeTessellations();
 
-    // //todo:dummy primitive lists to draw
-    // m_shapes_to_draw.clear();
-    // RenderShapeData dummy_shape;
-    // dummy_shape.primitive.type = PrimitiveType::PRIMITIVE_CYLINDER;
-    // dummy_shape.ctm = glm::mat4(1.0f);
-    // m_shapes_to_draw.push_back(dummy_shape);
+    //for particles
+    m_particleSystems.clear();
+    for (const auto& emitterData : m_renderData.particles) {
+        auto system = std::make_unique<ParticleSystem>(emitterData);
+        system->init();
+        m_particleSystems.push_back(std::move(system));
+    }
+
+    std::string defaultScenePath = "/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/proj5-ytap/scenefiles/Proj6/default.json";
+    settings.sceneFilePath = defaultScenePath;
+    sceneChanged();
+
+    //for sound
+    m_audioCapture = new AudioCapture(this);
+
+    m_gl_initialized = true;
 
     //for avoiding crashes
     m_gl_initialized = true;
@@ -278,6 +298,7 @@ void Realtime::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(m_shader_program);
 
+    //1.Realtime for primitives
     //A:Projection matrix setting
     float aspectRatio = (float)width() / (float)height();
     float fovY = m_renderData.cameraData.heightAngle; //potential bug: is this radians?
@@ -353,7 +374,27 @@ void Realtime::paintGL() {
             GLuint vertexCount = m_vertex_count_map.at(shape.primitive.type);
             glDrawArrays(GL_TRIANGLES, 0, vertexCount);
         }
+
+
     }
+
+    //2.Realtime for particles
+    glUseProgram(m_particle_shader);
+    glUniform1f(glGetUniformLocation(m_particle_shader, "u_time"), m_simTime);
+
+    for (auto& system : m_particleSystems) {
+        system->draw(m_particle_shader, view, proj);
+    }
+
+
+    //turn setting back for other instances
+    glDepthMask(GL_TRUE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_BLEND);
+
+    glBindVertexArray(0);
+    glUseProgram(0);
+
 
     //E:Cleanup after drawing
     glBindVertexArray(0);
@@ -374,6 +415,14 @@ void Realtime::sceneChanged() {
     if (!m_parser.parse(filepath, m_renderData)) {
         std::cerr << "Error parsing scene: " << filepath << std::endl;
         return;
+    }
+
+    //particles
+    m_particleSystems.clear();
+    for (const auto& emitterData : m_renderData.particles) {
+        auto system = std::make_unique<ParticleSystem>(emitterData);
+        system->init();
+        m_particleSystems.push_back(std::move(system));
     }
     updateAllShapeTessellations();
     update(); // asks for a PaintGL() call to occur
@@ -455,7 +504,16 @@ void Realtime::timerEvent(QTimerEvent *event) {
     int elapsedms   = m_elapsedTimer.elapsed();
     float deltaTime = elapsedms * 0.001f;
     m_elapsedTimer.restart();
+    float audioLevel = m_audioCapture ? m_audioCapture->getLevel() : 0.0f;
+    float audioFreq  = m_audioCapture ? m_audioCapture->getFrequency() : 0.0f;
 
+
+    //particlessssss!!!
+    m_simTime += deltaTime; // for sparkle
+
+    for (auto& system : m_particleSystems) {
+        system->update(deltaTime, audioLevel, audioFreq);
+    }
     // Use deltaTime and m_keyMap here to move around
 
     //1. camera rn
@@ -494,6 +552,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
     update(); // asks for a PaintGL() call to occur
 }
+
 
 // DO NOT EDIT
 void Realtime::saveViewportImage(std::string filePath) {

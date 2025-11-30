@@ -37,6 +37,7 @@ private:
     bool parseGroupData(const QJsonObject &object, SceneNode *node);
     bool parsePrimitive(const QJsonObject &prim, SceneNode *node);
     bool parseLightData(const QJsonObject &lightData, SceneNode *node);
+    bool parseParticleEmitter(const QJsonObject &particleData, SceneNode *node); //particles
 
     std::string file_name;
 

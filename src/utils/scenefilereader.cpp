@@ -133,6 +133,8 @@ bool ScenefileReader::readJSON() {
         }
     }
 
+
+
     // Parse the groups
     if (scenefile.contains("groups")) {
         if (!parseGroups(scenefile["groups"], m_root)) {
@@ -578,7 +580,7 @@ bool ScenefileReader::parseTemplateGroupData(const QJsonObject &templateGroup) {
  * NAME OF NODE CANNOT REFERENCE TEMPLATE NODE
  */
 bool ScenefileReader::parseGroupData(const QJsonObject &object, SceneNode *node) {
-    QStringList optionalFields = {"name", "translate", "rotate", "scale", "matrix", "lights", "primitives", "groups"};
+    QStringList optionalFields = {"name", "translate", "rotate", "scale", "matrix", "lights", "primitives", "groups", "particles"}; //add particles!
     QStringList allFields = optionalFields;
     for (auto &field : object.keys()) {
         if (!allFields.contains(field)) {
@@ -731,6 +733,26 @@ bool ScenefileReader::parseGroupData(const QJsonObject &object, SceneNode *node)
             }
         }
     }
+
+
+    // parse particles if any
+    if (object.contains("particles")) {
+        if (!object["particles"].isArray()) {
+            std::cout << "group particles must be of type array" << std::endl;
+            return false;
+        }
+        QJsonArray particlesArray = object["particles"].toArray();
+        for (auto pVal : particlesArray) {
+            if (!pVal.isObject()) {
+                std::cout << "particle item must be of type object" << std::endl;
+                return false;
+            }
+            if (!parseParticleEmitter(pVal.toObject(), node)) {
+                return false;
+            }
+        }
+    }
+
 
     // parse primitives if any
     if (object.contains("primitives")) {
@@ -1024,6 +1046,65 @@ bool ScenefileReader::parsePrimitive(const QJsonObject &prim, SceneNode *node) {
         mat.bumpMap.repeatU = prim.contains("bumpMapU") && prim["bumpMapU"].isDouble() ? prim["bumpMapU"].toDouble() : 1;
         mat.bumpMap.repeatV = prim.contains("bumpMapV") && prim["bumpMapV"].isDouble() ? prim["bumpMapV"].toDouble() : 1;
         mat.bumpMap.isUsed = true;
+    }
+
+    return true;
+}
+
+
+//added by student: Parses particle
+bool ScenefileReader::parseParticleEmitter(const QJsonObject &particleData, SceneNode *node) {
+    SceneParticleEmitter *emitter = new SceneParticleEmitter();
+    node->particles.push_back(emitter);
+
+
+    // Name
+    if (particleData.contains("name") && particleData["name"].isString()) {
+        emitter->name = particleData["name"].toString().toStdString();
+    }
+
+    // Position (vec3)
+    if (particleData.contains("position") && particleData["position"].isArray()) {
+        QJsonArray arr = particleData["position"].toArray();
+        emitter->position = glm::vec3(arr[0].toDouble(), arr[1].toDouble(), arr[2].toDouble());
+    }
+
+    // Velocity (vec3)
+    if (particleData.contains("velocity") && particleData["velocity"].isArray()) {
+        QJsonArray arr = particleData["velocity"].toArray();
+        emitter->velocity = glm::vec3(arr[0].toDouble(), arr[1].toDouble(), arr[2].toDouble());
+    }
+
+    // Color (vec4)
+    if (particleData.contains("color") && particleData["color"].isArray()) {
+        QJsonArray arr = particleData["color"].toArray();
+        if (arr.size() >= 3) {
+            float r = arr[0].toDouble();
+            float g = arr[1].toDouble();
+            float b = arr[2].toDouble();
+            float a = (arr.size() > 3) ? arr[3].toDouble() : 1.0f; // Alpha省略時は1.0
+            emitter->color = glm::vec4(r, g, b, a);
+        }
+    }
+
+    // Lifetime (float)
+    if (particleData.contains("lifetime") && particleData["lifetime"].isDouble()) {
+        emitter->lifetime = (float)particleData["lifetime"].toDouble();
+    }
+
+    // MaxParticles (int)
+    if (particleData.contains("maxParticles") && particleData["maxParticles"].isDouble()) {
+        emitter->maxParticles = (int)particleData["maxParticles"].toDouble();
+    }
+
+    // Scale (float)
+    if (particleData.contains("scale") && particleData["scale"].isDouble()) {
+        emitter->scale = (float)particleData["scale"].toDouble();
+    }
+
+    // Audio Reactive (bool)
+    if (particleData.contains("audioReactive") && particleData["audioReactive"].isBool()) {
+        emitter->isAudioReactive = particleData["audioReactive"].toBool();
     }
 
     return true;

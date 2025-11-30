@@ -19,7 +19,7 @@ find_package(Qt6 REQUIRED COMPONENTS Gui)
 find_package(Qt6 REQUIRED COMPONENTS OpenGL)
 find_package(Qt6 REQUIRED COMPONENTS OpenGLWidgets)
 find_package(Qt6 REQUIRED COMPONENTS Xml)
-
+find_package(Qt6 REQUIRED COMPONENTS Multimedia)
 # Allows you to include files from within those directories, without prefixing their filepaths
 include_directories(src)
 
@@ -41,20 +41,29 @@ add_executable(${PROJECT_NAME}
     src/utils/sceneparser.h
     src/utils/shaderloader.h
     src/utils/aspectratiowidget/aspectratiowidget.hpp
+    src/audiocapture.h
+    src/audiocapture.cpp
+    resources/shaders/particle.vert
+    resources/shaders/particle.frag
+    src/particlesystem.cpp
+    src/particlesystem.h
 )
 
 # GLM: this creates its library and allows you to `#include "glm/..."`
 add_subdirectory(glm)
 
+
 # GLEW: this creates its library and allows you to `#include "GL/glew.h"`
 add_library(StaticGLEW STATIC glew/src/glew.c
-    src/utils/Triangle.h src/utils/Triangle.cpp
     src/utils/Triangle.h src/utils/Triangle.cpp
     src/utils/Cube.h src/utils/Cube.cpp
     src/utils/Cylinder.h src/utils/Cylinder.cpp
     src/utils/Sphere.h src/utils/Sphere.cpp
     src/utils/Tet.h src/utils/Tet.cpp
-    src/utils/Cone.h src/utils/Cone.cpp)
+    src/utils/Cone.h src/utils/Cone.cpp
+    src/particlesystem.h src/particlesystem.cpp
+)
+
 include_directories(${PROJECT_NAME} PRIVATE glew/include)
 
 # Specifies libraries to be linked (Qt components, glew, etc)
@@ -64,6 +73,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt::OpenGL
     Qt::OpenGLWidgets
     Qt::Xml
+    Qt::Multimedia  # sound!
     StaticGLEW
 )
 
@@ -74,6 +84,8 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
     FILES
         resources/shaders/default.frag
         resources/shaders/default.vert
+        resources/shaders/particle.vert
+        resources/shaders/particle.frag
 )
 
 # GLEW: this provides support for Windows (including 64-bit)

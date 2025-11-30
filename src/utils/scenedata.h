@@ -160,11 +160,35 @@ struct SceneTransformation {
     glm::mat4 matrix;    // Only applicable when transforming by a custom matrix. This is that custom matrix.
 };
 
+//particlesss
+struct SceneParticleEmitter {
+    SceneParticleEmitter()
+        : name("default"),
+          position(0.0f),
+          velocity(0.0f, 0.5f, 0.0f),
+          color(0.2f, 0.6f, 1.0f, 1.0f),
+          lifetime(5.0f),
+          maxParticles(1000),
+          scale(0.2f),
+          isAudioReactive(true) {} // does it react to audio?
+
+    std::string name;
+    glm::vec3 position;
+    glm::vec3 velocity;      // how does it go above
+    SceneColor color;
+    float lifetime;
+    int maxParticles;
+    float scale;
+    bool isAudioReactive;
+};
+
+
 // Struct which represents a node in the scene graph/tree, to be parsed by the student's `SceneParser`.
 struct SceneNode {
     std::vector<SceneTransformation*> transformations; // Note the order of transformations described in lab 5
     std::vector<ScenePrimitive*> primitives;
     std::vector<SceneLight*> lights;
     std::vector<SceneNode*> children;
+    std::vector<SceneParticleEmitter*> particles; //add for particles
 };
 

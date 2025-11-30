@@ -21,6 +21,9 @@
 #include "utils/Tet.h"
 #include "utils/Triangle.h"
 #include "utils/sceneparser.h"
+#include "audiocapture.h"
+#include "particlesystem.h"
+#include <memory>
 
 class Realtime : public QOpenGLWidget
 {
@@ -31,6 +34,13 @@ public:
     void settingsChanged();
     void saveViewportImage(std::string filePath);
 
+    struct Particle {
+        glm::vec3 position;
+        glm::vec3 velocity;
+        glm::vec4 color;
+        float life;
+    };
+
 public slots:
     void tick(QTimerEvent* event);                      // Called once per tick of m_timer
 
@@ -40,6 +50,12 @@ protected:
     void resizeGL(int width, int height) override;      // Called when window size changes
 
 private:
+    //for particle
+    std::vector<std::unique_ptr<ParticleSystem>> m_particleSystems;
+    GLuint m_particle_shader;
+    AudioCapture* m_audioCapture = nullptr;
+    float m_simTime = 0.0f;
+
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
