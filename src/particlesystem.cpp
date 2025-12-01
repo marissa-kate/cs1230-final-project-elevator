@@ -1,6 +1,8 @@
 #include "particlesystem.h"
 #include <cmath>
 #include <vector>
+#include <iostream>
+
 
 ParticleSystem::ParticleSystem(const SceneParticleEmitter& config)
     : m_config(config), m_vao(0), m_vbo_mesh(0), m_vbo_instance(0)
@@ -15,21 +17,53 @@ ParticleSystem::~ParticleSystem() {
 
 void ParticleSystem::init() {
     m_particles.resize(m_config.maxParticles);
+    // ★デバッグログ追加
+    std::cout << "[DEBUG] Init L-System: " << m_config.name << std::endl;
+    std::cout << "  Iter: " << m_config.lsysIter << std::endl;
+    std::cout << "  Axiom: " << m_config.lsysAxiom << std::endl;
+
+
+    if (m_config.lsysIter > 0) { //for lsystem driven design
+        LSystemConfig lsysConfig;
+        lsysConfig.axiom = m_config.lsysAxiom;
+        lsysConfig.rule = m_config.lsysRule;
+        lsysConfig.iterations = m_config.lsysIter;
+        lsysConfig.angle = m_config.lsysAngle;
+        lsysConfig.length = 1.0f; // base length
+        lsysConfig.startPos = m_config.position; // starting position
+
+        LSystem lsys(lsysConfig);
+        skeleton = lsys.generate(); // generate skeleton
+        // ★生成結果のログ追加
+        std::cout << "  Skeleton Size: " << skeleton.size() << std::endl;
+    }
 
     for (auto& p : m_particles) {
         // Pre-warming
         float age = frand() * m_config.lifetime;
         p.life = 1.0f - (age / m_config.lifetime);
 
-        float speedVariation = 0.9f + (frand() * 0.2f);
-        p.velocity = m_config.velocity * speedVariation;
 
         float r = (frand() * 1.5f) + 0.5f;
         float startTheta = frand() * 6.28f;
 
-        // spinning up
-        float currentY = m_config.position.y + (p.velocity.y * age);
 
+        if (!skeleton.empty()) {//L-system mode
+            int segIndex = rand() % skeleton.size();
+            Segment& seg = skeleton[segIndex];
+            float t = frand();
+
+            p.position = glm::mix(seg.start, seg.end, t);
+            // distribute
+            p.position += glm::vec3(frand()-0.5f, frand()-0.5f, frand()-0.5f) * 0.1f;
+
+            // velocity is slow, because it's a tree
+            p.velocity = m_config.velocity;
+        } else {
+        // spinning up for normal design
+        float currentY = m_config.position.y + (p.velocity.y * age);
+        float speedVariation = 0.9f + (frand() * 0.2f);
+        p.velocity = m_config.velocity * speedVariation;
         float rotationSpeed = 2.0f * speedVariation;
         float currentTheta = startTheta + (rotationSpeed * age);
         float spiralFactor = pow(0.995f, age * 60.0f);
@@ -38,6 +72,7 @@ void ParticleSystem::init() {
         p.position.x = m_config.position.x + (r * cos(currentTheta) * spiralFactor);
         p.position.y = currentY;
         p.position.z = m_config.position.z + (r * sin(currentTheta) * spiralFactor);
+        }
 
         p.color = m_config.color; // use set color
         p.phase = frand() * 6.28f;
@@ -80,12 +115,25 @@ void ParticleSystem::update(float deltaTime, float audioLevel, float audioFreq) 
         audioLevel = 0.0f;
         audioFreq = 0.0f; // set it to 0 if no
     }
+    bool isLSystem = (m_config.lsysIter > 0 && !skeleton.empty());
 
     for (auto& p : m_particles) {
         p.life -= deltaTime / m_config.lifetime; // life setting
 
         if (p.life <= 0.0f) {
             p.life = 1.0f + (frand() * 0.2f);
+
+            if (isLSystem) {
+                // L-System respawn
+                int segIndex = rand() % skeleton.size();
+                auto& seg = skeleton[segIndex];
+
+                float t = frand();
+                p.position = glm::mix(seg.start, seg.end, t);
+                p.position += glm::vec3(frand()-0.5f, frand()-0.5f, frand()-0.5f) * 0.1f; //a bit distibuted
+
+                p.velocity = m_config.velocity; // back to speed (default is 0?)
+            }else{
 
             float r = (frand() * 1.5f) + 0.5f;
             float theta = frand() * 6.28f;
@@ -97,8 +145,11 @@ void ParticleSystem::update(float deltaTime, float audioLevel, float audioFreq) 
 
             float speedVariation = 0.9f + (frand() * 0.2f);
             p.velocity = m_config.velocity * speedVariation;
+            }
         }
 
+        if (isLSystem) {//L-system movement: dont roll!
+        }else{
         // movement
         glm::vec3 currentVel = p.velocity;
         currentVel.y += audioLevel * 3.0f; // sound speeds up
@@ -118,6 +169,7 @@ void ParticleSystem::update(float deltaTime, float audioLevel, float audioFreq) 
         float dynamicSuction = 0.96f + (audioLevel * 0.25f);
         p.position.x = m_config.position.x + (nextX * dynamicSuction);
         p.position.z = m_config.position.z + (nextZ * dynamicSuction);
+        }
 
         positionData.push_back(p.position.x);
         positionData.push_back(p.position.y);

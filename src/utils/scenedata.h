@@ -170,7 +170,10 @@ struct SceneParticleEmitter {
           lifetime(5.0f),
           maxParticles(1000),
           scale(0.2f),
-          isAudioReactive(true) {} // does it react to audio?
+          isAudioReactive(true), // does it react to audio?
+         lsysIter(0), lsysAngle(25.0f) {} //for Lsystem
+
+
 
     std::string name;
     glm::vec3 position;
@@ -180,6 +183,10 @@ struct SceneParticleEmitter {
     int maxParticles;
     float scale;
     bool isAudioReactive;
+    std::string lsysAxiom;
+    std::string lsysRule;
+    int lsysIter;
+    float lsysAngle;
 };
 
 

@@ -1107,5 +1107,19 @@ bool ScenefileReader::parseParticleEmitter(const QJsonObject &particleData, Scen
         emitter->isAudioReactive = particleData["audioReactive"].toBool();
     }
 
+    // L-System Parameters
+    if (particleData.contains("lsysAxiom") && particleData["lsysAxiom"].isString()) {
+        emitter->lsysAxiom = particleData["lsysAxiom"].toString().toStdString();
+    }
+    if (particleData.contains("lsysRule") && particleData["lsysRule"].isString()) {
+        emitter->lsysRule = particleData["lsysRule"].toString().toStdString();
+    }
+    if (particleData.contains("lsysIter") && particleData["lsysIter"].isDouble()) {
+        emitter->lsysIter = (int)particleData["lsysIter"].toDouble();
+    }
+    if (particleData.contains("lsysAngle") && particleData["lsysAngle"].isDouble()) {
+        emitter->lsysAngle = (float)particleData["lsysAngle"].toDouble();
+    }
+
     return true;
 }

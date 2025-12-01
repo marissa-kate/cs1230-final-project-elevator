@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include "utils/scenedata.h"
+#include "lsystem.h"
 
 class ParticleSystem {
 public:
@@ -33,4 +34,7 @@ private:
 
     // helper
     float frand() { return (float)rand() / RAND_MAX; }
+
+    //L-system
+    std::vector<Segment> skeleton;
 };
