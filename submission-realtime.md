@@ -121,6 +121,35 @@ campath_loop.json (Looped continuously, animation being at the same place at sta
 https://github.com/user-attachments/assets/5179ac12-f7ca-48e6-b063-34eeef95f8ac
 
 
+campath_speed.json (Non constant time intervals)
+
+
+https://github.com/user-attachments/assets/697588ef-d30c-467f-9315-42e9a44a9fb6
+
+
+
+campath_orientation.json (Can the up vector and look vector change drastically)
+
+
+https://github.com/user-attachments/assets/7cfdee61-26b9-42bd-8cc9-d7927c60f87f
+
+
+
+campath_curve.json (Non-linear movement)
+
+
+https://github.com/user-attachments/assets/13fed351-3adc-4504-9799-ea4ae673cb51
+
+
+
+
+campath_stay.json (Stopping, edge case)
+
+
+
+https://github.com/user-attachments/assets/fa5eaa8c-a607-41d2-8310-0785df212976
+
+
 
 ### Design Choices
 Realtime.cpp acts as the central manager for the new features. I implemented particles, lsystems, and camera paths. Also for particles, I made them audio reactive using Qt multimedia. In sceneChanged(), it initializes a list of ParticleSystem objects and a CameraPath instance using data parsed from the JSON file by ScenefileReader. In timerEvent(), it retrieves real-time audio data (volume and frequency) from the AudioCapture class, updates the camera's position and orientation via CameraPath, and advances the simulation for all particle systems. paintGL() then issues the draw calls for these systems.
@@ -133,7 +162,7 @@ I used Geminmi heavily for conceptual questions, especially understanding the ga
 Also for audio reactive particles, I generated codes related to Qt MultiMedia using Gemini, because this is not a scope for this class. 
 
 ### Known Bugs
-none
+Campath inconsistent when loaded?
 
 ### Extra Credit
 I implemented stuff worth 140(120) points!
