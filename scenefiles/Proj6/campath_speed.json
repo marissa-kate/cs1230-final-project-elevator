@@ -1,24 +1,36 @@
 {
-    "globalData": { "ambientCoeff": 0.5, "diffuseCoeff": 0.5, "specularCoeff": 0.5, "transparentCoeff": 0 },
-    "cameraData": { "position": [0, 0, 15], "focus": [0, 0, 0], "up": [0, 1, 0], "heightAngle": 45 },
-    "cameraPath": [
-        { "time": 0.0, "position": [-10, 2, 10], "focus": [-10, 0, 0], "up": [0, 1, 0] },
-        { "time": 3.0, "position": [ -5, 2, 10], "focus": [ -5, 0, 0], "up": [0, 1, 0] },
-        { "time": 3.5, "position": [  0, 2, 10], "focus": [  0, 0, 0], "up": [0, 1, 0] },
-        { "time": 4.0, "position": [  5, 2, 10], "focus": [  5, 0, 0], "up": [0, 1, 0] },
-        { "time": 7.0, "position": [ 10, 2, 10], "focus": [ 10, 0, 0], "up": [0, 1, 0] }
-    ],
-    "groups": [
+  "name": "root",
+  "globalData": {
+    "ambientCoeff": 0.5,
+    "diffuseCoeff": 0.5,
+    "specularCoeff": 0.5,
+    "transparentCoeff": 0
+  },
+  "cameraData": {
+    "position": [-10.0, 0.0, 5.0],
+    "up": [0.0, 1.0, 0.0],
+    "heightAngle": 30.0,
+    "focus": [0.0, 0.0, 0.0]
+  },
+  "cameraPath": [
+    { "time": 0.0, "position": [-10, 0, 5], "focus": [0, 0, 0], "up": [0, 1, 0] },
+    { "time": 3.0, "position": [ -5, 0, 5], "focus": [0, 0, 0], "up": [0, 1, 0] },
+    { "time": 3.5, "position": [  0, 0, 5], "focus": [0, 0, 0], "up": [0, 1, 0] },
+    { "time": 4.0, "position": [  5, 0, 5], "focus": [0, 0, 0], "up": [0, 1, 0] },
+    { "time": 7.0, "position": [ 10, 0, 5], "focus": [0, 0, 0], "up": [0, 1, 0] }
+  ],
+  "groups": [
+    {
+      "lights": [
+        { "type": "directional", "color": [1.0, 1.0, 1.0], "direction": [-3.0, -2.0, -1.0] }
+      ]
+    },
+    {
+      "groups": [
         {
-            "name": "root",
-            "lights": [ { "type": "point", "color": [1, 1, 1], "attenuationCoeff": [0.5, 0, 0] } ],
-            "groups": [
-                { "translate": [-10, 0, 0], "primitives": [{ "type": "cube", "diffuse": [0, 1, 1] }] },
-                { "translate": [ -5, 0, 0], "primitives": [{ "type": "cube", "diffuse": [0, 1, 1] }] },
-                { "translate": [  0, 0, 0], "primitives": [{ "type": "cube", "diffuse": [1, 0, 0] }] },
-                { "translate": [  5, 0, 0], "primitives": [{ "type": "cube", "diffuse": [0, 1, 1] }] },
-                { "translate": [ 10, 0, 0], "primitives": [{ "type": "cube", "diffuse": [0, 1, 1] }] }
-            ]
+          "primitives": [ { "type": "cube", "diffuse": [1.0, 0.0, 0.0], "specular": [1.0, 1.0, 1.0], "shininess": 25.0 } ]
         }
-    ]
+      ]
+    }
+  ]
 }
