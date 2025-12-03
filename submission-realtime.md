@@ -29,7 +29,8 @@ lsystem_rule.json (plant like system or fractale like system)
 
 lsystem_weird.json (Can it ignore undefined letters?)
 
-campath_speed.json 
+campath_loop.json (Looped continuously, animation being at the same place at start at back, working on all angles)
+
 
 
 ### Design Choices
