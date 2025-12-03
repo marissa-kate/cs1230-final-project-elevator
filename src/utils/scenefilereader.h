@@ -26,6 +26,8 @@ public:
 
     SceneNode *getRootNode() const;
 
+    std::vector<SceneCameraKeyframe> getCameraPath() const; //camera!
+
 private:
     // The filename should be contained within this parser implementation.
     // If you want to parse a new file, instantiate a different parser.
@@ -48,4 +50,8 @@ private:
 
     SceneNode *m_root;
     std::vector<SceneNode *> m_nodes;
+
+    //save path data for caemra
+    std::vector<SceneCameraKeyframe> m_cameraPath;
+    bool parseCameraPath(const QJsonValue &pathData);
 };

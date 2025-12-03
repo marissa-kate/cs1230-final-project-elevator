@@ -18,6 +18,7 @@ struct RenderData {
     std::vector<SceneLightData> lights;
     std::vector<RenderShapeData> shapes;
     std::vector<SceneParticleEmitter> particles;
+    std::vector<SceneCameraKeyframe> cameraPath; //for camera
 };
 
 class SceneParser {

@@ -424,6 +424,8 @@ void Realtime::sceneChanged() {
         system->init();
         m_particleSystems.push_back(std::move(system));
     }
+
+    m_cameraPath.fromKeyframes(m_renderData.cameraPath); //camera path clear
     updateAllShapeTessellations();
     update(); // asks for a PaintGL() call to occur
 }
@@ -514,6 +516,18 @@ void Realtime::timerEvent(QTimerEvent *event) {
     for (auto& system : m_particleSystems) {
         system->update(deltaTime, audioLevel, audioFreq);
     }
+
+    //camera movement!!!
+    if (!m_renderData.cameraPath.empty()) {
+        // get position and rotation at time t
+        SceneCameraData interpolated = m_cameraPath.evaluate(m_simTime);
+
+        // write data
+        m_renderData.cameraData.pos = interpolated.pos;
+        m_renderData.cameraData.look = interpolated.look;
+        m_renderData.cameraData.up = interpolated.up;
+    }
+
     // Use deltaTime and m_keyMap here to move around
 
     //1. camera rn

@@ -2,6 +2,7 @@
 #include "scenedata.h"
 
 #include "glm/gtc/type_ptr.hpp"
+#include "sceneparser.h"
 
 #include <cassert>
 #include <cstring>
@@ -53,6 +54,12 @@ ScenefileReader::~ScenefileReader() {
     m_templates.clear();
 }
 
+//camera
+std::vector<SceneCameraKeyframe> ScenefileReader::getCameraPath() const {
+    return m_cameraPath;
+}
+
+
 SceneGlobalData ScenefileReader::getGlobalData() const {
     return m_globalData;
 }
@@ -67,6 +74,7 @@ SceneNode *ScenefileReader::getRootNode() const {
 
 // This is where it all goes down...
 bool ScenefileReader::readJSON() {
+    m_cameraPath.clear();
     // Read the file
     QFile file(file_name.c_str());
     if (!file.open(QFile::ReadOnly)) {
@@ -104,7 +112,7 @@ bool ScenefileReader::readJSON() {
     }
 
     QStringList requiredFields = {"globalData", "cameraData"};
-    QStringList optionalFields = {"name", "groups", "templateGroups"};
+    QStringList optionalFields = {"name", "groups", "templateGroups", "cameraPath"};
     // If other fields are present, raise an error
     QStringList allFields = requiredFields + optionalFields;
     for (auto &field : scenefile.keys()) {
@@ -129,6 +137,13 @@ bool ScenefileReader::readJSON() {
     // Parse the template groups
     if (scenefile.contains("templateGroups")) {
         if (!parseTemplateGroups(scenefile["templateGroups"])) {
+            return false;
+        }
+    }
+
+    //camera!
+    if (scenefile.contains("cameraPath")) {
+        if (!parseCameraPath(scenefile["cameraPath"])) {
             return false;
         }
     }
@@ -580,7 +595,7 @@ bool ScenefileReader::parseTemplateGroupData(const QJsonObject &templateGroup) {
  * NAME OF NODE CANNOT REFERENCE TEMPLATE NODE
  */
 bool ScenefileReader::parseGroupData(const QJsonObject &object, SceneNode *node) {
-    QStringList optionalFields = {"name", "translate", "rotate", "scale", "matrix", "lights", "primitives", "groups", "particles"}; //add particles!
+    QStringList optionalFields = {"name", "translate", "rotate", "scale", "matrix", "lights", "primitives", "groups", "particles", "cameraPath"}; //add particles!
     QStringList allFields = optionalFields;
     for (auto &field : object.keys()) {
         if (!allFields.contains(field)) {
@@ -1121,5 +1136,66 @@ bool ScenefileReader::parseParticleEmitter(const QJsonObject &particleData, Scen
         emitter->lsysAngle = (float)particleData["lsysAngle"].toDouble();
     }
 
+
+    return true;
+}
+
+
+bool ScenefileReader::parseCameraPath(const QJsonValue &pathData) {
+    if (!pathData.isArray()) {
+        std::cout << "cameraPath must be an array" << std::endl;
+        return false;
+    }
+
+    QJsonArray pathArray = pathData.toArray();
+    for (auto val : pathArray) {
+        if (!val.isObject()) {
+            std::cout << "cameraPath item must be an object" << std::endl;
+            return false;
+        }
+        QJsonObject obj = val.toObject();
+
+        SceneCameraKeyframe kf;
+
+        // Time
+        if (obj.contains("time") && obj["time"].isDouble()) {
+            kf.time = (float)obj["time"].toDouble();
+        } else {
+            std::cout << "cameraPath item missing \"time\"" << std::endl;
+            return false;
+        }
+
+        // Position
+        if (obj.contains("position") && obj["position"].isArray()) {
+            QJsonArray pos = obj["position"].toArray();
+            kf.position = glm::vec3(pos[0].toDouble(), pos[1].toDouble(), pos[2].toDouble());
+        } else {
+            std::cout << "cameraPath item missing \"position\"" << std::endl;
+            return false;
+        }
+
+        // Look or Focus
+        if (obj.contains("look") && obj["look"].isArray()) {
+            QJsonArray look = obj["look"].toArray();
+            kf.look = glm::vec3(look[0].toDouble(), look[1].toDouble(), look[2].toDouble());
+        } else if (obj.contains("focus") && obj["focus"].isArray()) {
+            QJsonArray focus = obj["focus"].toArray();
+            glm::vec3 focusPoint = glm::vec3(focus[0].toDouble(), focus[1].toDouble(), focus[2].toDouble());
+            kf.look = focusPoint - kf.position; // FocusからLookベクトルへ変換
+        } else {
+            std::cout << "cameraPath item missing \"look\" or \"focus\"" << std::endl;
+            return false;
+        }
+
+        // Up (Optional, default 0,1,0)
+        if (obj.contains("up") && obj["up"].isArray()) {
+            QJsonArray up = obj["up"].toArray();
+            kf.up = glm::vec3(up[0].toDouble(), up[1].toDouble(), up[2].toDouble());
+        } else {
+            kf.up = glm::vec3(0, 1, 0);
+        }
+
+        m_cameraPath.push_back(kf);
+    }
     return true;
 }

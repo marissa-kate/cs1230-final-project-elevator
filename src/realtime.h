@@ -24,6 +24,9 @@
 #include "audiocapture.h"
 #include "particlesystem.h"
 #include <memory>
+#include "camerapath.h"
+
+
 
 class Realtime : public QOpenGLWidget
 {
@@ -55,6 +58,9 @@ private:
     GLuint m_particle_shader;
     AudioCapture* m_audioCapture = nullptr;
     float m_simTime = 0.0f;
+
+    //for camerapath
+    CameraPath m_cameraPath;
 
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
@@ -99,6 +105,7 @@ private:
     Cone m_cone;
     void setupShapeVAO(PrimitiveType type);
     void updateAllShapeTessellations();
+
 
     //parser
     SceneParser m_parser;

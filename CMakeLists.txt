@@ -63,6 +63,7 @@ add_library(StaticGLEW STATIC glew/src/glew.c
     src/utils/Cone.h src/utils/Cone.cpp
     src/particlesystem.h src/particlesystem.cpp
     src/lsystem.h src/lsystem.cpp
+    src/camerapath.h src/camerapath.cpp
 )
 
 include_directories(${PROJECT_NAME} PRIVATE glew/include)

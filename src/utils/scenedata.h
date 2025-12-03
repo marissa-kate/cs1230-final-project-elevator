@@ -199,3 +199,11 @@ struct SceneNode {
     std::vector<SceneParticleEmitter*> particles; //add for particles
 };
 
+
+//camera!!
+struct SceneCameraKeyframe {
+    float time;
+    glm::vec3 position;
+    glm::vec3 look;
+    glm::vec3 up;
+};

@@ -127,6 +127,7 @@ bool SceneParser::parse(std::string filepath, RenderData &renderData) {
     // Task 5: populate renderData with global data, and camera data;
     renderData.globalData = fileReader.getGlobalData();
     renderData.cameraData = fileReader.getCameraData();
+    renderData.cameraPath = fileReader.getCameraPath();
 
 
     // Task 6: populate renderData's list of primitives and their transforms.
