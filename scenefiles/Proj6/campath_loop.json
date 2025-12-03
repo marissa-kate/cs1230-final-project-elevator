@@ -1,6 +1,6 @@
 {
     "globalData": { "ambientCoeff": 0.5, "diffuseCoeff": 0.5, "specularCoeff": 0.5, "transparentCoeff": 0 },
-    "cameraData": { "position": [0, 2, 10], "focus": [0, 0, 0], "up": [0, 1, 0], "heightAngle": 45 },
+    "cameraData": { "position": [0, 2, 5], "focus": [0, 0, 0], "up": [0, 1, 0], "heightAngle": 45 },
     "cameraPath": [
         { "time": 0.0, "position": [ 10, 2,  0], "focus": [0, 0, 0], "up": [0, 1, 0] },
         { "time": 2.0, "position": [  0, 2, 10], "focus": [0, 0, 0], "up": [0, 1, 0] },
@@ -12,8 +12,17 @@
         {
             "name": "root",
             "lights": [ { "type": "point", "color": [1, 1, 1], "attenuationCoeff": [1, 0, 0] } ],
-            "particles": [
-                { "name": "CenterMarker", "position": [0, -2, 0], "color": [0.2, 1.0, 0.4, 0.8], "lifetime": 3.0, "maxParticles": 5000, "scale": 0.1, "audioReactive": true }
+            "primitives": [
+                {
+                    "type": "cube",
+                    "diffuse": [1.0, 0.2, 0.2]
+                }
+            ],
+            "groups": [
+                {
+                    "scale": [0.5, 3.0, 0.5],
+                    "primitives": [ { "type": "cube", "diffuse": [0.2, 0.2, 0.2] } ]
+                }
             ]
         }
     ]

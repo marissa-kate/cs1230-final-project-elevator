@@ -16,33 +16,29 @@ ParticleSystem::~ParticleSystem() {
 }
 
 void ParticleSystem::init() {
-    m_particles.resize(m_config.maxParticles);
-    // ★デバッグログ追加
-    std::cout << "[DEBUG] Init L-System: " << m_config.name << std::endl;
-    std::cout << "  Iter: " << m_config.lsysIter << std::endl;
-    std::cout << "  Axiom: " << m_config.lsysAxiom << std::endl;
-
-
+    int safeMaxParticles = std::min(100000000, std::max(0, m_config.maxParticles));
+    m_particles.resize(safeMaxParticles);         // robust to negative
+    if (m_particles.empty()) {
+        return;
+    }
     if (m_config.lsysIter > 0) { //for lsystem driven design
         LSystemConfig lsysConfig;
         lsysConfig.axiom = m_config.lsysAxiom;
         lsysConfig.rule = m_config.lsysRule;
-        lsysConfig.iterations = m_config.lsysIter;
+        lsysConfig.iterations = std::min(6, m_config.lsysIter); //for safety
         lsysConfig.angle = m_config.lsysAngle;
         lsysConfig.length = 1.0f; // base length
         lsysConfig.startPos = m_config.position; // starting position
 
         LSystem lsys(lsysConfig);
         skeleton = lsys.generate(); // generate skeleton
-        // ★生成結果のログ追加
-        std::cout << "  Skeleton Size: " << skeleton.size() << std::endl;
     }
 
-    for (auto& p : m_particles) {
-        // Pre-warming
-        float age = frand() * m_config.lifetime;
-        p.life = 1.0f - (age / m_config.lifetime);
+    float safeLifetime = (std::abs(m_config.lifetime) < 0.0001f) ? 0.0001f : m_config.lifetime;
 
+    for (auto& p : m_particles) {
+        float age = frand() * safeLifetime;
+        p.life = 1.0f - (age / safeLifetime);
 
         float r = (frand() * 1.5f) + 0.5f;
         float startTheta = frand() * 6.28f;
@@ -107,6 +103,7 @@ void ParticleSystem::init() {
 }
 
 void ParticleSystem::update(float deltaTime, float audioLevel, float audioFreq) {
+    if (m_particles.empty()) return;
     std::vector<float> positionData;
     positionData.reserve(m_particles.size() * 3);
 
@@ -117,8 +114,10 @@ void ParticleSystem::update(float deltaTime, float audioLevel, float audioFreq) 
     }
     bool isLSystem = (m_config.lsysIter > 0 && !skeleton.empty());
 
+    float safeLifetime = (m_config.lifetime <= 0.0001f) ? 0.1f : m_config.lifetime; //no minus!
+
     for (auto& p : m_particles) {
-        p.life -= deltaTime / m_config.lifetime; // life setting
+        p.life -= deltaTime / safeLifetime;         // avoid 0 or negative division
 
         if (p.life <= 0.0f) {
             p.life = 1.0f + (frand() * 0.2f);
@@ -182,6 +181,7 @@ void ParticleSystem::update(float deltaTime, float audioLevel, float audioFreq) 
 }
 
 void ParticleSystem::draw(GLuint shaderProgram, const glm::mat4& view, const glm::mat4& proj) {
+    if (m_particles.empty()) return;
     glUseProgram(shaderProgram);
     glBindVertexArray(m_vao);
 

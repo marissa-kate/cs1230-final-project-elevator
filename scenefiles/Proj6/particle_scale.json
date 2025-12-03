@@ -25,6 +25,16 @@
                     "maxParticles": 500, 
                     "scale": 0.3, 
                     "audioReactive": false
+                },
+                {
+                    "name": "ZeroParticles",
+                    "position": [2.0, -2.0, 0.0],
+                    "velocity": [0.0, 0.5, 0.0],
+                    "color": [1.0, 0.8, 0.2, 0.5],
+                    "lifetime": 3.0,
+                    "maxParticles": 500, 
+                    "scale": 0.0, 
+                    "audioReactive": false
                 }
             ]
         }

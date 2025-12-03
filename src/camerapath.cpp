@@ -45,6 +45,13 @@ void CameraPath::computeControlPoints() {
         glm::vec3 p3 = m_frames[i+1].pos;
 
         float dt = m_frames[i+1].time - m_frames[i].time;
+        if (dt <= 0.0001f) {
+            BezierControlPoints cp;
+            cp.p1 = p0;
+            cp.p2 = p3;
+            m_controlPoints.push_back(cp);
+            continue;
+        }
 
         // Calculate the velocity
 

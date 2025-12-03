@@ -195,14 +195,13 @@ void Realtime::updateAllShapeTessellations() {
     glBufferData(GL_ARRAY_BUFFER, coneData.size() * sizeof(GLfloat), coneData.data(), GL_STATIC_DRAW);
     m_vertex_count_map[PrimitiveType::PRIMITIVE_CONE] = coneData.size() / 6;
 
-    // 共通のバインド解除
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 // ================== Rendering the Scene!
 
 Realtime::Realtime(QWidget *parent)
-    : QOpenGLWidget(parent)
+    : QOpenGLWidget(parent), m_timer(0)
 {
     m_prev_mouse_pos = glm::vec2(size().width()/2, size().height()/2);
     setMouseTracking(true);
@@ -410,6 +409,7 @@ void Realtime::resizeGL(int w, int h) {
 
 void Realtime::sceneChanged() {
     std::string filepath = settings.sceneFilePath;
+    m_cameraPath = CameraPath();
     m_renderData.lights.clear();
     //error
     if (!m_parser.parse(filepath, m_renderData)) {
@@ -425,15 +425,33 @@ void Realtime::sceneChanged() {
         m_particleSystems.push_back(std::move(system));
     }
 
-    m_cameraPath.fromKeyframes(m_renderData.cameraPath); //camera path clear
+    std::cout << "[DEBUG] Calling m_cameraPath.fromKeyframes..." << std::endl;
+    m_cameraPath.fromKeyframes(m_renderData.cameraPath);
+    std::cout << "[DEBUG] Returned from m_cameraPath.fromKeyframes." << std::endl;
+    std::cout << "[Debug] Scene Loaded: " << filepath << std::endl;
+    std::cout << "[Debug] Loaded " << m_renderData.cameraPath.size() << " keyframes for CameraPath." << std::endl;
+
+    m_simTime = 0.0f;
+    m_elapsedTimer.restart();
+
+    if (m_timer != 0) {//for timer
+        killTimer(m_timer);
+    }
+    m_timer = startTimer(1000/60);
+
+    makeCurrent();
     updateAllShapeTessellations();
-    update(); // asks for a PaintGL() call to occur
+    doneCurrent();
+    update();
 }
 
 void Realtime::settingsChanged() {
     if (m_gl_initialized) {
+        makeCurrent();
         updateAllShapeTessellations();
+        doneCurrent();
     }
+
     update(); // asks for a PaintGL() call to occur
 }
 
@@ -510,6 +528,11 @@ void Realtime::timerEvent(QTimerEvent *event) {
     float audioFreq  = m_audioCapture ? m_audioCapture->getFrequency() : 0.0f;
 
 
+    std::cout << "[DEBUG] Timer Tick. m_simTime: " << m_simTime << std::endl;
+    std::cout << "[DEBUG] m_renderData.cameraPath.size(): " << m_renderData.cameraPath.size() << std::endl;
+    std::cout << "[DEBUG] m_renderData address: " << &m_renderData << std::endl;
+
+
     //particlessssss!!!
     m_simTime += deltaTime; // for sparkle
 
@@ -519,6 +542,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
     //camera movement!!!
     if (!m_renderData.cameraPath.empty()) {
+        std::cout << "[Debug] Evaluating Camera Path at t=" << m_simTime << std::endl;
         // get position and rotation at time t
         SceneCameraData interpolated = m_cameraPath.evaluate(m_simTime);
 

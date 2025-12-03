@@ -2,18 +2,21 @@
     "globalData": { "ambientCoeff": 0.5, "diffuseCoeff": 0.5, "specularCoeff": 0.5, "transparentCoeff": 0 },
     "cameraData": { "position": [0, 0, 20], "focus": [0, 0, 0], "up": [0, 1, 0], "heightAngle": 45 },
     "cameraPath": [
-        { "time": 0.0, "position": [ 0, 0,  20], "focus": [0, 0, 0] },
-        { "time": 2.0, "position": [ 5, 0,  10], "focus": [0, 0, 0] },
-        { "time": 4.0, "position": [-5, 2,   0], "focus": [0, 0, 0] },
-        { "time": 6.0, "position": [ 5, 4, -10], "focus": [0, 0, 0] },
-        { "time": 8.0, "position": [ 0, 6, -20], "focus": [0, 0, 0] }
+        { "time": 0.0, "position": [ 0, 2,  20], "focus": [0, 2, 10] },
+        { "time": 2.0, "position": [ 5, 2,  10], "focus": [0, 2, 0] },
+        { "time": 4.0, "position": [-5, 2,   0], "focus": [0, 2, -10] },
+        { "time": 6.0, "position": [ 5, 2, -10], "focus": [0, 2, -20] },
+        { "time": 8.0, "position": [ 0, 2, -20], "focus": [0, 2, -30] }
     ],
     "groups": [
         {
             "name": "root",
             "lights": [ { "type": "point", "color": [1, 1, 1], "attenuationCoeff": [1, 0, 0] } ],
-            "particles": [
-                { "name": "Slalom", "position": [0, -2, 0], "color": [1.0, 0.2, 0.8, 0.8], "lifetime": 5, "maxParticles": 10000, "scale": 0.05, "audioReactive": true }
+            "groups": [
+                { "translate": [ 0, 0, 15], "scale": [1, 4, 1], "primitives": [{ "type": "cube", "diffuse": [1, 1, 0] }] },
+                { "translate": [ 0, 0,  5], "scale": [1, 4, 1], "primitives": [{ "type": "cube", "diffuse": [1, 1, 0] }] },
+                { "translate": [ 0, 0, -5], "scale": [1, 4, 1], "primitives": [{ "type": "cube", "diffuse": [1, 1, 0] }] },
+                { "translate": [ 0, 0,-15], "scale": [1, 4, 1], "primitives": [{ "type": "cube", "diffuse": [1, 1, 0] }] }
             ]
         }
     ]
