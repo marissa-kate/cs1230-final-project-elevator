@@ -8,9 +8,10 @@ class Cube
 public:
     void updateParams(int param1);
     std::vector<float> generateShape() { return m_vertexData; }
+    glm::mat3 inertiaTensor(float m, glm::vec3 scale);
 
 private:
-    glm::mat3 inertiaTensor(float m, glm::vec3 scale);
+
     void insertVec3(std::vector<float> &data, glm::vec3 v);
     void insertVec2(std::vector<float> &data, glm::vec2 v);
     glm::vec2 getUV(glm::vec3 vert, int face);

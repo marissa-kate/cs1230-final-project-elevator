@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scenedata.h"
+#include "utils/phys.h"
 #include <vector>
 #include <string>
 
@@ -9,6 +10,7 @@ struct RenderShapeData {
     ScenePrimitive primitive;
     glm::mat4 ctm; // the cumulative transformation matrix
     glm::mat4 inv_ctm;
+    RigidBody * rb;
 };
 
 // Struct which contains all the data needed to render a scene
