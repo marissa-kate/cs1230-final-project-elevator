@@ -11,6 +11,19 @@ void Cone::updateParams(int param1, int param2) {
     }
     setVertexData();
 }
+
+glm::mat3 Cone::inertiaTensor(float m, glm::vec3 scale){
+    float r = scale.x * 0.5f;
+    float h = scale.y;
+    float I_xz = (3.0f/20.0f) * m * (r*r + 0.25f*h*h);
+    float I_y  = (3.0f/10.0f)  * m * r*r;
+    return glm::mat3(
+        I_xz, 0,    0,
+        0,    I_y,  0,
+        0,    0,    I_xz
+        );
+}
+
 void Cone::makeCapTile(glm::vec3 topLeft,
                        glm::vec3 topRight,
                        glm::vec3 bottomLeft,

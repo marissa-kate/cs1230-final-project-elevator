@@ -10,6 +10,7 @@ public:
     std::vector<float> generateShape() { return m_vertexData; }
 
 private:
+    glm::mat3 inertiaTensor(float m, glm::vec3 scale);
     void makeCapTile(glm::vec3 topLeft,
                      glm::vec3 topRight,
                      glm::vec3 bottomLeft,

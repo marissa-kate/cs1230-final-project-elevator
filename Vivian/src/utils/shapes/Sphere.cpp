@@ -14,6 +14,12 @@ void Sphere::updateParams(int param1, int param2) {
     setVertexData();
 }
 
+glm::mat3 Sphere::inertiaTensor(float m, glm::vec3 scale){
+    float r = scale.x * 0.5f;
+    float coeff = 0.4f * m * r * r;   // 2/5 m r^2
+    return glm::mat3(coeff);
+}
+
 void Sphere::makeTile(glm::vec3 topLeft,
                       glm::vec3 topRight,
                       glm::vec3 bottomLeft,

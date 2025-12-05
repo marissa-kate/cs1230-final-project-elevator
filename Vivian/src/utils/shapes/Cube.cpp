@@ -7,6 +7,17 @@ void Cube::updateParams(int param1) {
     setVertexData();
 }
 
+glm::mat3 Cube::inertiaTensor(float m, glm::vec3 scale){
+    float w = scale.x;
+    float h = scale.y;
+    float d = scale.z;
+    return glm::mat3(
+        (1.0f/12.0f) * m * (h*h + d*d), 0, 0,
+        0, (1.0f/12.0f) * m * (w*w + d*d), 0,
+        0, 0, (1.0f/12.0f) * m * (w*w + h*h)
+        );
+}
+
 
 void Cube::makeTile(glm::vec3 topLeft,
                     glm::vec3 topRight,
