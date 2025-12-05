@@ -45,7 +45,7 @@ void Realtime::finish() {
     killTimer(m_timer);
     this->makeCurrent();
 
-    glDeleteProgram(m_shader);
+    glDeleteProgram(m_phong_shader);
 
     glDeleteProgram(m_fullscreen_shader);
 
@@ -79,6 +79,12 @@ void Realtime::finish() {
     glDeleteTextures(1, &m_fbo_texture);
     glDeleteRenderbuffers(1, &m_fbo_renderbuffer);
     glDeleteFramebuffers(1, &m_fbo);
+    glDeleteTextures(1, &m_bright_texture);
+    glDeleteTextures(1, &m_fbo_texture);
+    glDeleteRenderbuffers(1, &m_rbo);
+    glDeleteFramebuffers(1, &m_fbo);
+    glDeleteProgram(m_blur_shader);
+    glDeleteProgram(m_composite_shader);
 
 
     this->doneCurrent();
@@ -120,9 +126,11 @@ void Realtime::initializeGL() {
 
 
     // Shader setup (DO NOT EDIT)
-    m_shader = ShaderLoader::createShaderProgram(":/resources/shaders/default.vert", ":/resources/shaders/default.frag");
-    m_fullscreen_shader = ShaderLoader::createShaderProgram("/Users/vhcch/Desktop/Vivian/brown/cs1230/project-6-final-project-gear-up-vhchen29/resources/shaders/texture.vert",
-                                                            "/Users/vhcch/Desktop/Vivian/brown/cs1230/project-6-final-project-gear-up-vhchen29/resources/shaders/texture.frag");
+    m_phong_shader = ShaderLoader::createShaderProgram(":/resources/shaders/default.vert", ":/resources/shaders/default.frag");
+    m_blur_shader = ShaderLoader::createShaderProgram("resources/shaders/texture.vert", "resources/shaders/texture.frag");
+    m_composite_shader = ShaderLoader::createShaderProgram("resources/shaders/final.vert", "resources/shaders/final.frag");
+    // /m_fullscreen_shader = ShaderLoader::createShaderProgram("resources/shaders/texture.vert",
+    //                                                         "resources/shaders/texture.frag");
     // m_background_shader = ShaderLoader::createShaderProgram("/Users/vhcch/Desktop/Vivian/brown/cs1230/project-6-final-project-gear-up-vhchen29/resources/shaders/background.vert",
     //                                                         "/Users/vhcch/Desktop/Vivian/brown/cs1230/project-6-final-project-gear-up-vhchen29/resources/shaders/background.frag");
 
@@ -152,7 +160,7 @@ void Realtime::initializeGL() {
 
     //initialize FBOS
 
-    m_defaultFBO = 2;
+    m_defaultFBO = 4;
     m_screen_width = size().width() * m_devicePixelRatio;
     m_screen_height = size().height() * m_devicePixelRatio;
     m_fbo_width = m_screen_width;
@@ -393,8 +401,8 @@ void Realtime::bindTexture(){
         // Task 7: Unbind texture
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        glUseProgram(m_shader);
-        GLint samplerLoc = glGetUniformLocation(m_shader, "u_texture");
+        glUseProgram(m_phong_shader);
+        GLint samplerLoc = glGetUniformLocation(m_phong_shader, "u_texture");
         std::cout << "u_texture location = " << samplerLoc << std::endl;
         glUniform1i(samplerLoc, 0);
         glUseProgram(0);
@@ -402,42 +410,55 @@ void Realtime::bindTexture(){
 
 
 
-    glUseProgram(m_shader);
-    glUniform1i(glGetUniformLocation(m_shader, "hasTexture"), settings.hasTexture);
-    glUniform1i(glGetUniformLocation(m_shader, "bump_depth"), settings.bumpDepth);
+    glUseProgram(m_phong_shader);
+    glUniform1i(glGetUniformLocation(m_phong_shader, "hasTexture"), settings.hasTexture);
+    glUniform1i(glGetUniformLocation(m_phong_shader, "bump_depth"), settings.bumpDepth);
     glUseProgram(0);
 
 }
 
 void Realtime::makeFBO(){
-    // Task 19: Generate and bind an empty texture, set its min/mag filter interpolation, then unbind
     glGenTextures(1, &m_fbo_texture);
     glBindTexture(GL_TEXTURE_2D, m_fbo_texture);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_fbo_width, m_fbo_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_fbo_width, m_fbo_height, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //blur texture
+    glGenTextures(1, &m_bright_texture);
+    glBindTexture(GL_TEXTURE_2D, m_bright_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_fbo_width, m_fbo_height, 0, GL_RGBA, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    // Task 20: Generate and bind a renderbuffer of the right size, set its format, then unbind
-    glGenRenderbuffers(1, &m_fbo_renderbuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, m_fbo_renderbuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_fbo_width, m_fbo_height);
-
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-    // Task 18: Generate and bind an FBO
     glGenFramebuffers(1, &m_fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    //renderbuffer
+    glGenRenderbuffers(1, &m_rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, m_rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_fbo_width, m_fbo_height);
 
-    // Task 21: Add our texture as a color attachment, and our renderbuffer as a depth+stencil attachment, to our FBO
+    GLuint attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fbo_texture, 0);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_fbo_renderbuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_bright_texture, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_rbo);
+    glDrawBuffers(2, attachments);
 
-    // Task 22: Unbind the FBO
     glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
+
+    // ---------- Ping-pong FBOs for blur ----------
+    glGenFramebuffers(2, pingpong_fbo);
+    glGenTextures(2, pingpong_colorBuffers);
+
+    for(int i = 0; i < 2; i++){
+        glBindFramebuffer(GL_FRAMEBUFFER, pingpong_fbo[i]);
+        glBindTexture(GL_TEXTURE_2D, pingpong_colorBuffers[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_fbo_width, m_fbo_height, 0, GL_RGBA, GL_FLOAT, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpong_colorBuffers[i], 0);
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
+
 }
 
 
@@ -451,18 +472,21 @@ void Realtime::makeShape(GLuint vbo, GLuint vao, int vertexCount, const glm::mat
     glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(model)));
     glm::mat4 mvp = m_proj * m_view * model;
 
-    glUniformMatrix3fv(glGetUniformLocation(m_shader, "normalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
-    glUniformMatrix4fv(glGetUniformLocation(m_shader, "mvp"), 1, GL_FALSE, &mvp[0][0]);
+    glUniformMatrix3fv(glGetUniformLocation(m_phong_shader, "normalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(m_phong_shader, "mvp"), 1, GL_FALSE, &mvp[0][0]);
+    glm::vec4 fogColor = glm::vec4(0, 0, 0, 1.0f);
+    glUniform4fv(glGetUniformLocation(m_phong_shader, "fog_color"), 1, &fogColor[0]);
+
+    glUniform1f(glGetUniformLocation(m_phong_shader, "bloomThreshold"), 0.3); //TODO fix this
+
+    glUniform1f(glGetUniformLocation(m_phong_shader, "k_a"), metaData.globalData.ka);
+    glUniform1f(glGetUniformLocation(m_phong_shader, "k_d"), metaData.globalData.kd);
+    glUniform1f(glGetUniformLocation(m_phong_shader, "k_s"), metaData.globalData.ks);
+
+    glUniform4fv(glGetUniformLocation(m_phong_shader, "world_camera"), 1, &metaData.cameraData.pos[0]);
 
 
-    glUniform1f(glGetUniformLocation(m_shader, "k_a"), metaData.globalData.ka);
-    glUniform1f(glGetUniformLocation(m_shader, "k_d"), metaData.globalData.kd);
-    glUniform1f(glGetUniformLocation(m_shader, "k_s"), metaData.globalData.ks);
-
-    glUniform4fv(glGetUniformLocation(m_shader, "world_camera"), 1, &metaData.cameraData.pos[0]);
-
-
-    glUniform1i(glGetUniformLocation(m_shader, "num_lights"), metaData.lights.size());
+    glUniform1i(glGetUniformLocation(m_phong_shader, "num_lights"), metaData.lights.size());
 
     for(int i = 0; i < metaData.lights.size(); i++){
 
@@ -471,40 +495,40 @@ void Realtime::makeShape(GLuint vbo, GLuint vao, int vertexCount, const glm::mat
 
 
         //type
-        glUniform1i(glGetUniformLocation(m_shader, (base + ".type").c_str()), static_cast<int>(light.type));
+        glUniform1i(glGetUniformLocation(m_phong_shader, (base + ".type").c_str()), static_cast<int>(light.type));
 
         //color
-        glUniform3fv(glGetUniformLocation(m_shader, (base + ".color").c_str()), 1, &light.color[0]);
+        glUniform3fv(glGetUniformLocation(m_phong_shader, (base + ".color").c_str()), 1, &light.color[0]);
         // std::cout << "light color: " << glm::to_string(light.color) << std::endl;
 
         //fatt
-        glUniform3fv(glGetUniformLocation(m_shader, (base + ".function").c_str()), 1, &light.function[0]);
+        glUniform3fv(glGetUniformLocation(m_phong_shader, (base + ".function").c_str()), 1, &light.function[0]);
 
         //pos
-        glUniform4fv(glGetUniformLocation(m_shader, (base + ".pos").c_str()), 1, &light.pos[0]);
+        glUniform4fv(glGetUniformLocation(m_phong_shader, (base + ".pos").c_str()), 1, &light.pos[0]);
 
         //dir
-        glUniform4fv(glGetUniformLocation(m_shader, (base + ".dir").c_str()), 1, &light.dir[0]);
+        glUniform4fv(glGetUniformLocation(m_phong_shader, (base + ".dir").c_str()), 1, &light.dir[0]);
 
         //penumbra
-        glUniform1f(glGetUniformLocation(m_shader, (base + ".penumbra").c_str()), light.penumbra);
+        glUniform1f(glGetUniformLocation(m_phong_shader, (base + ".penumbra").c_str()), light.penumbra);
 
         //angle
-        glUniform1f(glGetUniformLocation(m_shader, (base + ".angle").c_str()), light.angle);
+        glUniform1f(glGetUniformLocation(m_phong_shader, (base + ".angle").c_str()), light.angle);
 
     }
 
     //cAmbient
-    glUniform3fv(glGetUniformLocation(m_shader, "material.cAmbient"), 1, &material.cAmbient[0]);
+    glUniform3fv(glGetUniformLocation(m_phong_shader, "material.cAmbient"), 1, &material.cAmbient[0]);
 
     //cDiffuse
-    glUniform3fv(glGetUniformLocation(m_shader, "material.cDiffuse"), 1, &material.cDiffuse[0]);
+    glUniform3fv(glGetUniformLocation(m_phong_shader, "material.cDiffuse"), 1, &material.cDiffuse[0]);
 
     //cSpecular
-    glUniform3fv(glGetUniformLocation(m_shader, "material.cSpecular"), 1, &material.cSpecular[0]);
+    glUniform3fv(glGetUniformLocation(m_phong_shader, "material.cSpecular"), 1, &material.cSpecular[0]);
 
     //shininess
-    glUniform1f(glGetUniformLocation(m_shader, "material.shininess"), material.shininess);
+    glUniform1f(glGetUniformLocation(m_phong_shader, "material.shininess"), material.shininess);
 
 
 
@@ -528,10 +552,10 @@ void Realtime::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-    glUseProgram(m_shader);
+    glUseProgram(m_phong_shader);
 
 
-    glUniform1i(glGetUniformLocation(m_shader, "bump_depth"), settings.bumpDepth);
+    glUniform1i(glGetUniformLocation(m_phong_shader, "bump_depth"), settings.bumpDepth);
 
     if (settings.hasTexture) {
         glActiveTexture(GL_TEXTURE0);
@@ -556,6 +580,25 @@ void Realtime::paintGL() {
             makeShape(m_cone_vbo, m_cone_vao, m_cone_vertices, s.ctm, s.primitive.material);
         }
     }
+    glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
+    //blur pass
+    blurBrightTexture();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //Final rendering pass
+    glUseProgram(m_composite_shader);
+    glUniform1i(glGetUniformLocation(m_composite_shader, "scene"), 0);
+    glUniform1i(glGetUniformLocation(m_composite_shader, "bloomBlur"), 1);
+    glUniform1f(glGetUniformLocation(m_composite_shader, "exposure"), 0.5); //TODO;
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_fbo_texture); // original scene
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, pingpong_colorBuffers[0]); // final blurred bloom
+    glBindVertexArray(m_fullscreen_vao);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
 
     // Unbind the shader
     glUseProgram(0);
@@ -565,6 +608,28 @@ void Realtime::paintGL() {
     glBindTexture(GL_TEXTURE_2D, 0);
     paintTexture(m_fbo_texture, settings.invert || settings.color);
 
+}
+
+void Realtime::blurBrightTexture() {
+    bool horizontal = true, first_iteration = true;
+    int amount = 20; // blur passes
+    glUseProgram(m_blur_shader);
+    glUniform1i(glGetUniformLocation(m_blur_shader, "image"), 0);
+    for(int i = 0; i < amount; i++){
+        glBindFramebuffer(GL_FRAMEBUFFER, pingpong_fbo[horizontal]);
+        glUniform1i(glGetUniformLocation(m_blur_shader, "horizontal"), horizontal);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, first_iteration ? m_bright_texture : pingpong_colorBuffers[!horizontal]);
+
+        glBindVertexArray(m_fullscreen_vao);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        horizontal = !horizontal;
+        if(first_iteration) first_iteration = false;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
+    glUseProgram(0);
 }
 
 void Realtime::paintBackground(GLuint bg){
@@ -712,7 +777,10 @@ void Realtime::sceneChanged() {
 }
 
 void Realtime::settingsChanged() {
-
+    if (!isValid() || m_phong_shader == 0) {
+        m_pendingSettingsUpdate = true;
+        return;
+    }
     makeCurrent(); // Ensure OpenGL context is active
 
     m_camera.updateProjMatrix(settings.nearPlane, settings.farPlane);
@@ -753,8 +821,9 @@ void Realtime::settingsChanged() {
 
         }
     }
-
-
+     makeFBO();
+    doneCurrent();
+    m_pendingSettingsUpdate = false;
 
     //load texture into textureReader
     //get vector of in the format of (bump value , u coord, v coord,)
