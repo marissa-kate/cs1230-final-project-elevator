@@ -9,6 +9,7 @@
 
 
 #include "settings.h"
+#include "utils/phys.h"
 #include "utils/sceneparser.h"
 #include "shaderloader.h"
 #include "utils/shapes/Cone.h"
@@ -21,7 +22,7 @@
 
 
 
-
+std::vector<RigidBody> Bodies;
 // ================== Rendering the Scene!
 
 Realtime::Realtime(QWidget *parent)
@@ -637,33 +638,75 @@ void Realtime::sceneChanged() {
 
 
     for( auto &s : metaData.shapes){
+        s.rb = new RigidBody();
+        RigidBody &rb = *s.rb;
 
+        rb.mass = 1.0f;
+        rb.invMass = 1.0f / rb.mass;
+
+        glm::vec3 scale(
+            glm::length(glm::vec3(s.ctm[0])),
+            glm::length(glm::vec3(s.ctm[1])),
+            glm::length(glm::vec3(s.ctm[2]))
+            );
+        rb.scale = scale;
         if(s.primitive.type == PrimitiveType::PRIMITIVE_CUBE){
             Cube cube;
             cube.updateParams(settings.shapeParameter1);
+            rb.I_body = cube.inertiaTensor(rb.mass, scale);
             std::vector<GLfloat> vertices = cube.generateShape();
             bindVBOVAO(PrimitiveType::PRIMITIVE_CUBE, vertices);
 
         } else if(s.primitive.type == PrimitiveType::PRIMITIVE_CYLINDER){
             Cylinder cylinder;
             cylinder.updateParams(settings.shapeParameter1, settings.shapeParameter2);
+            rb.I_body = cylinder.inertiaTensor(rb.mass, scale);
             std::vector<GLfloat> vertices = cylinder.generateShape();
             bindVBOVAO(PrimitiveType::PRIMITIVE_CYLINDER, vertices);
 
         } else if(s.primitive.type == PrimitiveType::PRIMITIVE_SPHERE){
             Sphere sphere;
             sphere.updateParams(settings.shapeParameter1, settings.shapeParameter2);
+            rb.I_body = sphere.inertiaTensor(rb.mass, scale);
             std::vector<GLfloat> vertices = sphere.generateShape();
             bindVBOVAO(PrimitiveType::PRIMITIVE_SPHERE, vertices);
 
         } else if(s.primitive.type == PrimitiveType::PRIMITIVE_CONE){
             Cone cone;
             cone.updateParams(settings.shapeParameter1, settings.shapeParameter2);
+            rb.I_body = cone.inertiaTensor(rb.mass, scale);
             std::vector<GLfloat> vertices = cone.generateShape();
             bindVBOVAO(PrimitiveType::PRIMITIVE_CONE, vertices);
 
         }
+        rb.I_body_inv = glm::inverse(rb.I_body);
+
+        // translation from CTM
+
+        rb.I_body_inv = glm::inverse(rb.I_body);
+
+        // Position
+        rb.x = glm::vec3(s.ctm[3]);
+
+        // Orientation
+        rb.q = glm::quat_cast(s.ctm);
+
+        // Zero velocities
+        rb.P = glm::vec3(0);
+        rb.L = glm::vec3(0);
+        rb.v = glm::vec3(0);
+        rb.w = glm::vec3(0);
+
+        // Force/torque accumulators
+        rb.force = glm::vec3(0);
+        rb.torque = glm::vec3(0);
     }
+
+    Bodies.resize(metaData.shapes.size());
+    for (int i = 0; i < metaData.shapes.size(); i++) {
+        Bodies[i] = *metaData.shapes[i].rb;
+    }
+    n_bodies = metaData.shapes.size();
 
     update(); // asks for a PaintGL() call to occur
 }
@@ -773,6 +816,54 @@ void Realtime::mouseMoveEvent(QMouseEvent *event) {
 void Realtime::timerEvent(QTimerEvent *event) {
     int elapsedms   = m_elapsedTimer.elapsed();
     float deltaTime = elapsedms * 0.001f;
+    double t0 = elapsedms * 0.001;
+    double t1 = t0 + deltaTime;
+    int len = STATE_SIZE * n_bodies;
+    std::vector<double> y0(len);
+    std::vector<double> yEnd(len);
+
+    //Update input forces
+    for (int i = 0; i < n_bodies; i++) {
+        RigidBody& rb = Bodies[i];
+
+        rb.inputForce = glm::vec3(0.0f);
+        rb.inputTorque = glm::vec3(0.0f);
+
+        const float move = 1.0f;    // direction only; scaling done in Compute_Force
+        const float rotate = 1.0f;
+
+        // Movement (XZ plane)
+        if (m_keyMap[Qt::Key_Up]) rb.inputForce.z -= move;
+        if (m_keyMap[Qt::Key_Down]) rb.inputForce.z += move;
+        if (m_keyMap[Qt::Key_Left]) rb.inputForce.x -= move;
+        if (m_keyMap[Qt::Key_Right]) rb.inputForce.x += move;
+
+        // Rotation (yaw torque)
+        if (m_keyMap[Qt::Key_Q]) rb.inputTorque.y += rotate;
+        if (m_keyMap[Qt::Key_E]) rb.inputTorque.y -= rotate;
+        if (m_keyMap[Qt::Key_Z]) rb.inputTorque.x -= rotate;
+        if (m_keyMap[Qt::Key_C]) rb.inputTorque.z += rotate;
+    }
+
+    Phys::Bodies_to_Array(y0, n_bodies, &Bodies[0]);
+    Phys::ode(y0, yEnd, len, t0, t1, n_bodies, &Bodies[0], deltaTime);
+    Phys::Array_to_Bodies(yEnd, &Bodies[0], n_bodies);
+    for (int i = 0; i < n_bodies; i++)
+    {
+        RigidBody& rb = Bodies[i];
+
+        rb.v  = rb.P * rb.invMass;
+        rb.R  = glm::mat3_cast(rb.q);
+        rb.I_inv = rb.R * rb.I_body_inv * glm::transpose(rb.R);
+        rb.w  = rb.I_inv * rb.L;
+
+        // update transform matrix
+        glm::mat4 S = glm::scale(glm::mat4(1.0f), rb.scale);   // scale
+        glm::mat4 R = glm::mat4_cast(rb.q);                     // rotation
+        glm::mat4 T = glm::translate(glm::mat4(1.0f), rb.x);
+        metaData.shapes[i].ctm = T * R* S;
+    }
+
     m_elapsedTimer.restart();
 
     // Use deltaTime and m_keyMap here to move around

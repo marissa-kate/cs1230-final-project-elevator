@@ -8,9 +8,10 @@ class Cylinder
 public:
     void updateParams(int param1, int param2);
     std::vector<float> generateShape() { return m_vertexData; }
+    glm::mat3 inertiaTensor(float m, glm::vec3 scale);
 
 private:
-    glm::mat3 inertiaTensor(float m, glm::vec3 scale);
+
     void makeCapTile(glm::vec3 topLeft,
                      glm::vec3 topRight,
                      glm::vec3 bottomLeft,

@@ -43,6 +43,7 @@ private:
     GLuint m_shader; // Stores id of shader program
     GLuint m_fullscreen_shader;
     GLuint m_background_shader;
+    int n_bodies;
 
 
     QImage m_texture_image;
