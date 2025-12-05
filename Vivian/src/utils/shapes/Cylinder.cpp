@@ -12,6 +12,18 @@ void Cylinder::updateParams(int param1, int param2) {
     setVertexData();
 }
 
+glm::mat3 Cylinder::inertiaTensor(float m, glm::vec3 scale){
+    float r = scale.x * 0.5f;
+    float h = scale.y;
+    float I_xz = (1.0f/12.0f) * m * (3*r*r + h*h);
+    float I_y  = 0.5f * m * (r*r);
+    return glm::mat3(
+        I_xz, 0,    0,
+        0,    I_y,  0,
+        0,    0,    I_xz
+        );
+}
+
 void Cylinder::makeCapTile(glm::vec3 topLeft,
                            glm::vec3 topRight,
                            glm::vec3 bottomLeft,
