@@ -40,19 +40,29 @@ private:
     void makeFBO();
     void paintBackground(GLuint bg);
 
-    GLuint m_shader; // Stores id of shader program
+    GLuint m_phong_shader; // Stores id of shader program
+    GLuint m_blur_shader;
+    GLuint m_composite_shader;
+
     GLuint m_fullscreen_shader;
     GLuint m_background_shader;
+    void blurBrightTexture();
     int n_bodies;
 
 
     QImage m_texture_image;
+    GLuint m_bright_texture;
+    GLuint m_rbo;
+    GLuint colorBuffers[2];
+    GLuint pingpong_fbo[2];
+    GLuint pingpong_colorBuffers[2];
     GLuint m_texture;
     int m_filter_type;
 
     QImage m_background_image;
     GLuint m_background;
 
+    bool m_pendingSettingsUpdate;
     // GLuint m_texture_shader;
     // GLuint m_fullscreen_vbo;
     // GLuint m_fullscreen_vao;
