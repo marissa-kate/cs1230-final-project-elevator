@@ -1,45 +1,34 @@
 #version 330 core
 
 // Task 16: Create a UV coordinate in variable
-in vec2 frag_uv;
+in vec2 tex;
 
-// Task 8: Add a sampler2D uniform
-uniform sampler2D u_texture;
-
-// Task 29: Add a bool on whether or not to filter the texture
-uniform bool bool_texture;
-
-uniform int filter_type; // 0: invert, 1: color
-
+uniform sampler2D m_texture;
 out vec4 fragColor;
+
+uniform sampler2D image;
+uniform bool horizontal;
+uniform float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
 
 void main()
 {
-    fragColor = vec4(1);
-    // // Task 17: Set fragColor using the sampler2D at the UV coordinate
-    vec4 color = vec4(texture(u_texture, frag_uv));
-
-    // Task 33: Invert fragColor's r, g, and b color channels if your bool is true
-    if(bool_texture){
-
-        if(filter_type == 0){
-
-        color.rgb = 1.0 - color.rgb;
-        // color = vec4(1.0, 0, 0, 1.0);
+    vec2 tex_offset = 1.0 / textureSize(image, 0); // gets size of single texel
+    vec3 result = texture(image, tex).rgb * weight[0]; // current fragment's contribution
+    if(horizontal)
+    {
+        for(int i = 1; i < 5; ++i)
+        {
+            result += texture(image, tex + vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
+            result += texture(image, tex - vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
         }
-
-        if(filter_type == 1){
-
-            color.rgb = vec3(1.0, 0, 0);
-
-        }
-
-    } else{
-
-        color.rgb = color.rgb;
     }
-
-
-
-    fragColor = color;
+    else
+    {
+        for(int i = 1; i < 5; ++i)
+        {
+            result += texture(image, tex + vec2(0.0, tex_offset.y * i)).rgb * weight[i];
+            result += texture(image, tex - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
+        }
+    }
+    fragColor = vec4(result, 1.0);
 }
