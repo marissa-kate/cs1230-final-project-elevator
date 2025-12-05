@@ -6,11 +6,12 @@ layout (location = 1) in vec2 uv;
 
 
 // Task 16: create an "out" variable representing a UV coordinate
-out vec2 frag_uv;
+out vec2 tex;
 
 void main() {
     // Task 16: assign the UV layout variable to the UV "out" variable
-    frag_uv = uv;
 
     gl_Position = vec4(position, 1.0);
+    tex = uv;
+
 }
