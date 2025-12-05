@@ -42,6 +42,8 @@ add_executable(${PROJECT_NAME}
     src/utils/shaderloader.h
     src/utils/aspectratiowidget/aspectratiowidget.hpp
     src/utils/sceneparser.h src/utils/sceneparser.cpp
+    src/utils/phys.cpp
+    src/utils/phys.h
 
     src/utils/shapes/Sphere.h
     src/utils/shapes/Sphere.cpp
