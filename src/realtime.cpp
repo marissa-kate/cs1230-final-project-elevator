@@ -44,7 +44,7 @@ void Realtime::finish() {
     glDeleteVertexArrays(1, &m_cone_vao);
     glDeleteVertexArrays(1, &m_cube_vao);
     glDeleteVertexArrays(1, &m_cyl_vao);
-
+    glDeleteTextures(1, &m_obj_texture);
 
     glDeleteVertexArrays(1, &m_fullscreen_vao);
     glDeleteBuffers(1, &m_fullscreen_vbo);
@@ -109,6 +109,8 @@ void Realtime::initializeGL() {
     setupVBO(m_cube_vao, m_cube_vbo, PrimitiveType::PRIMITIVE_CUBE);
     setupVBO(m_cyl_vao, m_cyl_vbo, PrimitiveType::PRIMITIVE_CYLINDER);
     setupVBO(m_sphere_vao, m_sphere_vbo, PrimitiveType::PRIMITIVE_SPHERE);
+
+    bindTexture();
 
     std::vector<GLfloat> fullscreen_quad_data =
         { //     POSITIONS    //
@@ -200,7 +202,7 @@ void Realtime::setupVBO(GLuint vao, GLuint vbo, PrimitiveType type) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * m_bufferData.size(), m_bufferData.data(), GL_STATIC_DRAW);
 
     // Each vertex has 6 floats: position (3) + normal (3)
-    int vertexCount = m_bufferData.size() / 6;
+    int vertexCount = m_bufferData.size() / 14;
     // Record vertex count by type
     switch (type) {
     case PrimitiveType::PRIMITIVE_CUBE:      m_cube_vertexCount = vertexCount; break;
@@ -210,10 +212,23 @@ void Realtime::setupVBO(GLuint vao, GLuint vbo, PrimitiveType type) {
     default: break;
     }
     // Enable attribute pointers here
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14* sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    //uvs
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
+
+    //Pu
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), reinterpret_cast<void*>(8 * sizeof(GLfloat)));
+
+    //Pv
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(GLfloat), reinterpret_cast<void*>(11 * sizeof(GLfloat)));
+
+
 }
 
 
@@ -246,10 +261,67 @@ void Realtime::paintGL() {
     glUseProgram(0);
 }
 
+void Realtime::bindTexture(){
+    if (settings.hasTexture){
+        // QString filepath = QString("/Users/vhcch/Desktop/Vivian/brown/cs1230/project-6-final-project-gear-up-vhchen29/scenefiles/bump-mapping/topleft.png");
+
+        m_obj_texture_image = settings.bumpTexture;
+
+        // Task 2: Format image to fit OpenGL
+        // m_texture_image = m_texture_image.convertToFormat(QImage::Format_Grayscale8).mirrored();
+
+        // Task 3: Generate texture
+        glGenTextures(1, &m_obj_texture);
+
+        // Task 9: Set the active texture slot to texture slot 0
+        glActiveTexture(GL_TEXTURE0);
+
+        // Task 4: Bind texture
+        glBindTexture(GL_TEXTURE_2D, m_obj_texture);
+
+        // Task 5: Load image into  texture
+        glTexImage2D(GL_TEXTURE_2D,0, GL_RED, m_obj_texture_image.width(), m_obj_texture_image.height(), 0, GL_RED, GL_UNSIGNED_BYTE,
+                     m_obj_texture_image.bits());
+
+        // Task 6: Set min and mag filters' interpolation mode to linear
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // Task 7: Unbind texture
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        glUseProgram(m_phong_shader);
+        GLint samplerLoc = glGetUniformLocation(m_phong_shader, "u_texture");
+        std::cout << "u_texture location = " << samplerLoc << std::endl;
+        glUniform1i(samplerLoc, 0);
+        glUseProgram(m_phong_shader);
+        glUniform1i(glGetUniformLocation(m_phong_shader, "hasTexture"), settings.hasTexture);
+        glUniform1i(glGetUniformLocation(m_phong_shader, "bump_depth"), settings.bumpDepth);
+        glUseProgram(0);
+    }
+
+
+
+    glUseProgram(m_phong_shader);
+    glUniform1i(glGetUniformLocation(m_phong_shader, "hasTexture"), settings.hasTexture);
+    glUniform1i(glGetUniformLocation(m_phong_shader, "bump_depth"), settings.bumpDepth);
+    glUseProgram(0);
+
+}
+
+
 void Realtime::drawPrimitives(){
     glUseProgram(m_phong_shader);
     m_view = cam.getViewMatrix();
     m_proj = cam.getPerspectiveMatrix();
+    glUniform1i(glGetUniformLocation(m_phong_shader, "bump_depth"), settings.bumpDepth);
+
+    if (settings.hasTexture) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_obj_texture);
+    } else {
+        glDisable(GL_TEXTURE_2D);
+    }
 
     glUniformMatrix4fv(glGetUniformLocation(m_phong_shader, "m_view"), 1, GL_FALSE, &m_view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(m_phong_shader, "m_proj"), 1, GL_FALSE, &m_proj[0][0]);
@@ -350,10 +422,10 @@ void Realtime::resizeGL(int w, int h) {
  * @brief Realtime::sceneChanged
  * @param scenePath
  */
-void Realtime::sceneChanged(std::string scenePath) {
+void Realtime::sceneChanged() {
     makeCurrent();
     RenderData metaData;
-    SceneParser::parse(scenePath, metaData);
+    SceneParser::parse(settings.sceneFilePath, metaData);
     inputs.initialize(metaData);
     std::vector<RenderShapeData> shapes = inputs.getPrimitives();
     Bodies.resize(shapes.size());

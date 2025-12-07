@@ -2,10 +2,18 @@
 in vec3 ws_pos;
 in vec3 ws_norm;
 in vec3 es_pos;
+in vec2 frag_uv;
+in vec3 frag_pu;
+in vec3 frag_pv;
 
 layout (location = 0) out vec4 fragColor;
 layout (location = 1) out vec4 brightColor;
 
+//texture uniforms
+uniform sampler2D u_texture;
+uniform bool hasTexture;
+
+//lighting uniforms
 uniform vec4 camera_pos;
 uniform float m_ka;
 uniform float m_kd;
@@ -24,15 +32,57 @@ uniform float m_lightType[8];
 uniform float m_lightAngle[8];
 uniform float m_lightPenumbra[8];
 
+//fog uniforms
 uniform float fog_minDist;
 uniform float fog_maxDist;
 uniform vec4  fog_color;
 
 uniform float bloomThreshold;
 
+uniform int bump_depth;
 
 void main() {
     vec3 normal = normalize(ws_norm);
+
+    if (hasTexture){
+            float texture_val = texture(u_texture, frag_uv).r;
+
+            int limit = 10;
+
+            float texture_func = 10 * texture_val - 5; //between -5 and 5
+
+            ivec2 size = textureSize(u_texture, 0);
+            float textureWidth  = size.x;
+            float textureHeight = size.y;
+
+            float du = 1.0f / textureWidth;
+            float dv = 1.0 / textureHeight;
+
+
+            float h = texture(u_texture, frag_uv).r;
+            float hU = texture(u_texture, frag_uv + vec2(du, 0)).r;
+            float hV = texture(u_texture, frag_uv + vec2(0, dv)).r;
+
+            float Fu = hU - h;
+            float Fv = hV - h;
+
+            Fu *= bump_depth;
+            Fv *= bump_depth;
+
+            // ** before bumpSlider has been implemented, just use a constant
+            // Fu = texture(u_texture, frag_uv).r * 10;
+            // Fv = texture(u_texture, frag_uv).r * 10;
+
+            //updated bump normal
+            normal = normalize(normal + Fu * cross(normal, frag_pv) + Fv * cross(frag_pu, normal));
+
+            // ** before implementing bump, try to output textures directly
+            // vec4 color = vec4(texture(u_texture, frag_uv).r, texture(u_texture, frag_uv).r, texture(u_texture, frag_uv).r, 1);
+
+            // fragColor = color;
+
+        }
+
     fragColor = m_ka * cAmbient;
      for(int i = 0; i < numLight; i ++){
          vec4 color = vec4(0, 0, 0, 1);

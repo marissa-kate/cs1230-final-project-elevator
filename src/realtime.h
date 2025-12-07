@@ -19,9 +19,10 @@ class Realtime : public QOpenGLWidget
 public:
     Realtime(QWidget *parent = nullptr);
     void finish();                                      // Called on program exit
-    void sceneChanged(std::string scenePath);
+    void sceneChanged();
     void settingsChanged();
     void saveViewportImage(std::string filePath);
+    void bindTexture();
 
 public slots:
     void tick(QTimerEvent* event);                      // Called once per tick of m_timer
@@ -37,6 +38,7 @@ private:
     // in Realtime.h
     bool m_pendingSettingsUpdate = false;
     bool m_pendingScene = true;
+
 
     //VAO, VBO, FBO, RBO
     GLuint m_cube_vbo = 0, m_cone_vbo = 0, m_cyl_vbo = 0, m_sphere_vbo = 0;
@@ -60,6 +62,8 @@ private:
     GLuint pingpong_colorBuffers[2];
     GLuint m_fullscreen_vbo;
     GLuint m_bright_texture;
+    GLuint m_obj_texture;
+    QImage m_obj_texture_image;
 
     void drawScenePrimitives();
     void makeFBO();

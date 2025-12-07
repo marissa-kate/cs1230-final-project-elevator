@@ -23,5 +23,10 @@ private:
     float m_radius = 0.5;
     std::vector<float> m_vertexData;
     int m_param1;
+
     int m_param2;
+
+    glm::vec2 getUV(glm::vec3 vertex);
+    glm::vec3 getPu(glm::vec3 vertex);
+    glm::vec3 getPv(glm::vec3 vertex);
 };

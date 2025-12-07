@@ -1,6 +1,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include <QtGui/qimage.h>
 #include <string>
 
 struct Settings {
@@ -17,6 +18,11 @@ struct Settings {
     bool extraCredit2 = false;
     bool extraCredit3 = false;
     bool extraCredit4 = false;
+    QImage bumpTexture;
+    bool hasTexture = false;
+    int bumpDepth = 10;
+    bool invert = false;
+    bool color = false;
 };
 
 

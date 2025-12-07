@@ -1,11 +1,14 @@
 #include "Cone.h"
 #include <numbers>
+#include <cmath>
 
 void Cone::updateParams(int param1, int param2) {
     m_vertexData = std::vector<float>();
     m_param1 = param1;
-    if (param2<3) m_param2 = 3;
-    else m_param2 = param2;
+    m_param2 = param2;
+    if(m_param2 < 3){
+        m_param2 = 3;
+    }
     setVertexData();
 }
 
@@ -21,143 +24,203 @@ glm::mat3 Cone::inertiaTensor(float m, glm::vec3 scale){
         );
 }
 
-void Cone::makeCapTile(glm::vec3 topLeft,glm::vec3 topRight,glm::vec3 bottomLeft,glm::vec3 bottomRight){
-    glm::vec3 n = glm::normalize(glm::cross(bottomRight-bottomLeft, topRight-bottomRight));
+void Cone::makeCapTile(glm::vec3 topLeft,
+                       glm::vec3 topRight,
+                       glm::vec3 bottomLeft,
+                       glm::vec3 bottomRight) {
 
-    insertVec3(m_vertexData,topLeft);
-    insertVec3(m_vertexData,n);
-    insertVec3(m_vertexData,bottomLeft);
-    insertVec3(m_vertexData,n);
-    insertVec3(m_vertexData,bottomRight);
-    insertVec3(m_vertexData, n);
+    glm::vec3 normal = glm::vec3(0, -1, 0);
 
-    insertVec3(m_vertexData,bottomRight);
-    insertVec3(m_vertexData,n);
-    insertVec3(m_vertexData,topRight);
-    insertVec3(m_vertexData,n);
-    insertVec3(m_vertexData,topLeft);
-    insertVec3(m_vertexData,n);
+    //add uv values to shapes
+    insertVec3(m_vertexData, topLeft);
+    insertVec3(m_vertexData, normal);
+    insertVec2(m_vertexData, glm::vec2(topLeft.x + 0.5f, topLeft.z + 0.5f));
+    insertVec3(m_vertexData, glm::vec3(1.0f, 0, 0));
+    insertVec3(m_vertexData, glm::vec3(0, 0, 1.0f));
+
+    insertVec3(m_vertexData, bottomLeft);
+    insertVec3(m_vertexData, normal);
+    insertVec2(m_vertexData, glm::vec2(bottomLeft.x + 0.5f, bottomLeft.z + 0.5f));
+    insertVec3(m_vertexData, glm::vec3(1.0f, 0, 0));
+    insertVec3(m_vertexData, glm::vec3(0, 0, 1.0f));
+
+    insertVec3(m_vertexData, topRight);
+    insertVec3(m_vertexData, normal);
+    insertVec2(m_vertexData, glm::vec2(topRight.x + 0.5f, topRight.z + 0.5f));
+    insertVec3(m_vertexData, glm::vec3(1.0f, 0, 0));
+    insertVec3(m_vertexData, glm::vec3(0, 0, 1.0f));
+
+    insertVec3(m_vertexData, topRight);
+    insertVec3(m_vertexData, normal);
+    insertVec2(m_vertexData, glm::vec2(topRight.x + 0.5, topRight.z + 0.5));
+    insertVec3(m_vertexData, glm::vec3(1.0f, 0, 0));
+    insertVec3(m_vertexData, glm::vec3(0, 0, 1.0f));
+
+    insertVec3(m_vertexData, bottomLeft);
+    insertVec3(m_vertexData, normal);
+    insertVec2(m_vertexData, glm::vec2(bottomLeft.x + 0.5, bottomLeft.z + 0.5));
+    insertVec3(m_vertexData, glm::vec3(1.0f, 0, 0));
+    insertVec3(m_vertexData, glm::vec3(0, 0, 1.0f));
+
+    insertVec3(m_vertexData, bottomRight);
+    insertVec3(m_vertexData, normal);
+    insertVec2(m_vertexData, glm::vec2(bottomRight.x + 0.5, bottomRight.z + 0.5));
+    insertVec3(m_vertexData, glm::vec3(1.0f, 0, 0));
+    insertVec3(m_vertexData, glm::vec3(0, 0, 1.0f));
 }
 
-void Cone::makeSlopeTile(glm::vec3 topLeft,glm::vec3 topRight,glm::vec3 bottomLeft,glm::vec3 bottomRight){
-    insertVec3(m_vertexData,topLeft);
-    insertVec3(m_vertexData,calcNorm(topLeft));
-    insertVec3(m_vertexData,bottomRight);
-    insertVec3(m_vertexData, calcNorm(bottomRight));
-    insertVec3(m_vertexData,bottomLeft);
-    insertVec3(m_vertexData,calcNorm(bottomLeft));
+void Cone::makeSlopeTile(glm::vec3 topLeft,
+                         glm::vec3 topRight,
+                         glm::vec3 bottomLeft,
+                         glm::vec3 bottomRight) {
 
-    insertVec3(m_vertexData,topRight);
-    insertVec3(m_vertexData,calcNorm(topRight));
+    float left_theta = atan2(bottomLeft.z, bottomLeft.x);
+    float right_theta = atan2(bottomRight.z, bottomRight.x);
+    float left_u; float right_u;
 
-    insertVec3(m_vertexData,bottomRight);
-    insertVec3(m_vertexData,calcNorm(bottomRight));
-    insertVec3(m_vertexData,topLeft);
-    insertVec3(m_vertexData,calcNorm(topLeft));
+    if(left_theta < 0){
+        left_u = - left_theta / (2.0f * std::numbers::pi);
+    } else {
+        left_u = 1 - left_theta / (2.0f * std::numbers::pi);
+    }
+
+    if(right_theta < 0){
+        right_u = - right_theta / (2.0f * std::numbers::pi);
+    }else {
+        right_u = 1 - right_theta / (2.0f * std::numbers::pi);
+    }
+
+
+    //fix seams
+
+    //left is near 1.0, right is near 0.0 (wrap-around)
+    if (left_u > 0.9f && right_u < (0.1f)) {
+        right_u += 1.0f;
+    }
+
+    //right near 1.0, left near 0.0
+    if (right_u > 0.9f && left_u < (0.1f)) {
+        left_u += 1.0f;
+    }
+
+    //for each vertex, add vec3 position, vec3 normals, vec2 uv values, vec3 dp/du, and vec3 dp/dv
+
+    insertVec3(m_vertexData, topLeft);
+    insertVec3(m_vertexData, glm::normalize(glm::vec3(2 * bottomLeft.x, 0.5f * (0.5f - bottomLeft.y), 2 * bottomLeft.z)));
+    insertVec2(m_vertexData, glm::vec2(left_u, topLeft.y + 0.5f));
+    insertVec3(m_vertexData, getPu(topLeft));
+    insertVec3(m_vertexData, glm::vec3(0, 1.0f, 0));
+
+    insertVec3(m_vertexData, bottomLeft);
+    insertVec3(m_vertexData, glm::normalize(glm::vec3(2 * bottomLeft.x, 0.5f * (0.5f - bottomLeft.y), 2 * bottomLeft.z)));
+    insertVec2(m_vertexData, glm::vec2(left_u, bottomLeft.y + 0.5f));
+    insertVec3(m_vertexData, getPu(bottomLeft));
+    insertVec3(m_vertexData, glm::vec3(0, 1.0f, 0));
+
+    insertVec3(m_vertexData, topRight);
+    insertVec3(m_vertexData, glm::normalize(glm::vec3(2 * bottomRight.x, 0.5f * (0.5f - bottomRight.y), 2 * bottomRight.z)));
+    insertVec2(m_vertexData, glm::vec2(right_u, topRight.y + 0.5f));
+    insertVec3(m_vertexData, getPu(topRight));
+    insertVec3(m_vertexData, glm::vec3(0, 1.0f, 0));
+
+    insertVec3(m_vertexData, topRight);
+    insertVec3(m_vertexData, glm::normalize(glm::vec3(2 * bottomRight.x, 0.5f * (0.5f - bottomRight.y), 2 * bottomRight.z)));
+    insertVec2(m_vertexData, glm::vec2(right_u, topRight.y + 0.5f));
+    insertVec3(m_vertexData, getPu(topRight));
+    insertVec3(m_vertexData, glm::vec3(0, 1.0f, 0));
+
+    insertVec3(m_vertexData, bottomLeft);
+    insertVec3(m_vertexData, glm::normalize(glm::vec3(2 * bottomLeft.x, 0.5f * (0.5f - bottomLeft.y), 2 * bottomLeft.z)));
+    insertVec2(m_vertexData, glm::vec2(left_u, bottomLeft.y + 0.5f));
+    insertVec3(m_vertexData, getPu(bottomLeft));
+    insertVec3(m_vertexData, glm::vec3(0, 1.0f, 0));
+
+    insertVec3(m_vertexData, bottomRight);
+    insertVec3(m_vertexData, glm::normalize(glm::vec3(2 * bottomRight.x, 0.5f * (0.5f - bottomRight.y), 2 * bottomRight.z)));
+    insertVec2(m_vertexData, glm::vec2(right_u, bottomRight.y + 0.5f));
+    insertVec3(m_vertexData, getPu(bottomRight));
+    insertVec3(m_vertexData, glm::vec3(0, 1.0f, 0));
+
+
 }
 
+glm::vec3 Cone::getPu(glm::vec3 vertex){
 
+    if(vertex.x * vertex.x + vertex.z * vertex.z == 0){
+        return glm::vec3( 0, 0, 0);
+    }
 
-glm::vec3 Cone::calcNorm(glm::vec3& pt) {
-    const float epsilon = 1e-4f;
-    float xNorm = (2 * pt.x);
-    float yNorm = -(1.f / 4.f) * (2.f * pt.y - 1.f);
-    float zNorm = (2 * pt.z);
-    glm::vec3 norm = glm::normalize(glm::vec3{ xNorm, yNorm, zNorm });
-    return norm;
+    return glm::vec3(vertex.z / ( 2 * std::numbers::pi * (vertex.x * vertex.x + vertex.z * vertex.z)),
+                     0,
+                     -vertex.x / ( 2 * std::numbers::pi * (vertex.x * vertex.x + vertex.z * vertex.z)));
+
 }
 
 void Cone::makeCapSlice(float currentTheta, float nextTheta){
-    // Note: think about how param 1 comes into play here!
-        float baseY = -0.5f;     // base of cone
-        float baseRadius = 0.5f; // radius of base
-        for (int i = 0; i < m_param1; i++) {
-            float innerR = (baseRadius * i) / m_param1;
-            float outerR = (baseRadius * (i + 1)) / m_param1;
 
-            glm::vec3 topLeft(
-                innerR * cos(currentTheta),
-                baseY,
-                innerR * sin(currentTheta)
-                );
+    glm::vec3 normal = glm::vec3(0, 0, -1);
+    float increment = 0.5f / float (m_param1);
+    float radius = 0.5f;
 
-            glm::vec3 topRight(
-                innerR * cos(nextTheta),
-                baseY,
-                innerR * sin(nextTheta)
-                );
+    for(int i = 0; i < m_param1; i++){
 
-            glm::vec3 bottomLeft(
-                outerR * cos(currentTheta),
-                baseY,
-                outerR * sin(currentTheta)
-                );
+        glm::vec3 topLeft = glm::vec3(radius * cos(nextTheta), -0.5f, radius * sin(nextTheta));
+        glm::vec3 topRight = glm::vec3(radius * cos(currentTheta), -0.5f, radius * sin(currentTheta));
 
-            glm::vec3 bottomRight(
-                outerR * cos(nextTheta),
-                baseY,
-                outerR * sin(nextTheta)
-                );
-            makeCapTile(topLeft, topRight, bottomLeft, bottomRight);
+        glm::vec3 bottomLeft = glm::vec3((radius - increment) * cos(nextTheta), -0.5f, (radius - increment) * sin(nextTheta));
+        glm::vec3 bottomRight = glm::vec3((radius - increment) * cos(currentTheta), -0.5f, (radius - increment) * sin(currentTheta));
+
+        makeCapTile(topLeft, topRight, bottomLeft, bottomRight);
+
+        radius -= increment;
+
     }
-
 }
 
 void Cone::makeSlopeSlice(float currentTheta, float nextTheta){
-        float baseY = -0.5f;
-        float apexY = 0.5f;
-        float baseRadius = 0.5f;
 
-        // For each vertical subdivision
-        for (int i = 0; i < m_param1; i++) {
-            float y1 = baseY + (apexY - baseY) * (i / (float)m_param1);
-            float y2 = baseY + (apexY - baseY) * ((i + 1) / (float)m_param1);
-            float r1 = baseRadius * (1 - i / (float)m_param1);
-            float r2 = baseRadius * (1 - (i + 1) / (float)m_param1);
+    float heightIncrement = 1.0f / m_param1;
+    float radiusIncrement = 0.5f / m_param1;
 
-            glm::vec3 bottomLeft(r1 * cos(currentTheta), y1, r1 * sin(currentTheta));
-            glm::vec3 bottomRight(r1 * cos(nextTheta), y1, r1 * sin(nextTheta));
-            glm::vec3 topLeft(r2 * cos(currentTheta), y2, r2 * sin(currentTheta));
-            glm::vec3 topRight(r2 * cos(nextTheta), y2, r2 * sin(nextTheta));
-            if (r2 < 1e-4f || r2 < 1e-4f){
-                glm::vec3 baseNorm1 = calcNorm(bottomLeft);
-                glm::vec3 baseNorm2 = calcNorm(bottomRight);
-                glm::vec3 avgBaseNorm = glm::normalize(baseNorm1 + baseNorm2);
-                insertVec3(m_vertexData,topLeft);
-                insertVec3(m_vertexData,avgBaseNorm);
-                insertVec3(m_vertexData,bottomRight);
-                insertVec3(m_vertexData, calcNorm(bottomRight));
-                insertVec3(m_vertexData,bottomLeft);
-                insertVec3(m_vertexData,calcNorm(bottomLeft));
+    float h = 0.5f;
+    float r = 0;
 
-                insertVec3(m_vertexData,topRight);
-                insertVec3(m_vertexData,avgBaseNorm);
 
-                insertVec3(m_vertexData,bottomRight);
-                insertVec3(m_vertexData,calcNorm(bottomRight));
-                insertVec3(m_vertexData,topLeft);
-                insertVec3(m_vertexData,avgBaseNorm);
-            }
-            else{
+    for(int i = 0; i < m_param1; i++){
+        glm::vec3 topLeft = glm::vec3(r * cos(nextTheta), h, r * sin(nextTheta));
+        glm::vec3 topRight = glm::vec3(r * cos(currentTheta), h, r * sin(currentTheta));
 
-                makeSlopeTile(topLeft, topRight, bottomLeft, bottomRight);
-            }
+        glm::vec3 bottomLeft = glm::vec3((r + radiusIncrement) * cos(nextTheta), h - heightIncrement, (r + radiusIncrement) * sin(nextTheta));
+        glm::vec3 bottomRight =  glm::vec3((r + radiusIncrement) * cos(currentTheta), h - heightIncrement, (r + radiusIncrement) * sin(currentTheta));
+
+
+
+        makeSlopeTile(topLeft, topRight, bottomLeft, bottomRight);
+
+        h -= heightIncrement;
+        r += radiusIncrement;
+
     }
 
 }
 
 void Cone::makeWedge(float currentTheta, float nextTheta) {
-    makeCapSlice(currentTheta, nextTheta);
-    makeSlopeSlice(currentTheta, nextTheta);
 
+    makeSlopeSlice(currentTheta, nextTheta);
+    makeCapSlice(currentTheta, nextTheta);
 
 }
 
 void Cone::setVertexData() {
-    float thetaStep = glm::radians(360.f / m_param2);
-    for(int i = 0; i < m_param2;i++){
-        float currentTheta = i * thetaStep;
-        float nextTheta = (i+1) * thetaStep;
-        makeWedge(currentTheta, nextTheta);
+
+    float thetaIncrement = 2 * std::numbers::pi / m_param2;
+    float r = 0;
+
+    for(int i = 0; i < m_param2; i++){
+
+        makeWedge(r, r + thetaIncrement);
+
+        r += thetaIncrement;
     }
+
 }

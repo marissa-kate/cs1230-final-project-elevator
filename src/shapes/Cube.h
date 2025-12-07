@@ -17,12 +17,15 @@ private:
     void makeTile(glm::vec3 topLeft,
                   glm::vec3 topRight,
                   glm::vec3 bottomLeft,
-                  glm::vec3 bottomRight);
+                  glm::vec3 bottomRight, int face);
     void makeFace(glm::vec3 topLeft,
                   glm::vec3 topRight,
                   glm::vec3 bottomLeft,
-                  glm::vec3 bottomRight);
+                  glm::vec3 bottomRight, int face);
     std::vector<float> m_vertexData;
     int m_param1;
     int m_param2;
+    glm::vec2 getUV(glm::vec3 vert, int face);
+    glm::vec3 getPu(glm::vec3 vert, int face);
+    glm::vec3 getPv(glm::vec3 vert, int face);
 };

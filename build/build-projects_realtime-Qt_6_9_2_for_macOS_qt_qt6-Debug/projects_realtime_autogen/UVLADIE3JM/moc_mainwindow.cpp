@@ -42,8 +42,13 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
         "onUploadFile",
         "",
         "onSaveImage",
-        "onValChangeP1",
+        "onUploadBump",
+        "onBumpChange",
         "newValue",
+        "onInvertChange",
+        "state",
+        "onColorChange",
+        "onValChangeP1",
         "onValChangeP2",
         "onValChangeNearSlider",
         "onValChangeFarSlider",
@@ -60,45 +65,59 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
         QtMocHelpers::SlotData<void()>(1, 2, QMC::AccessPrivate, QMetaType::Void),
         // Slot 'onSaveImage'
         QtMocHelpers::SlotData<void()>(3, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onUploadBump'
+        QtMocHelpers::SlotData<void()>(4, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onBumpChange'
+        QtMocHelpers::SlotData<void(int)>(5, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 6 },
+        }}),
+        // Slot 'onInvertChange'
+        QtMocHelpers::SlotData<void(int)>(7, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 8 },
+        }}),
+        // Slot 'onColorChange'
+        QtMocHelpers::SlotData<void(int)>(9, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 8 },
+        }}),
         // Slot 'onValChangeP1'
-        QtMocHelpers::SlotData<void(int)>(4, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { QMetaType::Int, 5 },
+        QtMocHelpers::SlotData<void(int)>(10, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 6 },
         }}),
         // Slot 'onValChangeP2'
-        QtMocHelpers::SlotData<void(int)>(6, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { QMetaType::Int, 5 },
+        QtMocHelpers::SlotData<void(int)>(11, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 6 },
         }}),
         // Slot 'onValChangeNearSlider'
-        QtMocHelpers::SlotData<void(int)>(7, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { QMetaType::Int, 5 },
+        QtMocHelpers::SlotData<void(int)>(12, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 6 },
         }}),
         // Slot 'onValChangeFarSlider'
-        QtMocHelpers::SlotData<void(int)>(8, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { QMetaType::Int, 5 },
+        QtMocHelpers::SlotData<void(int)>(13, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 6 },
         }}),
         // Slot 'onValChangeNearBox'
-        QtMocHelpers::SlotData<void(double)>(9, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { QMetaType::Double, 5 },
+        QtMocHelpers::SlotData<void(double)>(14, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Double, 6 },
         }}),
         // Slot 'onValChangeFarBox'
-        QtMocHelpers::SlotData<void(double)>(10, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { QMetaType::Double, 5 },
+        QtMocHelpers::SlotData<void(double)>(15, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Double, 6 },
         }}),
         // Slot 'onValChangeExposureBox'
-        QtMocHelpers::SlotData<void(double)>(11, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { QMetaType::Double, 5 },
+        QtMocHelpers::SlotData<void(double)>(16, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Double, 6 },
         }}),
         // Slot 'onValChangeBloomBox'
-        QtMocHelpers::SlotData<void(double)>(12, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { QMetaType::Double, 5 },
+        QtMocHelpers::SlotData<void(double)>(17, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Double, 6 },
         }}),
         // Slot 'onValChangeExposureSlider'
-        QtMocHelpers::SlotData<void(int)>(13, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { QMetaType::Int, 5 },
+        QtMocHelpers::SlotData<void(int)>(18, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 6 },
         }}),
         // Slot 'onValChangeBloomSlider'
-        QtMocHelpers::SlotData<void(int)>(14, 2, QMC::AccessPrivate, QMetaType::Void, {{
-            { QMetaType::Int, 5 },
+        QtMocHelpers::SlotData<void(int)>(19, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 6 },
         }}),
     };
     QtMocHelpers::UintData qt_properties {
@@ -125,16 +144,20 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         switch (_id) {
         case 0: _t->onUploadFile(); break;
         case 1: _t->onSaveImage(); break;
-        case 2: _t->onValChangeP1((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
-        case 3: _t->onValChangeP2((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
-        case 4: _t->onValChangeNearSlider((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
-        case 5: _t->onValChangeFarSlider((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
-        case 6: _t->onValChangeNearBox((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
-        case 7: _t->onValChangeFarBox((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
-        case 8: _t->onValChangeExposureBox((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
-        case 9: _t->onValChangeBloomBox((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
-        case 10: _t->onValChangeExposureSlider((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
-        case 11: _t->onValChangeBloomSlider((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 2: _t->onUploadBump(); break;
+        case 3: _t->onBumpChange((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 4: _t->onInvertChange((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 5: _t->onColorChange((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 6: _t->onValChangeP1((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 7: _t->onValChangeP2((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 8: _t->onValChangeNearSlider((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 9: _t->onValChangeFarSlider((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 10: _t->onValChangeNearBox((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
+        case 11: _t->onValChangeFarBox((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
+        case 12: _t->onValChangeExposureBox((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
+        case 13: _t->onValChangeBloomBox((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
+        case 14: _t->onValChangeExposureSlider((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 15: _t->onValChangeBloomSlider((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
         default: ;
         }
     }
@@ -159,14 +182,14 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 12)
+        if (_id < 16)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 12;
+        _id -= 16;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 12)
+        if (_id < 16)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 12;
+        _id -= 16;
     }
     return _id;
 }

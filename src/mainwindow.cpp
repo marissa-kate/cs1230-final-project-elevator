@@ -24,18 +24,6 @@ void MainWindow::initialize() {
     QFont font;
     font.setPointSize(12);
     font.setBold(true);
-    QLabel *tesselation_label = new QLabel(); // Parameters label
-    tesselation_label->setText("Tesselation");
-    tesselation_label->setFont(font);
-    QLabel *camera_label = new QLabel(); // Camera label
-    camera_label->setText("Camera");
-    camera_label->setFont(font);
-
-    // From old Project 6
-    // QLabel *filters_label = new QLabel(); // Filters label
-    // filters_label->setText("Filters");
-    // filters_label->setFont(font);
-
     QLabel *ec_label = new QLabel(); // Extra Credit label
     ec_label->setText("Extra Credit");
     ec_label->setFont(font);
@@ -56,6 +44,37 @@ void MainWindow::initialize() {
     // Create file uploader for scene file
     uploadFile = new QPushButton();
     uploadFile->setText(QStringLiteral("Upload Scene File"));
+
+    uploadBump = new QPushButton();
+    uploadBump->setText(QStringLiteral("Upload Bump File"));
+
+    QLabel *bump_depth_label = new QLabel(); //Bump depth
+    bump_depth_label->setText("Bump depth: ");
+    QGroupBox *bumpLayout= new QGroupBox(); // horizonal slider 1 alignment
+    QHBoxLayout *b = new QHBoxLayout();
+
+    bumpSlider = new QSlider(Qt::Orientation::Horizontal); // bump depth slider
+    bumpSlider->setTickInterval(1);
+    bumpSlider->setMinimum(-50);
+    bumpSlider->setMaximum(50);
+    bumpSlider->setValue(10);
+
+    bumpBox = new QSpinBox();
+    bumpBox->setMinimum(-50);
+    bumpBox->setMaximum(50);
+    bumpBox->setSingleStep(1);
+    bumpBox->setValue(10);
+
+    b->addWidget(bumpSlider);
+    b->addWidget(bumpBox);
+    bumpLayout->setLayout(b);
+
+    invert = new QCheckBox("Invert");  //post processing
+    invert->setChecked(false);      // default
+
+    colorgrade = new QCheckBox("Color Grade");
+    colorgrade->setChecked(false);
+
 
     saveImage = new QPushButton();
     saveImage->setText(QStringLiteral("Save Image"));
@@ -180,13 +199,18 @@ void MainWindow::initialize() {
     bloomLayout->setLayout(lbloom);
 
     vLayout->addWidget(uploadFile);
+    vLayout->addWidget(uploadBump);
+    vLayout->addWidget(bump_depth_label);
+    vLayout->addWidget(bumpLayout);
+    // vLayout->addWidget(invert);
+    // vLayout->addWidget(colorgrade);
     vLayout->addWidget(saveImage);
-    vLayout->addWidget(tesselation_label);
+
     vLayout->addWidget(param1_label);
     vLayout->addWidget(p1Layout);
     vLayout->addWidget(param2_label);
     vLayout->addWidget(p2Layout);
-    vLayout->addWidget(camera_label);
+
     vLayout->addWidget(near_label);
     vLayout->addWidget(nearLayout);
     vLayout->addWidget(far_label);
@@ -196,18 +220,6 @@ void MainWindow::initialize() {
     vLayout->addWidget(exposureLayout);
     vLayout->addWidget(bloom_threshold);
     vLayout->addWidget(bloomLayout);
-
-    // From old Project 6
-    // vLayout->addWidget(filters_label);
-    // vLayout->addWidget(filter1);
-    // vLayout->addWidget(filter2);
-
-    // Extra Credit:
-    // vLayout->addWidget(ec_label);
-    // vLayout->addWidget(ec1);
-    // vLayout->addWidget(ec2);
-    // vLayout->addWidget(ec3);
-    // vLayout->addWidget(ec4);
 
     connectUIElements();
 
@@ -239,6 +251,10 @@ void MainWindow::connectUIElements() {
     connectFar();
     connectExposure();
     connectBloom();
+    connectUploadBump();
+    connectBump();
+    connectInvert();
+    connectColor();
 
 }
 
@@ -246,6 +262,26 @@ void MainWindow::connectUploadFile() {
     connect(uploadFile, &QPushButton::clicked, this, &MainWindow::onUploadFile);
 }
 
+void MainWindow::connectUploadBump() {
+    connect(uploadBump, &QPushButton::clicked, this, &MainWindow::onUploadBump);
+}
+
+void MainWindow::connectBump(){
+    connect(bumpSlider, &QSlider::valueChanged, this, &MainWindow::onBumpChange);
+    connect(bumpBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            this, &MainWindow::onBumpChange);
+
+}
+
+void MainWindow::connectInvert(){
+    connect(invert, &QCheckBox::stateChanged,
+            this, &MainWindow::onInvertChange);
+}
+
+void MainWindow::connectColor(){
+    connect(colorgrade, &QCheckBox::stateChanged,
+            this, &MainWindow::onColorChange);
+}
 void MainWindow::connectSaveImage() {
     connect(saveImage, &QPushButton::clicked, this, &MainWindow::onSaveImage);
 }
@@ -286,15 +322,7 @@ void MainWindow::connectExposure() {
             this, &MainWindow::onValChangeExposureBox);
 }
 
-// From old Project 6
-// void MainWindow::onPerPixelFilter() {
-//     settings.perPixelFilter = !settings.perPixelFilter;
-//     realtime->settingsChanged();
-// }
-// void MainWindow::onKernelBasedFilter() {
-//     settings.kernelBasedFilter = !settings.kernelBasedFilter;
-//     realtime->settingsChanged();
-// }
+
 
 void MainWindow::onUploadFile() {
     // Get abs path of scene file
@@ -315,7 +343,30 @@ void MainWindow::onUploadFile() {
 
     std::cout << "Loaded scenefile: \"" << configFilePath.toStdString() << "\"." << std::endl;
 
-    realtime->sceneChanged(settings.sceneFilePath);
+    realtime->sceneChanged();
+}
+
+void MainWindow::onUploadBump() {
+    // Get abs path of scene file
+    QString configFilePath = QFileDialog::getOpenFileName(this, tr("Upload File"),
+                                                          QDir::currentPath()
+                                                              .append(QDir::separator())
+                                                              .append("scenefiles")
+                                                              .append(QDir::separator())
+                                                              .append("realtime")
+                                                              .append(QDir::separator())
+                                                              .append("required"), tr("Images (*.png *.jpg *.jpeg)"));
+
+
+    QImage texture = QImage(configFilePath);
+    settings.bumpTexture = texture.convertToFormat(QImage::Format_Grayscale8).mirrored();
+    settings.hasTexture = true;
+
+    std::cout << "Loaded bumpfile: \"" << configFilePath.toStdString() << "\"." << std::endl;
+
+    realtime->bindTexture();
+
+    realtime->sceneChanged();
 }
 
 void MainWindow::onSaveImage() {
@@ -339,6 +390,39 @@ void MainWindow::onSaveImage() {
     realtime->saveViewportImage(filePath.toStdString());
 }
 
+void MainWindow::onBumpChange(int newValue){
+    bumpSlider->setValue(newValue);
+    bumpBox->setValue(newValue);
+    settings.bumpDepth = bumpSlider->value();
+    realtime->settingsChanged();
+}
+
+void MainWindow::onInvertChange(int state){
+    if (state == Qt::Checked) {
+        colorgrade->blockSignals(true);   // prevent infinite loop
+        colorgrade->setChecked(false);
+        colorgrade->blockSignals(false);
+
+        settings.color = false;
+    }
+
+    settings.invert = (state == Qt::Checked);
+    realtime->settingsChanged();
+
+}
+
+void MainWindow::onColorChange(int state){
+    if (state == Qt::Checked) {
+        invert->blockSignals(true);
+        invert->setChecked(false);
+        invert->blockSignals(false);
+
+        settings.invert = false;
+    }
+
+    settings.color = (state == Qt::Checked);
+    realtime->settingsChanged();
+}
 void MainWindow::onValChangeP1(int newValue) {
     p1Slider->setValue(newValue);
     p1Box->setValue(newValue);

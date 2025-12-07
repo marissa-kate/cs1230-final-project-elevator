@@ -26,6 +26,10 @@ private:
     void connectFar();
     void connectExposure();
     void connectBloom();
+    void connectUploadBump();
+    void connectBump();
+    void connectInvert();
+    void connectColor();
 
     // From old Project 6
     // void connectPerPixelFilter();
@@ -43,6 +47,11 @@ private:
     // QCheckBox *filter2;
 
     QPushButton *uploadFile;
+    QPushButton *uploadBump;
+    QSlider *bumpSlider;
+    QSpinBox *bumpBox;
+    QCheckBox *invert;
+    QCheckBox *colorgrade;
     QPushButton *saveImage;
     QSlider *p1Slider;
     QSlider *p2Slider;
@@ -70,6 +79,10 @@ private slots:
 
     void onUploadFile();
     void onSaveImage();
+    void onUploadBump();
+    void onBumpChange(int newValue);
+    void onInvertChange(int state);
+    void onColorChange(int state);
     void onValChangeP1(int newValue);
     void onValChangeP2(int newValue);
     void onValChangeNearSlider(int newValue);

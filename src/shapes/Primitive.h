@@ -14,6 +14,9 @@ public:
         data.push_back(v.y);
         data.push_back(v.z);};
     virtual void setVertexData() = 0;
-
+    void insertVec2(std::vector<float> &data, glm::vec2 v) {
+        data.push_back(v.x);
+        data.push_back(v.y);
+    }
 
 };

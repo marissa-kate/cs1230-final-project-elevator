@@ -24,4 +24,5 @@ private:
     std::vector<float> m_vertexData;
     int m_param1;
     int m_param2;
+    glm::vec3 getPu(glm::vec3 vertex);
 };
