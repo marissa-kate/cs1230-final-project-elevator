@@ -81,6 +81,16 @@ private:
     GLuint m_blur_shader;
     GLuint m_composite_shader;
 
+
+    //color-grading
+    GLuint m_color_shader;
+    GLuint m_2d_lut;
+    int m_lut_size;
+    std::vector<float> m_lut_data;
+    void loadCubeLUT(const QString& path);
+
+    void paintTexture(GLuint texture, bool filter);
+
     glm::mat4 m_proj;
     glm::vec4 camera_pos; //world space camera
     Camera cam;

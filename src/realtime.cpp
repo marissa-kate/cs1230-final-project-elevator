@@ -94,6 +94,8 @@ void Realtime::initializeGL() {
     m_blur_shader = ShaderLoader::createShaderProgram("resources/shaders/texture.vert", "resources/shaders/texture.frag");
     m_phong_shader = ShaderLoader::createShaderProgram("resources/shaders/default.vert", "resources/shaders/default.frag");
     m_composite_shader = ShaderLoader::createShaderProgram("resources/shaders/final.vert", "resources/shaders/final.frag");
+    m_color_shader = ShaderLoader::createShaderProgram("resources/shaders/color-grading.vert", "resources/shaders/color-grading.frag");
+
 
     //initialize vaos and vbos
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -139,6 +141,72 @@ void Realtime::initializeGL() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     makeFBO();
+
+    //set color-grading uniform for texture
+    glUseProgram(m_color_shader);
+    glUniform1i(glGetUniformLocation(m_color_shader, "u_texture"), 0);
+    glUseProgram(0);
+
+
+    //load lut
+    QString filepath = "resources/70 CGC LUTs/Look LUTs/Grand Budapest.cube";
+
+    loadCubeLUT(filepath);
+
+    glGenTextures(1, &m_2d_lut);
+
+    glActiveTexture(GL_TEXTURE1);
+
+    glBindTexture(GL_TEXTURE_3D, m_2d_lut);
+
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, m_lut_size, m_lut_size, m_lut_size, 0, GL_RGB, GL_FLOAT, m_lut_data.data());
+
+    // Task 6: Set min and mag filters' interpolation mode to linear
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Task 7: Unbind kitten texture
+    // glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_3D, 1);
+
+
+    // Task 10: Set the texture.frag uniform for our texture
+    glUseProgram(m_color_shader);
+    glUniform1i(glGetUniformLocation(m_color_shader, "lut"), 1);
+    glUseProgram(0);
+
+
+}
+
+void Realtime::loadCubeLUT(const QString& path) {
+
+    QFile file(path);
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
+
+    QTextStream in(&file);
+
+    while (!in.atEnd()) {
+        QString line = in.readLine().trimmed();
+
+        if (line.startsWith("#") || line.isEmpty())
+            continue;
+
+        if (line.startsWith("LUT_3D_SIZE")) {
+            m_lut_size = line.split(" ")[1].toInt();
+            m_lut_data.reserve(m_lut_size * m_lut_size * m_lut_size * 3);
+            continue;
+        }
+
+        // Parse RGB triple
+        QStringList vals = line.split(" ");
+        if (vals.size() == 3) {
+            m_lut_data.push_back(vals[0].toFloat());
+            m_lut_data.push_back(vals[1].toFloat());
+            m_lut_data.push_back(vals[2].toFloat());
+
+        }
+    }
 }
 
 /**
@@ -252,12 +320,56 @@ void Realtime::paintGL() {
     glUniform1i(glGetUniformLocation(m_composite_shader, "bloomBlur"), 1);
     glUniform1f(glGetUniformLocation(m_composite_shader, "exposure"), settings.exposure);
 
+    paintTexture(m_fbo_texture, true);
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_fbo_texture); // original scene
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, pingpong_colorBuffers[0]); // final blurred bloom
     glBindVertexArray(m_fullscreen_vao);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+    glUseProgram(0);
+}
+
+void Realtime::paintTexture(GLuint texture, bool filter){
+    glUseProgram(m_color_shader);
+
+    // Set bool
+    glUniform1i(glGetUniformLocation(m_color_shader, "bool_texture"), filter);
+
+    //set lut size
+    glUniform1i(glGetUniformLocation(m_color_shader, "lut_size"), m_lut_size);
+
+
+    // ================================
+    // 1. MAIN IMAGE → texture unit 0
+    // ================================
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glUniform1i(glGetUniformLocation(m_color_shader, "u_texture"), 0);
+
+    // ================================
+    // 2. 2D LUT → texture unit 1
+    // ================================
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_3D, m_2d_lut);
+    glUniform1i(glGetUniformLocation(m_color_shader, "lut"), 1);
+
+
+    glBindVertexArray(m_fullscreen_vao);
+
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_3D, 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+
+    glBindVertexArray(0);
     glUseProgram(0);
 }
 
