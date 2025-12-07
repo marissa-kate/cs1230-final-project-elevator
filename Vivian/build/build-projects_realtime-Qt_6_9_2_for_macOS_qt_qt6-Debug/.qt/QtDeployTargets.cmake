@@ -1,4 +1,0 @@
-set(__QT_DEPLOY_TARGET_projects_realtime_FILE /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/Vivian/build/build-projects_realtime-Qt_6_9_2_for_macOS_qt_qt6-Debug/projects_realtime)
-set(__QT_DEPLOY_TARGET_projects_realtime_TYPE EXECUTABLE)
-set(__QT_DEPLOY_TARGET_StaticGLEW_FILE /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/Vivian/build/build-projects_realtime-Qt_6_9_2_for_macOS_qt_qt6-Debug/libStaticGLEW.a)
-set(__QT_DEPLOY_TARGET_StaticGLEW_TYPE STATIC_LIBRARY)
