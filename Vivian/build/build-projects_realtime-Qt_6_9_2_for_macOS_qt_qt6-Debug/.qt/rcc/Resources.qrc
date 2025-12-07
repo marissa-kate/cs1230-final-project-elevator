@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="resources/shaders/default.frag">/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/Vivian/resources/shaders/default.frag</file>
+    <file alias="resources/shaders/default.vert">/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/Vivian/resources/shaders/default.vert</file>
+    <file alias="resources/shaders/final.vert">/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/Vivian/resources/shaders/final.vert</file>
+    <file alias="resources/shaders/final.frag">/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/Vivian/resources/shaders/final.frag</file>
+    <file alias="resources/shaders/texture.vert">/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/Vivian/resources/shaders/texture.vert</file>
+    <file alias="resources/shaders/texture.frag">/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/Vivian/resources/shaders/texture.frag</file>
+  </qresource>
+</RCC>
+

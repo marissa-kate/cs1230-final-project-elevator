@@ -1,0 +1,27 @@
+# ninja log v6
+2	59	1764877943544552847	StaticGLEW_autogen/timestamp	ff62a3c7b08b5442
+2	59	1764877943544552847	StaticGLEW_autogen/mocs_compilation.cpp	ff62a3c7b08b5442
+2	59	1764877943544552847	/Users/vhcch/Desktop/Vivian/brown/cs1230/cs1230-final-project-elevator/Vivian/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/StaticGLEW_autogen/timestamp	ff62a3c7b08b5442
+2	59	1764877943544552847	/Users/vhcch/Desktop/Vivian/brown/cs1230/cs1230-final-project-elevator/Vivian/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/StaticGLEW_autogen/mocs_compilation.cpp	ff62a3c7b08b5442
+60	87	1764877943553237086	CMakeFiles/StaticGLEW.dir/StaticGLEW_autogen/mocs_compilation.cpp.o	d820668d2b0c091d
+60	358	1764877943553436669	CMakeFiles/StaticGLEW.dir/glew/src/glew.c.o	2ea855618ccc8d8d
+358	1374	1764877943851539937	libStaticGLEW.a	d522ed5bd182d43b
+1374	1858	1764877945338044904	projects_realtime_autogen/timestamp	69e3a8e35438d106
+1374	1858	1764877945338044904	projects_realtime_autogen/mocs_compilation.cpp	69e3a8e35438d106
+1374	1858	1764877945338044904	/Users/vhcch/Desktop/Vivian/brown/cs1230/cs1230-final-project-elevator/Vivian/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/projects_realtime_autogen/timestamp	69e3a8e35438d106
+1374	1858	1764877945338044904	/Users/vhcch/Desktop/Vivian/brown/cs1230/cs1230-final-project-elevator/Vivian/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/projects_realtime_autogen/mocs_compilation.cpp	69e3a8e35438d106
+1860	1883	1764877945375522568	.qt/rcc/qrc_Resources.cpp	c1f4c4b031f86bf6
+1860	1883	1764877945375522568	/Users/vhcch/Desktop/Vivian/brown/cs1230/cs1230-final-project-elevator/Vivian/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/.qt/rcc/qrc_Resources.cpp	c1f4c4b031f86bf6
+1886	1982	1764877945379836354	CMakeFiles/projects_realtime.dir/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/.qt/rcc/qrc_Resources.cpp.o	a4e99ffc96d8bc20
+1884	2495	1764877945377249316	CMakeFiles/projects_realtime.dir/src/utils/shapes/Sphere.cpp.o	870e12454e9f5f9e
+1884	2564	1764877945377526899	CMakeFiles/projects_realtime.dir/src/utils/shapes/Cone.cpp.o	8ea2cb493ca9cc60
+1885	2616	1764877945378266815	CMakeFiles/projects_realtime.dir/src/utils/shapes/Cylinder.cpp.o	24640e00b15008fd
+1884	2693	1764877945377987107	CMakeFiles/projects_realtime.dir/src/utils/shapes/Cube.cpp.o	5390e1de3b5305e4
+1883	2728	1764877945376831733	CMakeFiles/projects_realtime.dir/src/settings.cpp.o	71d6f2fd10f0a95b
+1883	3132	1764877945377075733	CMakeFiles/projects_realtime.dir/src/utils/sceneparser.cpp.o	60ec002bfd86ad60
+1883	3263	1764877945376458567	CMakeFiles/projects_realtime.dir/src/main.cpp.o	feac19ae3d447edb
+1883	3266	1764877945376227567	CMakeFiles/projects_realtime.dir/projects_realtime_autogen/mocs_compilation.cpp.o	15c5f6cc1070d6f0
+1883	3371	1764877945376950691	CMakeFiles/projects_realtime.dir/src/utils/scenefilereader.cpp.o	ba41116567539b78
+1883	3381	1764877945376713983	CMakeFiles/projects_realtime.dir/src/mainwindow.cpp.o	8daa5e98b59b1d00
+1883	3394	1764877945376593817	CMakeFiles/projects_realtime.dir/src/realtime.cpp.o	a2cf79ac0bd01be3
+3394	3573	1764877946887901879	projects_realtime	dee720b05490750
