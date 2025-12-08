@@ -55,6 +55,7 @@ void Realtime::finish() {
     glDeleteProgram(m_blur_shader);
     glDeleteProgram(m_composite_shader);
     glDeleteProgram(m_phong_shader);
+    glDeleteProgram(m_particle_shader);
     this->doneCurrent();
 }
 
@@ -175,7 +176,13 @@ void Realtime::initializeGL() {
     glUniform1i(glGetUniformLocation(m_color_shader, "lut"), 1);
     glUseProgram(0);
 
+    m_audioCapture = new AudioCapture(this);
 
+    // particle shaders
+    m_particle_shader = ShaderLoader::createShaderProgram(
+        "resources/shaders/particle.vert",
+        "resources/shaders/particle.frag"
+        );
 }
 
 void Realtime::loadCubeLUT(const QString& path) {
@@ -299,35 +306,71 @@ void Realtime::setupVBO(GLuint vao, GLuint vbo, PrimitiveType type) {
 
 }
 
-
 void Realtime::paintGL() {
+    // 1. Calculate viewport and projection matrix
     glViewport(0, 0, size().width() * m_devicePixelRatio, size().height() * m_devicePixelRatio);
-    cam.calculatePerspectiveMatrix(settings.nearPlane, settings.farPlane, cam.getHeightAngle(),  aspect);
+    cam.calculatePerspectiveMatrix(settings.nearPlane, settings.farPlane, cam.getHeightAngle(), aspect);
 
+    // 2. Bind FBO and render the main scene
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //phong shader pass
+
+    // --- A. Render physical objects (rigid bodies) ---
+    // m_view and m_proj are updated inside this function
     drawPrimitives();
 
+    // --- B. Render particles (Corrected part) ---
+    // Enable blending and disable depth write for semi-transparent/additive rendering
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE); // Additive blending (gets brighter when overlapped)
+    glDepthMask(GL_FALSE);             // Disable writing to depth buffer (so transparent objects don't occlude each other)
+    glDisable(GL_CULL_FACE);
+    glUseProgram(m_particle_shader);
+
+    // Send time uniform (for sparkle animation)
+    glUniform1f(glGetUniformLocation(m_particle_shader, "u_time"), m_simTime);
+
+    for (auto& system : m_particleSystems) {
+        // Render using m_view and m_proj updated in drawPrimitives
+        system->draw(m_particle_shader, m_view, m_proj);
+    }
+    glUseProgram(0);
+
+    // Restore settings (Important: rigid bodies will look transparent in the next frame if forgotten)
+    glDepthMask(GL_TRUE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_BLEND);
+    // ---------------------------------------
+
+    // 3. Blur (Bloom) processing
+    // No need to revert to default FBO here since blurBrightTexture handles FBO switching,
+    // but unbinding here is safer just in case.
     glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
-    //blur pass
+
     blurBrightTexture();
+
+    // 4. Final rendering (compositing) to default FBO (screen)
+    // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //Final rendering pass
     glUseProgram(m_composite_shader);
     glUniform1i(glGetUniformLocation(m_composite_shader, "scene"), 0);
     glUniform1i(glGetUniformLocation(m_composite_shader, "bloomBlur"), 1);
     glUniform1f(glGetUniformLocation(m_composite_shader, "exposure"), settings.exposure);
 
-    paintTexture(m_fbo_texture, true);
-
+    // Texture Unit 0: Original scene (including particles)
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_fbo_texture); // original scene
+    glBindTexture(GL_TEXTURE_2D, m_fbo_texture);
+
+    // Texture Unit 1: Blurred image (for Bloom)
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, pingpong_colorBuffers[0]); // final blurred bloom
+    glBindTexture(GL_TEXTURE_2D, pingpong_colorBuffers[0]);
+
+    // Render full-screen quad
     glBindVertexArray(m_fullscreen_vao);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    glBindVertexArray(0);
     glUseProgram(0);
 }
 
@@ -544,6 +587,13 @@ void Realtime::sceneChanged() {
     for (int i = 0; i < shapes.size(); i++) {
         Bodies[i] = *shapes[i].rb;
     }
+    //particlssss
+    m_particleSystems.clear();
+    for (const auto& emitterData : metaData.particles) {
+        auto system = std::make_unique<ParticleSystem>(emitterData);
+        system->init();
+        m_particleSystems.push_back(std::move(system));
+    }
     n_bodies = shapes.size();
     cam = inputs.getCamera();
     doneCurrent();
@@ -570,6 +620,7 @@ void Realtime::settingsChanged() {
 
     makeFBO();
     doneCurrent();
+    //particles
     m_pendingSettingsUpdate = false;
 
     update(); // asks for a PaintGL() call to occur
@@ -612,6 +663,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
     if (m_pendingScene) return;
     int elapsedms   = m_elapsedTimer.elapsed();
     float deltaTime = elapsedms * 0.001f;
+    m_simTime += deltaTime; //particle
     double t0 = elapsedms * 0.001;
     double t1 = t0 + deltaTime;
     int len = STATE_SIZE * n_bodies;
@@ -639,6 +691,15 @@ void Realtime::timerEvent(QTimerEvent *event) {
         if (m_keyMap[Qt::Key_E]) rb.inputTorque.y -= rotate;
         if (m_keyMap[Qt::Key_Z]) rb.inputTorque.x -= rotate;
         if (m_keyMap[Qt::Key_C]) rb.inputTorque.z += rotate;
+    }
+
+
+    //sound particles
+    float audioLevel = m_audioCapture ? m_audioCapture->getLevel() : 0.0f;
+    float audioFreq = m_audioCapture ? m_audioCapture->getFrequency() : 0.0f;
+
+    for (auto& system : m_particleSystems) {
+        system->update(deltaTime, audioLevel, audioFreq);
     }
 
     Phys::Bodies_to_Array(y0, n_bodies, &Bodies[0]);

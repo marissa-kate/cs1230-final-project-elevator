@@ -1,0 +1,30 @@
+{
+    "globalData": { "ambientCoeff": 0.5, "diffuseCoeff": 0.5, "specularCoeff": 0.5, "transparentCoeff": 0 },
+    "cameraData": { "position": [0, 2, 8], "focus": [0, 1, 0], "up": [0, 1, 0], "heightAngle": 45 },
+    "groups": [
+        {
+            "name": "root",
+            "lights": [ { "type": "point", "color": [1, 1, 1], "attenuationCoeff": [1, 0, 0] } ],
+            "particles": [
+                {
+                    "name": "AudioOFF",
+                    "position": [-2.0, -2.0, 0.0],
+                    "velocity": [0.0, 0.5, 0.0],
+                    "color": [0.5, 0.5, 0.5, 1.0],
+                    "lifetime": 4.0,
+                    "maxParticles": 3000, "scale": 0.1, 
+                    "audioReactive": false
+                },
+                {
+                    "name": "AudioON",
+                    "position": [2.0, -2.0, 0.0],
+                    "velocity": [0.0, 0.5, 0.0],
+                    "color": [0.2, 0.6, 1.0, 1.0],
+                    "lifetime": 4.0,
+                    "maxParticles": 3000, "scale": 0.1, 
+                    "audioReactive": true
+                }
+            ]
+        }
+    ]
+}

@@ -14,6 +14,9 @@
 #include <QTime>
 #include <QTimer>
 
+#include "audiocapture.h"
+#include "particlesystem.h"
+
 class Realtime : public QOpenGLWidget
 {
 public:
@@ -113,4 +116,13 @@ private:
     float  m_angleX;
     float  m_angleY;
     float  m_zoom;
+
+
+    //particle
+    std::vector<std::unique_ptr<ParticleSystem>> m_particleSystems;
+    GLuint m_particle_shader;
+    float m_simTime = 0.0f;
+
+    // audio
+    AudioCapture* m_audioCapture = nullptr;
 };

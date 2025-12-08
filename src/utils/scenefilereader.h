@@ -48,4 +48,5 @@ private:
 
     SceneNode *m_root;
     std::vector<SceneNode *> m_nodes;
+    bool parseParticleEmitter(const QJsonObject &object, SceneNode *node);
 };

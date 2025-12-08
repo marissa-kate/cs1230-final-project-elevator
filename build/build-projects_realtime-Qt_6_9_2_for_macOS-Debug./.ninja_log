@@ -1,0 +1,30 @@
+# ninja log v6
+1	156	1765166940267988651	StaticGLEW_autogen/timestamp	d08c50149d70f0be
+1	156	1765166940267988651	StaticGLEW_autogen/mocs_compilation.cpp	d08c50149d70f0be
+1	156	1765166940267988651	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug./StaticGLEW_autogen/timestamp	d08c50149d70f0be
+1	156	1765166940267988651	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug./StaticGLEW_autogen/mocs_compilation.cpp	d08c50149d70f0be
+157	256	1765166940287653696	CMakeFiles/StaticGLEW.dir/StaticGLEW_autogen/mocs_compilation.cpp.o	8ff40d0458dfb57f
+157	611	1765166940287893063	CMakeFiles/StaticGLEW.dir/glew/src/glew.c.o	7ec8e901d8280330
+611	1475	1765166940741536236	libStaticGLEW.a	f116949c4d6bf10b
+1475	1934	1765166942049840153	projects_realtime_autogen/timestamp	f281b6c9902f1b99
+1475	1934	1765166942049840153	projects_realtime_autogen/mocs_compilation.cpp	f281b6c9902f1b99
+1475	1934	1765166942049840153	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug./projects_realtime_autogen/timestamp	f281b6c9902f1b99
+1475	1934	1765166942049840153	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug./projects_realtime_autogen/mocs_compilation.cpp	f281b6c9902f1b99
+1936	1968	1765166942097696594	.qt/rcc/qrc_Resources.cpp	8c4974b8f5be3c3c
+1936	1968	1765166942097696594	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug./.qt/rcc/qrc_Resources.cpp	8c4974b8f5be3c3c
+1975	2919	1765166942106070922	CMakeFiles/projects_realtime.dir/src/shapes/Cone.cpp.o	8298393cda93f132
+1979	3106	1765166942110189239	CMakeFiles/projects_realtime.dir/src/shapes/Sphere.cpp.o	d0206e50f765f3bc
+1977	3181	1765166942107359299	CMakeFiles/projects_realtime.dir/src/shapes/Cube.cpp.o	2397f0cd70ad7d04
+3182	3232	1765166943312496443	CMakeFiles/projects_realtime.dir/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug./.qt/rcc/qrc_Resources.cpp.o	80a44ba2b08768f8
+1978	3322	1765166942108987671	CMakeFiles/projects_realtime.dir/src/shapes/Cylinder.cpp.o	8f4ef5e5df3c441d
+1980	3324	1765166942110607541	CMakeFiles/projects_realtime.dir/src/camera/camera.cpp.o	98c1bbae78aff86d
+1972	3481	1765166942103030140	CMakeFiles/projects_realtime.dir/src/settings.cpp.o	a3d5349fcf7087e8
+3106	3678	1765166943237340623	CMakeFiles/projects_realtime.dir/src/utils/phys.cpp.o	644f51b7af4c5389
+2919	3778	1765166943050285877	CMakeFiles/projects_realtime.dir/src/inputs.cpp.o	bfed5fb98c0a123c
+1974	4007	1765166942105114169	CMakeFiles/projects_realtime.dir/src/utils/sceneparser.cpp.o	4b626ba5b740a2e9
+1969	4064	1765166942099833129	CMakeFiles/projects_realtime.dir/src/main.cpp.o	66916af54b95e046
+1968	4079	1765166942098613675	CMakeFiles/projects_realtime.dir/projects_realtime_autogen/mocs_compilation.cpp.o	56773fb2d45599b4
+1973	4173	1765166942103720482	CMakeFiles/projects_realtime.dir/src/utils/scenefilereader.cpp.o	7f33358e736bf5cd
+1971	4213	1765166942102247036	CMakeFiles/projects_realtime.dir/src/mainwindow.cpp.o	27e4ab91b9584268
+1970	4290	1765166942100971698	CMakeFiles/projects_realtime.dir/src/realtime.cpp.o	5a273af9dbeb5840
+4290	4508	1765166944421418890	projects_realtime	13a5b39940157b6c

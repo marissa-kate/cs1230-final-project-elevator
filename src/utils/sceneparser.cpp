@@ -69,6 +69,15 @@ void SceneParser::traverse(SceneNode* node,
 
     }
 
+    for (SceneParticleEmitter* emitter : node->particles) {
+        SceneParticleEmitter newEmitter = *emitter;
+
+        glm::vec4 worldPos = cumulativeMatrix * glm::vec4(emitter->position, 1.0f);
+        newEmitter.position = glm::vec3(worldPos);
+
+        renderData.particles.push_back(newEmitter);
+    }
+
     // Step 4: recurse to children
     for (SceneNode* child : node->children) {
         traverse(child, cumulativeMatrix, renderData);

@@ -104,7 +104,7 @@ bool ScenefileReader::readJSON() {
     }
 
     QStringList requiredFields = {"globalData", "cameraData"};
-    QStringList optionalFields = {"name", "groups", "templateGroups"};
+    QStringList optionalFields = {"name", "groups", "templateGroups", "particles"};
     // If other fields are present, raise an error
     QStringList allFields = requiredFields + optionalFields;
     for (auto &field : scenefile.keys()) {
@@ -578,7 +578,7 @@ bool ScenefileReader::parseTemplateGroupData(const QJsonObject &templateGroup) {
  * NAME OF NODE CANNOT REFERENCE TEMPLATE NODE
  */
 bool ScenefileReader::parseGroupData(const QJsonObject &object, SceneNode *node) {
-    QStringList optionalFields = {"name", "translate", "rotate", "scale", "matrix", "lights", "primitives", "groups"};
+    QStringList optionalFields = {"name", "translate", "rotate", "scale", "matrix", "lights", "primitives", "groups", "particles"};
     QStringList allFields = optionalFields;
     for (auto &field : object.keys()) {
         if (!allFields.contains(field)) {
@@ -746,6 +746,20 @@ bool ScenefileReader::parseGroupData(const QJsonObject &object, SceneNode *node)
             }
 
             if (!parsePrimitive(primitive.toObject(), node)) {
+                return false;
+            }
+        }
+    }
+
+    if (object.contains("particles")) {
+        if (!object["particles"].isArray()) {
+            std::cout << "group particles must be of type array" << std::endl;
+            return false;
+        }
+        QJsonArray particleArray = object["particles"].toArray();
+        for (auto pVal : particleArray) {
+            if (!pVal.isObject()) return false;
+            if (!parseParticleEmitter(pVal.toObject(), node)) {
                 return false;
             }
         }
@@ -1026,5 +1040,44 @@ bool ScenefileReader::parsePrimitive(const QJsonObject &prim, SceneNode *node) {
         mat.bumpMap.isUsed = true;
     }
 
+    return true;
+}
+
+bool ScenefileReader::parseParticleEmitter(const QJsonObject &obj, SceneNode *node) {
+    SceneParticleEmitter* emitter = new SceneParticleEmitter();
+
+
+    // parameters
+    if (obj.contains("position") && obj["position"].isArray()) {
+        QJsonArray pos = obj["position"].toArray();
+        emitter->position = glm::vec3(pos[0].toDouble(), pos[1].toDouble(), pos[2].toDouble());
+    }
+    if (obj.contains("velocity") && obj["velocity"].isArray()) {
+        QJsonArray vel = obj["velocity"].toArray();
+        emitter->velocity = glm::vec3(vel[0].toDouble(), vel[1].toDouble(), vel[2].toDouble());
+    }
+    if (obj.contains("color") && obj["color"].isArray()) {
+        QJsonArray col = obj["color"].toArray();
+        if (col.size() == 4) {
+            emitter->color = glm::vec4(col[0].toDouble(), col[1].toDouble(), col[2].toDouble(), col[3].toDouble());
+        } else if (col.size() == 3) {
+            emitter->color = glm::vec4(col[0].toDouble(), col[1].toDouble(), col[2].toDouble(), 1.0);
+        }
+    }
+    if (obj.contains("lifetime")) emitter->lifetime = obj["lifetime"].toDouble();
+    if (obj.contains("maxParticles")) emitter->maxParticles = obj["maxParticles"].toInt();
+    if (obj.contains("scale")) emitter->scale = obj["scale"].toDouble();
+    if (obj.contains("audioReactive")) {
+        emitter->isAudioReactive = obj["audioReactive"].toBool();
+    }    else if (obj.contains("isAudioReactive")) {
+        emitter->isAudioReactive = obj["isAudioReactive"].toBool();
+    }
+    // L-System
+    if (obj.contains("lsysIter")) emitter->lsysIter = obj["lsysIter"].toInt();
+    if (obj.contains("lsysAngle")) emitter->lsysAngle = obj["lsysAngle"].toDouble();
+    if (obj.contains("lsysAxiom")) emitter->lsysAxiom = obj["lsysAxiom"].toString().toStdString();
+    if (obj.contains("lsysRule")) emitter->lsysRule = obj["lsysRule"].toString().toStdString();
+
+    node->particles.push_back(emitter);
     return true;
 }
