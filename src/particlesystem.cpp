@@ -16,7 +16,7 @@ ParticleSystem::~ParticleSystem() {
 }
 
 void ParticleSystem::init() {
-    int safeMaxParticles = std::min(100000000, std::max(0, m_config.maxParticles));
+    int safeMaxParticles = std::min(10000000, std::max(0, m_config.maxParticles));
     m_particles.resize(safeMaxParticles);         // robust to negative
     if (m_particles.empty()) {
         return;

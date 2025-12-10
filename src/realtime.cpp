@@ -20,15 +20,40 @@ Realtime::Realtime(QWidget *parent)
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
     m_keyMap[Qt::Key_W]       = false;
+    m_keyMap[Qt::Key_Q]       = false;
+    m_keyMap[Qt::Key_E]       = false;
+    m_keyMap[Qt::Key_R]       = false;
+    m_keyMap[Qt::Key_T]       = false;
+    m_keyMap[Qt::Key_Y]       = false;
+    m_keyMap[Qt::Key_U]       = false;
+    m_keyMap[Qt::Key_I]       = false;
+
+    m_keyMap[Qt::Key_1]       = false;
+    m_keyMap[Qt::Key_2]       = false;
+    m_keyMap[Qt::Key_3]       = false;
+    m_keyMap[Qt::Key_4]       = false;
+    m_keyMap[Qt::Key_5]       = false;
+    m_keyMap[Qt::Key_6]       = false;
+    m_keyMap[Qt::Key_7]       = false;
+    m_keyMap[Qt::Key_8]       = false;
+
     m_keyMap[Qt::Key_A]       = false;
     m_keyMap[Qt::Key_S]       = false;
     m_keyMap[Qt::Key_D]       = false;
-    m_keyMap[Qt::Key_Control] = false;
-    m_keyMap[Qt::Key_Space]   = false;
-    m_keyMap[Qt::Key_Up]       = false;
-    m_keyMap[Qt::Key_Down]       = false;
-    m_keyMap[Qt::Key_Left]       = false;
-    m_keyMap[Qt::Key_Right]       = false;
+    m_keyMap[Qt::Key_F]       = false;
+    m_keyMap[Qt::Key_G]       = false;
+    m_keyMap[Qt::Key_H]       = false;
+    m_keyMap[Qt::Key_J]       = false;
+    m_keyMap[Qt::Key_K]       = false;
+
+    m_keyMap[Qt::Key_Z]       = false;
+    m_keyMap[Qt::Key_X]       = false;
+    m_keyMap[Qt::Key_C]       = false;
+    m_keyMap[Qt::Key_V]       = false;
+    m_keyMap[Qt::Key_B]       = false;
+    m_keyMap[Qt::Key_N]       = false;
+    m_keyMap[Qt::Key_M]       = false;
+    m_keyMap[Qt::Key_Comma]       = false;
 }
 
 void Realtime::finish() {
@@ -176,6 +201,7 @@ void Realtime::initializeGL() {
     glUniform1i(glGetUniformLocation(m_color_shader, "lut"), 1);
     glUseProgram(0);
 
+
     m_audioCapture = new AudioCapture(this);
 
     // particle shaders
@@ -319,7 +345,7 @@ void Realtime::paintGL() {
     // m_view and m_proj are updated inside this function
     drawPrimitives();
 
-    // --- B. Render particles (Corrected part) ---
+    //--- B. Render particles (Corrected part) ---
     // Enable blending and disable depth write for semi-transparent/additive rendering
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE); // Additive blending (gets brighter when overlapped)
@@ -340,6 +366,7 @@ void Realtime::paintGL() {
     glDepthMask(GL_TRUE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_BLEND);
+    glEnable(GL_CULL_FACE);
     // ---------------------------------------
 
     // 3. Blur (Bloom) processing
@@ -485,7 +512,7 @@ void Realtime::drawPrimitives(){
     inputs.sendLightUniformData(m_phong_shader);
     inputs.sendGlobalUniformData(m_phong_shader);
 
-    glUniform1f(glGetUniformLocation(m_phong_shader, "fog_minDist"), 5.0f);
+    glUniform1f(glGetUniformLocation(m_phong_shader, "fog_minDist"), 0.0f);
     glUniform1f(glGetUniformLocation(m_phong_shader, "fog_maxDist"), 25.0f);
 
     glm::vec4 fogColor = glm::vec4(0, 0, 0, 1.0f);
@@ -730,20 +757,20 @@ void Realtime::timerEvent(QTimerEvent *event) {
     if (m_keyMap[Qt::Key_G]) cam.translateCamera(Qt::Key_Space, deltaTime);
     if (m_keyMap[Qt::Key_H]) cam.translateCamera(Qt::Key_Control, deltaTime);
 
-    //tessellation
-    if(m_keyMap[Qt::Key_T]) settings.shapeParameter1+=1; settingsChanged();
-    if(m_keyMap[Qt::Key_Y])settings.shapeParameter1-=1;settingsChanged();
-    if(m_keyMap[Qt::Key_D]) settings.shapeParameter2+=1 ;settingsChanged();
-    if(m_keyMap[Qt::Key_F])settings.shapeParameter2-=1;settingsChanged();
+    // //tessellation
+    // if(m_keyMap[Qt::Key_T]) settings.shapeParameter1+=1; settingsChanged();
+    // if(m_keyMap[Qt::Key_Y])settings.shapeParameter1-=1;settingsChanged();
+    // if(m_keyMap[Qt::Key_D]) settings.shapeParameter2+=1 ;settingsChanged();
+    // if(m_keyMap[Qt::Key_F])settings.shapeParameter2-=1;settingsChanged();
 
-    if(m_keyMap[Qt::Key_M])settings.exposure+=0.1;
-    if(m_keyMap[Qt::Key_Comma])settings.exposure-=0.1;
+    // if(m_keyMap[Qt::Key_M])settings.exposure+=0.1;
+    // if(m_keyMap[Qt::Key_Comma])settings.exposure-=0.1;
 
-    if(m_keyMap[Qt::Key_7])settings.bloomThreshold+=0.1;
-    if(m_keyMap[Qt::Key_8])settings.bloomThreshold-=0.1;
+    // if(m_keyMap[Qt::Key_7])settings.bloomThreshold+=0.1;
+    // if(m_keyMap[Qt::Key_8])settings.bloomThreshold-=0.1;
 
-    if(m_keyMap[Qt::Key_7])settings.bumpDepth+=5;
-    if(m_keyMap[Qt::Key_8])settings.bumpDepth-=5;
+    // if(m_keyMap[Qt::Key_A])settings.bumpDepth+=5;
+    // if(m_keyMap[Qt::Key_S])settings.bumpDepth-=5;
 
 
     camera_pos = glm::vec4(cam.pos, 1.0);
