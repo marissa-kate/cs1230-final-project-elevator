@@ -629,16 +629,16 @@ void Realtime::timerEvent(QTimerEvent *event) {
         const float rotate = 1.0f;
 
         // Movement (XZ plane)
-        if (m_keyMap[Qt::Key_Up]) rb.inputForce.z -= move;
-        if (m_keyMap[Qt::Key_Down]) rb.inputForce.z += move;
-        if (m_keyMap[Qt::Key_Left]) rb.inputForce.x -= move;
-        if (m_keyMap[Qt::Key_Right]) rb.inputForce.x += move;
+        if (m_keyMap[Qt::Key_B]) rb.inputForce.z -= move;
+        if (m_keyMap[Qt::Key_N]) rb.inputForce.z += move;
+        if (m_keyMap[Qt::Key_U]) rb.inputForce.x -= move;
+        if (m_keyMap[Qt::Key_I]) rb.inputForce.x += move;
 
         // Rotation (yaw torque)
-        if (m_keyMap[Qt::Key_Q]) rb.inputTorque.y += rotate;
-        if (m_keyMap[Qt::Key_E]) rb.inputTorque.y -= rotate;
-        if (m_keyMap[Qt::Key_Z]) rb.inputTorque.x -= rotate;
-        if (m_keyMap[Qt::Key_C]) rb.inputTorque.z += rotate;
+        if (m_keyMap[Qt::Key_J]) rb.inputTorque.y += rotate;
+        if (m_keyMap[Qt::Key_K]) rb.inputTorque.y -= rotate;
+        if (m_keyMap[Qt::Key_E]) rb.inputTorque.x -= rotate;
+        if (m_keyMap[Qt::Key_R]) rb.inputTorque.z += rotate;
     }
 
     Phys::Bodies_to_Array(y0, n_bodies, &Bodies[0]);
@@ -661,12 +661,12 @@ void Realtime::timerEvent(QTimerEvent *event) {
     }
 
     m_elapsedTimer.restart();
-    if (m_keyMap[Qt::Key_W]) cam.translateCamera(Qt::Key_W, deltaTime);
-    if (m_keyMap[Qt::Key_S]) cam.translateCamera(Qt::Key_S, deltaTime);
-    if (m_keyMap[Qt::Key_A]) cam.translateCamera(Qt::Key_A, deltaTime);
-    if (m_keyMap[Qt::Key_D]) cam.translateCamera(Qt::Key_D, deltaTime);
-    if (m_keyMap[Qt::Key_Space]) cam.translateCamera(Qt::Key_Space, deltaTime);
-    if (m_keyMap[Qt::Key_Control]) cam.translateCamera(Qt::Key_Control, deltaTime);
+    if (m_keyMap[Qt::Key_Q]) cam.translateCamera(Qt::Key_W, deltaTime);
+    if (m_keyMap[Qt::Key_W]) cam.translateCamera(Qt::Key_S, deltaTime);
+    if (m_keyMap[Qt::Key_1]) cam.translateCamera(Qt::Key_A, deltaTime);
+    if (m_keyMap[Qt::Key_2]) cam.translateCamera(Qt::Key_D, deltaTime);
+    if (m_keyMap[Qt::Key_G]) cam.translateCamera(Qt::Key_Space, deltaTime);
+    if (m_keyMap[Qt::Key_H]) cam.translateCamera(Qt::Key_Control, deltaTime);
     camera_pos = glm::vec4(cam.pos, 1.0);
     update(); // triggers paintGL()
 }
