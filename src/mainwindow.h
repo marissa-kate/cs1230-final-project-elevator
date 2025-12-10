@@ -22,6 +22,9 @@ private:
     void connectUIElements();
     void connectParam1();
     void connectParam2();
+    void connectFocalLength();
+    void connectFocalPlane();
+    void connectAperature();
     void connectNear();
     void connectFar();
     void connectExposure();
@@ -57,8 +60,14 @@ private:
     QSlider *p2Slider;
     QSpinBox *p1Box;
     QSpinBox *p2Box;
+    QSlider *aperatureSlider;
+    QSlider *focal_length_slider;
+    QSlider *focal_plane_slider;
     QSlider *nearSlider;
     QSlider *farSlider;
+    QDoubleSpinBox *aperatureBox;
+    QDoubleSpinBox *focal_plane_box;
+    QDoubleSpinBox *focal_length_box;
     QDoubleSpinBox *nearBox;
     QDoubleSpinBox *farBox;
     QSlider *exposureSlider;
@@ -85,6 +94,15 @@ private slots:
     void onColorChange(int state);
     void onValChangeP1(int newValue);
     void onValChangeP2(int newValue);
+
+    // dof stuff:
+    void onValChangeAperatureSlider(int newValue);
+    void onValChangeAperatureBox(double newValue);
+    void onValChangeFocalPlaneSlider(int newValue);
+    void onValChangeFocalPlaneBox(double newValue);
+    void onValChangeFocalLengthSlider(int newValue);
+    void onValChangeFocalLengthBox(double newValue);
+
     void onValChangeNearSlider(int newValue);
     void onValChangeFarSlider(int newValue);
     void onValChangeNearBox(double newValue);
