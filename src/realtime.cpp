@@ -461,9 +461,6 @@ void Realtime::paintGL() {
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_composite_fbo);
 
-    glViewport(0, 0, m_fbo_width, m_fbo_height);
-    glErrorCheck(__FILE__, __LINE__);
-
     glClear(GL_COLOR_BUFFER_BIT);
     glErrorCheck(__FILE__, __LINE__);
 
@@ -500,12 +497,6 @@ void Realtime::paintGL() {
 
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
-
-    glViewport(0, 0, m_fbo_width, m_fbo_height);
-    glErrorCheck(__FILE__, __LINE__);
-
-    glClear(GL_COLOR_BUFFER_BIT);
-    glErrorCheck(__FILE__, __LINE__);
 
     glBindTexture(GL_TEXTURE_2D, final_color); //generate mipmaps
     glErrorCheck(__FILE__,__LINE__);
@@ -788,8 +779,6 @@ void Realtime::drawLights(){
 
 void Realtime::blurBrightTexture() {
     // glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
-    glViewport(0,0, m_fbo_width, m_fbo_height);
-    glClear(GL_COLOR_BUFFER_BIT);
 
     // glDisable(GL_DEPTH_TEST);
     // glDepthMask(GL_FALSE);
