@@ -1083,14 +1083,18 @@
   /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/glm/vec3.hpp \
   /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/glm/vec4.hpp \
   /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/glm/vector_relational.hpp \
+  /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/audiocapture.h \
   /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/camera/camera.h \
   /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/inputs.h \
+  /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/lsystem.h \
+  /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/particlesystem.h \
   /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/realtime.h \
   /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/utils/aspectratiowidget/aspectratiowidget.hpp \
   /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/utils/phys.h \
   /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/utils/scenedata.h \
   /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/utils/sceneparser.h \
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtCore.framework/Versions/A/Headers/QElapsedTimer \
+  /Users/marissashaffer/Qt/6.9.2/macos/lib/QtCore.framework/Versions/A/Headers/QObject \
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtCore.framework/Versions/A/Headers/QTime \
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtCore.framework/Versions/A/Headers/QTimer \
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtCore.framework/Versions/A/Headers/q17memory.h \
@@ -1147,6 +1151,7 @@
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtCore.framework/Versions/A/Headers/qglobalstatic.h \
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtCore.framework/Versions/A/Headers/qhash.h \
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtCore.framework/Versions/A/Headers/qhashfunctions.h \
+  /Users/marissashaffer/Qt/6.9.2/macos/lib/QtCore.framework/Versions/A/Headers/qiodevice.h \
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtCore.framework/Versions/A/Headers/qiodevicebase.h \
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtCore.framework/Versions/A/Headers/qiterable.h \
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtCore.framework/Versions/A/Headers/qiterator.h \
@@ -1257,6 +1262,18 @@
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtGui.framework/Versions/A/Headers/qtransform.h \
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtGui.framework/Versions/A/Headers/qvalidator.h \
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtGui.framework/Versions/A/Headers/qwindowdefs.h \
+  /Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/QAudioDevice \
+  /Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/QAudioSource \
+  /Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/QMediaDevices \
+  /Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/qaudio.h \
+  /Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/qaudiodevice.h \
+  /Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/qaudioformat.h \
+  /Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/qaudiosource.h \
+  /Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/qmediadevices.h \
+  /Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/qtaudio.h \
+  /Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/qtmultimedia-config.h \
+  /Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/qtmultimediaexports.h \
+  /Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/qtmultimediaglobal.h \
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtOpenGLWidgets.framework/Versions/A/Headers/QOpenGLWidget \
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtOpenGLWidgets.framework/Versions/A/Headers/qopenglwidget.h \
   /Users/marissashaffer/Qt/6.9.2/macos/lib/QtOpenGLWidgets.framework/Versions/A/Headers/qtopenglwidgetsexports.h \
