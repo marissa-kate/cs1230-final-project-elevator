@@ -731,8 +731,12 @@ void Realtime::timerEvent(QTimerEvent *event) {
         // Rotation (yaw torque)
         if (m_keyMap[Qt::Key_J]) rb.inputTorque.y += rotate;
         if (m_keyMap[Qt::Key_K]) rb.inputTorque.y -= rotate;
-        if (m_keyMap[Qt::Key_E]) rb.inputTorque.x -= rotate;
+
+        if (m_keyMap[Qt::Key_E]) rb.inputTorque.z -= rotate;
         if (m_keyMap[Qt::Key_R]) rb.inputTorque.z += rotate;
+
+        if (m_keyMap[Qt::Key_D]) rb.inputTorque.x += rotate;
+        if (m_keyMap[Qt::Key_F]) rb.inputTorque.x -= rotate;
     }
 
 
@@ -773,36 +777,33 @@ void Realtime::timerEvent(QTimerEvent *event) {
     if (m_keyMap[Qt::Key_H]) cam.translateCamera(Qt::Key_Control, deltaTime);
 
     // //tessellation
-    if (keyJustPressed(Qt::Key_T, prevKeys)) {
+    if (keyJustPressed(Qt::Key_Y, prevKeys)) {
         settings.shapeParameter1 += 1;
         settings.shapeParameter2 += 1;
         paramUpdate();
     }
 
-    if (keyJustPressed(Qt::Key_Y, prevKeys)) {
+    if (keyJustPressed(Qt::Key_T, prevKeys)) {
+        if(settings.shapeParameter1 >3){
         settings.shapeParameter1 -= 1;
+        }
+        if(settings.shapeParameter2>3){
         settings.shapeParameter2 -= 1;
+        }
+
         paramUpdate();
     }
 
-    // if (keyJustPressed(Qt::Key_D, prevKeys)) {
+    if(m_keyMap[Qt::Key_Comma])settings.exposure+=0.05;
 
-    //     paramUpdate();
-    // }
+    if(m_keyMap[Qt::Key_M]){
+            if(settings.exposure>=0.1)settings.exposure-=0.05;}
 
-    // if (keyJustPressed(Qt::Key_F, prevKeys)) {
-    //     settings.shapeParameter2 -= 1;
-    //     paramUpdate();
-    // }
+    if(m_keyMap[Qt::Key_7])settings.bloomThreshold+=0.05;
+    if(m_keyMap[Qt::Key_8])settings.bloomThreshold-=0.05;
 
-    if(m_keyMap[Qt::Key_Comma])settings.exposure+=0.1;
-    if(m_keyMap[Qt::Key_M])settings.exposure-=0.1;
-
-    if(m_keyMap[Qt::Key_7])settings.bloomThreshold+=0.1;
-    if(m_keyMap[Qt::Key_8])settings.bloomThreshold-=0.1;
-
-    if(m_keyMap[Qt::Key_A])settings.bumpDepth+=5;
-    if(m_keyMap[Qt::Key_S])settings.bumpDepth-=5;
+    if(m_keyMap[Qt::Key_A])settings.bumpDepth+=3;
+    if(m_keyMap[Qt::Key_S])settings.bumpDepth-=3;
 
 
     camera_pos = glm::vec4(cam.pos, 1.0);
