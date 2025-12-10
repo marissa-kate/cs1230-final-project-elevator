@@ -2,24 +2,26 @@
 
 in vec2 frag_uv;
 
-
 layout (location = 0) out vec4 fragColor;
 layout (location = 1) out vec4 brightColor;
-
-uniform sampler2D in_position;
-uniform sampler2D in_normal;
-uniform sampler2D ambient_shininess;
-uniform sampler2D diffuse_spec;
-
 
 //lighting uniforms
 uniform vec4 camera_pos;
 uniform float m_ka;
 uniform float m_kd;
 uniform float m_ks;
+
+
 uniform int numLight;
 
 uniform mat4 m_view;
+
+uniform sampler2D color_position;
+uniform sampler2D color_normal;
+uniform sampler2D ambient_shininess;
+uniform sampler2D albedo_spec;
+uniform sampler2D depth;
+uniform sampler2D final_color;
 
 uniform vec4 m_lightPos[8];
 uniform vec4 m_lightDir[8];
@@ -37,16 +39,19 @@ uniform vec4  fog_color;
 uniform float bloomThreshold;
 
 void main() {
-    vec3 normal = normalize(texture(in_normal, frag_uv)).rgb;
-    vec4 position = texture(in_position, frag_uv);
-    vec3 es_pos = vec3(m_view *  position);
-    vec3 ws_pos = position.rgb;
+
+    vec3 normal = normalize(texture(color_normal, frag_uv)).xyz;
     vec4 ambient_shine = texture(ambient_shininess, frag_uv);
-    vec4 diff_spec = texture(diffuse_spec, frag_uv);
-    vec4 cAmbient = vec4(ambient_shine.xyz, 1.0);
-    vec4 cDiffuse = vec4(diff_spec.xyz, 1.0);
-    vec4 cSpecular = vec4(vec3(diff_spec.a), 1.0);
-    float m_shininess = ambient_shine.a;
+    vec4 diffuse_spec = texture(albedo_spec, frag_uv);
+
+    vec4 position = texture(color_position, frag_uv);
+    vec4 es_pos = m_view * position;
+    vec3 ws_pos = position.xyz;
+
+    vec4 cAmbient = vec4(ambient_shine.xyz, 1.0f);
+    vec4 cDiffuse = vec4(diffuse_spec.xyz, 0.0f);
+    vec4 cSpecular = vec4(vec3(diffuse_spec.w), 0.0f);
+    float m_shininess = ambient_shine.w;
 
     fragColor = m_ka * cAmbient;
      for(int i = 0; i < numLight; i ++){

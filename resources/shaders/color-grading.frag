@@ -12,7 +12,7 @@ uniform bool bool_texture;
 
 uniform int lut_size;
 
-out vec4 fragColor;
+layout (location = 1) out vec4 fragColor;
 
 void main()
 {

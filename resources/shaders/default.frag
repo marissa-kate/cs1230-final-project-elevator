@@ -6,43 +6,23 @@ in vec2 frag_uv;
 in vec3 frag_pu;
 in vec3 frag_pv;
 
-layout (location = 0) out vec4 fragColor;
-layout (location = 1) out vec4 brightColor;
+layout( location = 2) out vec4 out_position;
+layout( location = 3) out vec4 out_normal;
+layout( location = 4) out vec4 out_ambient_shininess;
+layout( location = 5) out vec4 out_albedo_spec;
+layout( location = 6) out float depth_out;
 
-//texture uniforms
-uniform sampler2D u_texture;
-uniform bool hasTexture;
-
-//lighting uniforms
-uniform vec4 camera_pos;
-uniform float m_ka;
-uniform float m_kd;
-uniform float m_ks;
 uniform vec4 cAmbient;
 uniform vec4 cDiffuse;
 uniform vec4 cSpecular;
-uniform int numLight;
 uniform float m_shininess;
 
-uniform vec4 m_lightPos[8];
-uniform vec4 m_lightDir[8];
-uniform vec3 m_lightFunction[8];
-uniform vec4 m_lightColor[8];
-uniform float m_lightType[8];
-uniform float m_lightAngle[8];
-uniform float m_lightPenumbra[8];
-
-//fog uniforms
-uniform float fog_minDist;
-uniform float fog_maxDist;
-uniform vec4  fog_color;
-
-uniform float bloomThreshold;
-
+uniform sampler2D u_texture;
+uniform bool hasTexture;
 uniform int bump_depth;
 
 void main() {
-    vec3 normal = normalize(ws_norm);
+    vec3 normal = vec3(normalize(ws_norm));
 
     if (hasTexture){
             float texture_val = texture(u_texture, frag_uv).r;
@@ -83,66 +63,9 @@ void main() {
 
         }
 
-    fragColor = m_ka * cAmbient;
-     for(int i = 0; i < numLight; i ++){
-         vec4 color = vec4(0, 0, 0, 1);
-         vec3 lightdir;
-         float f_att = 1.0; //Attenuation
-         float intensity = 1.0; //Intensity (varies for spot lights)
-
-        if(m_lightType[i] == 0){ //dir
-            lightdir = normalize(vec3(-m_lightDir[i]));
-        }
-
-        else if(m_lightType[i] == 1){ // point
-            lightdir = normalize(vec3(m_lightPos[i])-ws_pos);
-            float dist = distance(vec3(m_lightPos[i]), ws_pos);
-            f_att = min(1.0, 1 / (m_lightFunction[i][0] + dist * m_lightFunction[i][1] +
-                                       dist * dist * m_lightFunction[i][2]));
-        }
-        else if(m_lightType[i] == 2){ //spot
-            lightdir = normalize(-vec3(m_lightDir[i]));
-            vec3 pointdir = normalize(vec3(m_lightPos[i]) - ws_pos);
-            float theta = acos(dot(lightdir, pointdir));
-            float inner = m_lightAngle[i] - m_lightPenumbra[i];
-            float outer = m_lightAngle[i];
-            if(theta > inner && theta <= outer){ //falloff
-                float falloff = (-2 * pow((theta - inner) / (outer - inner), 3)) +
-                                (3 * pow((theta - inner) / (outer - inner), 2));
-                intensity = 1.0 - falloff;
-            } else if(theta > outer) { //outside of cone of light
-                intensity = 0.0;
-            }
-            float dist = distance(vec3(m_lightPos[i]), ws_pos);
-            f_att = min(1.0, 1 / (m_lightFunction[i][0] + dist * m_lightFunction[i][1] +
-                                       dist * dist * m_lightFunction[i][2]));
-        }
-
-      //Diffuse color & texture color are added here
-         float lambert = max(dot(normal, normalize(lightdir)), 0.0);
-         vec4 diffuse =  m_kd * m_lightColor[i] * cDiffuse * lambert * intensity * f_att;
-         fragColor += diffuse;
-
-    // if(lambert>0.0){
-        vec3 reflected = normalize(reflect(lightdir, normal));
-        float specDot = max(dot(reflected, (normalize(ws_pos-vec3(camera_pos)))), 0.0);
-        float shiny = pow(specDot, m_shininess);
-        fragColor +=  m_ks * m_lightColor[i] * cSpecular * shiny;
-    }
-
-     // -------- FOG ---------
-     float dist = length(es_pos);
-     float fogFactor = (fog_maxDist - dist) / (fog_maxDist - fog_minDist);
-     fogFactor = clamp(fogFactor, 0.0, 1.0);
-
-     // blend between fog and shaded color
-     fragColor = mix(fog_color, fragColor, fogFactor);
-
-     float brightness = dot(fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-         if(brightness > bloomThreshold)
-             brightColor = vec4(fragColor.rgb, 1.0);
-         else
-             brightColor = vec4(0.0, 0.0, 0.0, 1.0);
-
-
+    out_normal = vec4(normal, 0.0f);
+    out_position = vec4(ws_pos, 1.0f);
+    out_ambient_shininess = vec4(cAmbient.xyz, m_shininess);
+    out_albedo_spec = vec4(cDiffuse.xyz, cSpecular.x);
+    depth_out = gl_FragCoord.z;
 }

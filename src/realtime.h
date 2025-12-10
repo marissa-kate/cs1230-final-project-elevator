@@ -7,13 +7,13 @@
 #endif
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <iostream>
 
 #include <unordered_map>
 #include <QElapsedTimer>
 #include <QOpenGLWidget>
 #include <QTime>
 #include <QTimer>
-
 #include "audiocapture.h"
 #include "particlesystem.h"
 
@@ -54,13 +54,31 @@ private:
 
     GLuint m_defaultFBO;
     GLuint m_fbo;
+    GLuint m_composite_fbo;
     GLuint colorBuffers[2];
     GLuint m_hdr_fbo;
-    GLuint m_composite_fbo;
     GLuint m_composite_fbo_texture;
     int m_fbo_width;
     int m_fbo_height;
     GLuint m_fbo_texture;
+
+    GLuint position_fbo;
+    GLuint normal_fbo;
+    GLuint ambinet_shininess_texture;
+    GLuint albedo_spec_texture;
+    GLuint second_depth_fbo;
+    GLuint final_color;
+    GLuint composite_color;
+    GLuint first_depth_fbo;
+    GLuint blur_texture;
+    GLuint color_grading_texture;
+
+    float zfar_plane;
+    float znear_plane;
+    float aperature;
+    float focal_length;
+    float plane_in_focus;
+
     GLuint m_rbo;
     GLuint m_fullscreen_vao;
     GLuint pingpong_fbo[2];
@@ -82,6 +100,24 @@ private:
     void timerEvent(QTimerEvent *event) override;
     void blurBrightTexture();
     void drawPrimitives();
+    void drawLights();
+    void final_color_pass();
+    void store_texture(GLuint &thing, int m_fbo_width, int m_fbo_height, const GLuint &internalFormat, const GLenum &format, const GLenum &type,
+                      const GLenum &first_parameter_value, const GLenum &second_parameter_value, const GLenum &attachment);
+    void pass_texture_sampler2D_uniforms(GLuint &dof_shader, GLuint &fbo_thing, const GLenum &texture_slot, std::string shader_name,const GLint &id);
+    void pass_dof_sampler2D_uniforms(GLuint &dof_shader, GLuint &fbo_thing, const GLenum &texture_slot, std::string shader_name,const GLint &id);
+    void pass_dof_uniform(GLuint &dof_shader, float thing, std::string shader_name);
+    void depth_of_field_pass();
+    inline void glErrorCheck(const char* file, int line_number) {
+        GLenum errorNumber = glGetError();
+        while (errorNumber != GL_NO_ERROR) {
+            // Task 2: Edit this print statement to be more descriptive
+            std::cout << errorNumber << "in file: " << file << " - at line: " << line_number << std::endl;
+
+            errorNumber = glGetError();
+        }
+    }
+    GLuint m_geometry_shader;
     GLuint m_phong_shader;
     GLuint m_blur_shader;
     GLuint m_composite_shader;
@@ -89,6 +125,7 @@ private:
     int shapeParameter1 = 1;
     int shapeParameter2 = 1;
 
+    GLuint m_dof_shader;
 
     //color-grading
     GLuint m_color_shader;

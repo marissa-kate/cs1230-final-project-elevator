@@ -1,0 +1,16 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="resources/shaders/default.frag">/Users/ethanlin/cs1230-final-project-elevator/resources/shaders/default.frag</file>
+    <file alias="resources/shaders/default.vert">/Users/ethanlin/cs1230-final-project-elevator/resources/shaders/default.vert</file>
+    <file alias="resources/shaders/light.frag">/Users/ethanlin/cs1230-final-project-elevator/resources/shaders/light.frag</file>
+    <file alias="resources/shaders/light.vert">/Users/ethanlin/cs1230-final-project-elevator/resources/shaders/light.vert</file>
+    <file alias="resources/shaders/dof.frag">/Users/ethanlin/cs1230-final-project-elevator/resources/shaders/dof.frag</file>
+    <file alias="resources/shaders/dof.vert">/Users/ethanlin/cs1230-final-project-elevator/resources/shaders/dof.vert</file>
+    <file alias="resources/shaders/color-grading.frag">/Users/ethanlin/cs1230-final-project-elevator/resources/shaders/color-grading.frag</file>
+    <file alias="resources/shaders/color-grading.vert">/Users/ethanlin/cs1230-final-project-elevator/resources/shaders/color-grading.vert</file>
+    <file alias="resources/shaders/texture.frag">/Users/ethanlin/cs1230-final-project-elevator/resources/shaders/texture.frag</file>
+    <file alias="resources/shaders/final.vert">/Users/ethanlin/cs1230-final-project-elevator/resources/shaders/final.vert</file>
+    <file alias="resources/shaders/final.frag">/Users/ethanlin/cs1230-final-project-elevator/resources/shaders/final.frag</file>
+  </qresource>
+</RCC>
+

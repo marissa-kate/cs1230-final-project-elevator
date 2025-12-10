@@ -1,16 +1,10 @@
-
 #version 330 core
-layout (location = 0) in vec3 position;
-layout (location = 1) in vec2 uv;
+layout (location = 0) in vec3 full_screen_position;
+layout (location = 1) in vec2 full_screen_uv;
 
-
-// Task 16: create an "out" variable representing a UV coordinate
 out vec2 frag_uv;
 
 void main() {
-    // Task 16: assign the UV layout variable to the UV "out" variable
-
-    gl_Position = vec4(position, 1.0);
-    frag_uv = uv;
-
+   gl_Position = vec4(full_screen_position, 1.0);
+   frag_uv = full_screen_uv;
 }

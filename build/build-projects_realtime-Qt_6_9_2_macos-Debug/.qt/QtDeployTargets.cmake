@@ -1,0 +1,4 @@
+set(__QT_DEPLOY_TARGET_projects_realtime_FILE /Users/ethanlin/cs1230-final-project-elevator/build/build-projects_realtime-Qt_6_9_2_macos-Debug/projects_realtime)
+set(__QT_DEPLOY_TARGET_projects_realtime_TYPE EXECUTABLE)
+set(__QT_DEPLOY_TARGET_StaticGLEW_FILE /Users/ethanlin/cs1230-final-project-elevator/build/build-projects_realtime-Qt_6_9_2_macos-Debug/libStaticGLEW.a)
+set(__QT_DEPLOY_TARGET_StaticGLEW_TYPE STATIC_LIBRARY)

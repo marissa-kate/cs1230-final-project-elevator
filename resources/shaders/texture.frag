@@ -3,7 +3,7 @@
 // Task 16: Create a UV coordinate in variable
 in vec2 tex;
 
-uniform sampler2D m_texture;
+// uniform sampler2D m_texture;
 out vec4 fragColor;
 
 uniform sampler2D image;

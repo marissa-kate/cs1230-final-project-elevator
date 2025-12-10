@@ -24,6 +24,14 @@ void MainWindow::initialize() {
     QFont font;
     font.setPointSize(12);
     font.setBold(true);
+
+    QLabel *focal_plane_label = new QLabel(); // Focal Plane label
+    focal_plane_label->setText("Focal Plane:");
+    QLabel *aperature_label = new QLabel(); // Aperature label
+    aperature_label->setText("Aperature:");
+    QLabel *focal_length_label = new QLabel(); // Focal Length label
+    focal_length_label->setText("Focal Length:");
+
     // QLabel *ec_label = new QLabel(); // Extra Credit label
     // ec_label->setText("Extra Credit");
     // ec_label->setFont(font);
@@ -39,6 +47,7 @@ void MainWindow::initialize() {
     // exposure_label->setText("Exposure:");
     // QLabel *bloom_threshold = new QLabel(); // Far plane label
     // bloom_threshold->setText("Bloom Threshold:");
+
 
 
     // Create file uploader for scene file
@@ -159,40 +168,70 @@ void MainWindow::initialize() {
     // lfar->addWidget(farBox);
     // farLayout->setLayout(lfar);
 
-    // QGroupBox *exposureLayout = new QGroupBox();
-    // QHBoxLayout *lexposure = new QHBoxLayout();
-    // QGroupBox *bloomLayout = new QGroupBox();
-    // QHBoxLayout *lbloom = new QHBoxLayout();
 
-    // exposureSlider = new QSlider(Qt::Orientation::Horizontal);
-    // exposureSlider->setTickInterval(1);
-    // exposureSlider->setMinimum(0);
-    // exposureSlider->setMaximum(100);   // maps to 0.00–1.00
-    // exposureSlider->setValue(50);      // default 0.5
+    // Creates the boxes containing the camera sliders and number boxes
+    QGroupBox *aperLayout = new QGroupBox(); // horizonal near slider alignment
+    QHBoxLayout *aper = new QHBoxLayout();
+    QGroupBox *focal_PlaneLayout = new QGroupBox(); // horizonal near slider alignment
+    QHBoxLayout *foc_plane = new QHBoxLayout();
+    QGroupBox *focal_lengthLayout = new QGroupBox(); // horizonal near slider alignment
+    QHBoxLayout *foc_len = new QHBoxLayout();
+    // QGroupBox *nearLayout = new QGroupBox(); // horizonal near slider alignment
+    // QHBoxLayout *lnear = new QHBoxLayout();
+    // QGroupBox *farLayout = new QGroupBox(); // horizonal far slider alignment
+    // QHBoxLayout *lfar = new QHBoxLayout();
 
-    // exposureBox = new QDoubleSpinBox();
-    // exposureBox->setMinimum(0.0);
-    // exposureBox->setMaximum(1.0);
-    // exposureBox->setSingleStep(0.01);
-    // exposureBox->setDecimals(2);
-    // exposureBox->setValue(0.5);
+    // Create slider controls to control near/far planes
+    focal_length_slider = new QSlider(Qt::Orientation::Horizontal); // focal length slider
+    focal_length_slider->setTickInterval(1.0f);
+    focal_length_slider->setMinimum(1);
+    focal_length_slider->setMaximum(1000);
+    focal_length_slider->setValue(10);
 
-    // bloomSlider = new QSlider(Qt::Orientation::Horizontal);
-    // bloomSlider->setTickInterval(1);
-    // bloomSlider->setMinimum(0);
-    // bloomSlider->setMaximum(100);     // 0–100 → 0.00–1.00
-    // bloomSlider->setValue(100);       // default = 1.0
+    focal_length_box = new QDoubleSpinBox();
+    focal_length_box->setMinimum(1.0f);
+    focal_length_box->setMaximum(100.0f);
+    focal_length_box->setSingleStep(0.1f);
+    focal_length_box->setValue(1.0f);
 
-    // bloomBox = new QDoubleSpinBox();
-    // bloomBox->setMinimum(0.0);
-    // bloomBox->setMaximum(1.0);
-    // bloomBox->setSingleStep(0.01);
-    // bloomBox->setDecimals(2);
-    // bloomBox->setValue(1.0);
+    focal_plane_slider = new QSlider(Qt::Orientation::Horizontal); // focal Plane slider
+    focal_plane_slider->setTickInterval(0.1f);
+    focal_plane_slider->setMinimum(1.f);
+    focal_plane_slider->setMaximum(2000);
+    focal_plane_slider->setValue(10.f);
 
-    // lexposure->addWidget(exposureSlider);
-    // lexposure->addWidget(exposureBox);
-    // exposureLayout->setLayout(lexposure);
+    focal_plane_box = new QDoubleSpinBox();
+    focal_plane_box->setMinimum(0.1f);
+    focal_plane_box->setMaximum(200.0f);
+    focal_plane_box->setSingleStep(0.01f);
+    focal_plane_box->setValue(0.1f);
+
+    aperatureSlider = new QSlider(Qt::Orientation::Horizontal); // Aperature slider
+    aperatureSlider->setTickInterval(1);
+    aperatureSlider->setMinimum(100);
+    aperatureSlider->setMaximum(4000);
+    aperatureSlider->setValue(100);
+
+    aperatureBox = new QDoubleSpinBox();
+    aperatureBox->setMinimum(1.f);
+    aperatureBox->setMaximum(40.0f);
+    aperatureBox->setSingleStep(0.1f);
+    aperatureBox->setValue(1.f);
+
+
+
+    // Adds the slider and number box to the parameter layouts
+    foc_plane->addWidget(focal_plane_slider);
+    foc_plane->addWidget(focal_plane_box);
+    focal_PlaneLayout->setLayout(foc_plane);
+
+    foc_len->addWidget(focal_length_slider);
+    foc_len->addWidget(focal_length_box);
+    focal_lengthLayout->setLayout(foc_len);
+
+    aper->addWidget(aperatureSlider);
+    aper->addWidget(aperatureBox);
+    aperLayout->setLayout(aper);
 
     // lbloom->addWidget(bloomSlider);
     // lbloom->addWidget(bloomBox);
@@ -206,10 +245,13 @@ void MainWindow::initialize() {
     // vLayout->addWidget(colorgrade);
     vLayout->addWidget(saveImage);
 
-    // vLayout->addWidget(param1_label);
-    // vLayout->addWidget(p1Layout);
-    // vLayout->addWidget(param2_label);
-    // vLayout->addWidget(p2Layout);
+    vLayout->addWidget(focal_length_label);
+    vLayout->addWidget(focal_lengthLayout);
+    vLayout->addWidget(focal_plane_label);
+    vLayout->addWidget(focal_PlaneLayout);
+    vLayout->addWidget(aperature_label);
+    vLayout->addWidget(aperLayout);
+
 
     // vLayout->addWidget(near_label);
     // vLayout->addWidget(nearLayout);
@@ -245,6 +287,11 @@ void MainWindow::connectUIElements() {
     //connectKernelBasedFilter();
     connectUploadFile();
     connectSaveImage();
+    connectFocalPlane();
+    connectFocalLength();
+    connectAperature();
+
+
     // connectParam1();
     // connectParam2();
     // connectNear();
@@ -297,6 +344,26 @@ void MainWindow::connectParam2() {
     connect(p2Box, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
             this, &MainWindow::onValChangeP2);
 }
+
+
+void MainWindow::connectFocalPlane() {
+    connect(focal_plane_slider, &QSlider::valueChanged, this, &MainWindow::onValChangeFocalPlaneSlider);
+    connect(focal_plane_box, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+            this, &MainWindow::onValChangeFocalPlaneBox);
+}
+
+void MainWindow::connectFocalLength() {
+    connect(focal_length_slider, &QSlider::valueChanged, this, &MainWindow::onValChangeFocalLengthSlider);
+    connect(focal_length_box, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+            this, &MainWindow::onValChangeFocalLengthBox);
+}
+
+void MainWindow::connectAperature() {
+    connect(aperatureSlider, &QSlider::valueChanged, this, &MainWindow::onValChangeAperatureSlider);
+    connect(aperatureBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+            this, &MainWindow::onValChangeAperatureBox);
+}
+
 
 void MainWindow::connectNear() {
     connect(nearSlider, &QSlider::valueChanged, this, &MainWindow::onValChangeNearSlider);
@@ -437,6 +504,25 @@ void MainWindow::onValChangeP2(int newValue) {
     realtime->settingsChanged();
 }
 
+void MainWindow::onValChangeFocalLengthSlider(int newValue) {
+    focal_length_box->setValue(newValue/100.f);
+    settings.focal_length = focal_length_box->value();
+    realtime->settingsChanged();
+}
+
+void MainWindow::onValChangeAperatureSlider(int newValue) {
+    aperatureBox->setValue(newValue/100.f);
+    settings.aperature = aperatureBox->value();
+    realtime->settingsChanged();
+}
+
+void MainWindow::onValChangeFocalPlaneSlider(int newValue) {
+    focal_plane_box->setValue((newValue/100.f));
+    //nearBox->setValue(newValue);
+    settings.plane_in_focus = focal_plane_box->value();
+    realtime->settingsChanged();
+}
+
 void MainWindow::onValChangeNearSlider(int newValue) {
     //nearSlider->setValue(newValue);
     nearBox->setValue(newValue/100.f);
@@ -462,6 +548,27 @@ void MainWindow::onValChangeExposureSlider(int newValue) {
    exposureSlider->setValue(newValue);
     exposureBox->setValue(newValue/100.f);
     settings.exposure = exposureBox->value();
+    realtime->settingsChanged();
+}
+
+void MainWindow::onValChangeFocalLengthBox(double newValue) {
+    focal_length_slider->setValue(int(newValue*100.f));
+    //nearBox->setValue(newValue);
+    settings.focal_length = focal_length_box->value();
+    realtime->settingsChanged();
+}
+
+void MainWindow::onValChangeFocalPlaneBox(double newValue) {
+    focal_plane_slider->setValue(int(newValue*100.f));
+    //nearBox->setValue(newValue);
+    settings.plane_in_focus = focal_plane_box->value();
+    realtime->settingsChanged();
+}
+
+void MainWindow::onValChangeAperatureBox(double newValue) {
+    aperatureSlider->setValue(int(newValue*100.f));
+    //nearBox->setValue(newValue);
+    settings.aperature = aperatureBox->value();
     realtime->settingsChanged();
 }
 
