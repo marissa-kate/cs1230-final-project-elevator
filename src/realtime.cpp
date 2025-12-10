@@ -8,9 +8,25 @@
 #include "utils/shaderloader.h"
 #include "settings.h"
 #include <glm/gtc/quaternion.hpp>
+#include <random>
 #include "utils/phys.h"
 
 std::vector<RigidBody> Bodies;
+QString LUTs[] = {"resources/70 CGC LUTs/Look LUTs/3Strip.cube", "resources/70 CGC LUTs/Look LUTs/70s.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Amelie.cube", "resources/70 CGC LUTs/Look LUTs/Aviator.cube", "resources/70 CGC LUTs/Look LUTs/Blade Runner.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Bleach.cube", "resources/70 CGC LUTs/Look LUTs/Brooklyn.cube","resources/70 CGC LUTs/Look LUTs/Celadon.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Chamoisee.cube", "resources/70 CGC LUTs/Look LUTs/Cubanismo.cube",  "resources/70 CGC LUTs/Look LUTs/Drive.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Duotone.cube", "resources/70 CGC LUTs/Look LUTs/Emulsion.cube","resources/70 CGC LUTs/Look LUTs/Enemy.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Enhance.cube","resources/70 CGC LUTs/Look LUTs/Fashion.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Glacier.cube","resources/70 CGC LUTs/Look LUTs/Godfather.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Grand Budapest.cube","resources/70 CGC LUTs/Look LUTs/Grime.cube","resources/70 CGC LUTs/Look LUTs/Grit.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Hannibal.cube","resources/70 CGC LUTs/Look LUTs/Her.cube", "resources/70 CGC LUTs/Look LUTs/Mad Max.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Matrix V1.cube","resources/70 CGC LUTs/Look LUTs/Matrix V2.cube", "resources/70 CGC LUTs/Look LUTs/Mint.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Moonrise Kingdom.cube","resources/70 CGC LUTs/Look LUTs/Ochre.cube", "resources/70 CGC LUTs/Look LUTs/Punch.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Revenant.cube","resources/70 CGC LUTs/Look LUTs/Rhythm.cube","resources/70 CGC LUTs/Look LUTs/Seven.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Spy.cube", "resources/70 CGC LUTs/Look LUTs/Stranger Things.cube", "resources/70 CGC LUTs/Look LUTs/Summer.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Teal and Orange.cube","resources/70 CGC LUTs/Look LUTs/Thriller.cube","resources/70 CGC LUTs/Look LUTs/Vinteo.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Wonder Woman.cube"};
 // ================== Rendering the Scene!
 
 Realtime::Realtime(QWidget *parent)
@@ -75,13 +91,24 @@ void Realtime::finish() {
     glDeleteBuffers(1, &m_fullscreen_vbo);
     glDeleteTextures(1, &m_bright_texture);
     glDeleteTextures(1, &m_fbo_texture);
+    glDeleteTextures(1, &m_2d_lut);
     glDeleteRenderbuffers(1, &m_rbo);
     glDeleteFramebuffers(1, &m_fbo);
     glDeleteProgram(m_blur_shader);
     glDeleteProgram(m_composite_shader);
     glDeleteProgram(m_phong_shader);
+    glDeleteProgram(m_color_shader);
     glDeleteProgram(m_particle_shader);
     this->doneCurrent();
+}
+
+int getLUTIndex(){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, 39);
+
+    int value = dist(gen);
+    return value;
 }
 
 void Realtime::initializeGL() {
@@ -89,7 +116,7 @@ void Realtime::initializeGL() {
 
     m_timer = startTimer(1000/60);
     m_elapsedTimer.start();
-    m_defaultFBO = 4;
+    m_defaultFBO = 5;
 
     // Initializing GL
     // GLEW (GL Extension Wrangler) provides access to OpenGL functions.
@@ -173,9 +200,10 @@ void Realtime::initializeGL() {
     glUniform1i(glGetUniformLocation(m_color_shader, "u_texture"), 0);
     glUseProgram(0);
 
-
+    lut_index = getLUTIndex();
     //load lut
-    QString filepath = "resources/70 CGC LUTs/Look LUTs/Grand Budapest.cube";
+    QString filepath = LUTs[lut_index];
+    std::cout<<"loading: "<<filepath.toStdString()<<std::endl;
 
     loadCubeLUT(filepath);
 
@@ -191,9 +219,7 @@ void Realtime::initializeGL() {
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    // Task 7: Unbind kitten texture
-    // glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_3D, 1);
+    glBindTexture(GL_TEXTURE_3D, 0);
 
 
     // Task 10: Set the texture.frag uniform for our texture
@@ -212,7 +238,7 @@ void Realtime::initializeGL() {
 }
 
 void Realtime::loadCubeLUT(const QString& path) {
-
+    m_lut_data.clear();
     QFile file(path);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
@@ -259,6 +285,7 @@ void Realtime::makeFBO(){
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+        //m_fbo
         glGenFramebuffers(1, &m_fbo);
         glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
         //renderbuffer
@@ -271,8 +298,22 @@ void Realtime::makeFBO(){
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_bright_texture, 0);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_rbo);
         glDrawBuffers(2, attachments);
-
         glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
+
+        //composite FBO
+    GLuint composite_attachments[1] = {GL_COLOR_ATTACHMENT0};
+        glGenFramebuffers(1, &m_composite_fbo);
+        glGenTextures(1, &m_composite_fbo_texture);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_composite_fbo);
+        glBindTexture(GL_TEXTURE_2D, m_composite_fbo_texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_fbo_width, m_fbo_height, 0, GL_RGBA, GL_FLOAT, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_composite_fbo_texture, 0);
+        glDrawBuffers(1, composite_attachments);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
+
 
         // ---------- Ping-pong FBOs for blur ----------
         glGenFramebuffers(2, pingpong_fbo);
@@ -370,15 +411,12 @@ void Realtime::paintGL() {
     // ---------------------------------------
 
     // 3. Blur (Bloom) processing
-    // No need to revert to default FBO here since blurBrightTexture handles FBO switching,
-    // but unbinding here is safer just in case.
     glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
-
     blurBrightTexture();
 
-    // 4. Final rendering (compositing) to default FBO (screen)
+    glBindFramebuffer(GL_FRAMEBUFFER, m_composite_fbo);
     // Clear the screen
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(m_composite_shader);
     glUniform1i(glGetUniformLocation(m_composite_shader, "scene"), 0);
@@ -399,6 +437,10 @@ void Realtime::paintGL() {
 
     glBindVertexArray(0);
     glUseProgram(0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    paintTexture(m_composite_fbo_texture, true);
 }
 
 void Realtime::paintTexture(GLuint texture, bool filter){
@@ -444,24 +486,18 @@ void Realtime::paintTexture(GLuint texture, bool filter){
 }
 
 void Realtime::bindTexture(){
+    glUseProgram(m_phong_shader);
     if (settings.hasTexture){
         // QString filepath = QString("/Users/vhcch/Desktop/Vivian/brown/cs1230/project-6-final-project-gear-up-vhchen29/scenefiles/bump-mapping/topleft.png");
 
         m_obj_texture_image = settings.bumpTexture;
 
-        // Task 2: Format image to fit OpenGL
-        // m_texture_image = m_texture_image.convertToFormat(QImage::Format_Grayscale8).mirrored();
-
-        // Task 3: Generate texture
         glGenTextures(1, &m_obj_texture);
 
-        // Task 9: Set the active texture slot to texture slot 0
         glActiveTexture(GL_TEXTURE0);
 
-        // Task 4: Bind texture
         glBindTexture(GL_TEXTURE_2D, m_obj_texture);
 
-        // Task 5: Load image into  texture
         glTexImage2D(GL_TEXTURE_2D,0, GL_RED, m_obj_texture_image.width(), m_obj_texture_image.height(), 0, GL_RED, GL_UNSIGNED_BYTE,
                      m_obj_texture_image.bits());
 
@@ -469,20 +505,12 @@ void Realtime::bindTexture(){
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        // Task 7: Unbind texture
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        glUseProgram(m_phong_shader);
         GLint samplerLoc = glGetUniformLocation(m_phong_shader, "u_texture");
         std::cout << "u_texture location = " << samplerLoc << std::endl;
         glUniform1i(samplerLoc, 0);
-        glUseProgram(m_phong_shader);
-        glUniform1i(glGetUniformLocation(m_phong_shader, "hasTexture"), settings.hasTexture);
-        glUniform1i(glGetUniformLocation(m_phong_shader, "bump_depth"), settings.bumpDepth);
-        glUseProgram(0);
     }
-
-
 
     glUseProgram(m_phong_shader);
     glUniform1i(glGetUniformLocation(m_phong_shader, "hasTexture"), settings.hasTexture);
@@ -725,6 +753,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
         // Movement (XZ plane)
         if (m_keyMap[Qt::Key_B]) rb.inputForce.z -= move;
         if (m_keyMap[Qt::Key_N]) rb.inputForce.z += move;
+
         if (m_keyMap[Qt::Key_U]) rb.inputForce.x -= move;
         if (m_keyMap[Qt::Key_I]) rb.inputForce.x += move;
 
@@ -771,10 +800,10 @@ void Realtime::timerEvent(QTimerEvent *event) {
     //camera
     if (m_keyMap[Qt::Key_Q]) cam.translateCamera(Qt::Key_W, deltaTime);
     if (m_keyMap[Qt::Key_W]) cam.translateCamera(Qt::Key_S, deltaTime);
-    if (m_keyMap[Qt::Key_1]) cam.translateCamera(Qt::Key_A, deltaTime);
-    if (m_keyMap[Qt::Key_2]) cam.translateCamera(Qt::Key_D, deltaTime);
-    if (m_keyMap[Qt::Key_G]) cam.translateCamera(Qt::Key_Space, deltaTime);
-    if (m_keyMap[Qt::Key_H]) cam.translateCamera(Qt::Key_Control, deltaTime);
+    if (m_keyMap[Qt::Key_G]) cam.translateCamera(Qt::Key_A, deltaTime);
+    if (m_keyMap[Qt::Key_H]) cam.translateCamera(Qt::Key_D, deltaTime);
+    if (m_keyMap[Qt::Key_1]) cam.translateCamera(Qt::Key_Space, deltaTime);
+    if (m_keyMap[Qt::Key_2]) cam.translateCamera(Qt::Key_Control, deltaTime);
 
     // //tessellation
     if (keyJustPressed(Qt::Key_Y, prevKeys)) {
@@ -794,7 +823,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
         paramUpdate();
     }
 
-    if(m_keyMap[Qt::Key_Comma])settings.exposure+=0.05;
+    if(m_keyMap[Qt::Key_Comma]) settings.exposure+=0.05;
 
     if(m_keyMap[Qt::Key_M]){
             if(settings.exposure>=0.1)settings.exposure-=0.05;}
@@ -805,6 +834,22 @@ void Realtime::timerEvent(QTimerEvent *event) {
     if(m_keyMap[Qt::Key_A])settings.bumpDepth+=3;
     if(m_keyMap[Qt::Key_S])settings.bumpDepth-=3;
 
+    if (keyJustPressed(Qt::Key_3, prevKeys)) {
+        lut_index = getLUTIndex();
+        loadCubeLUT(LUTs[lut_index]);
+        std::cout<<"loaded: "<<LUTs[lut_index].toStdString()<<std::endl;
+        glDeleteTextures(1, &m_2d_lut);
+        glGenTextures(1, &m_2d_lut);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_3D, m_2d_lut);
+        glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, m_lut_size, m_lut_size, m_lut_size, 0, GL_RGB, GL_FLOAT, m_lut_data.data());
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_3D, 0);
+        glUseProgram(m_color_shader);
+        glUniform1i(glGetUniformLocation(m_color_shader, "lut"), 1);
+        glUseProgram(0);
+    }
 
     camera_pos = glm::vec4(cam.pos, 1.0);
     update(); // triggers paintGL()

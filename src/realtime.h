@@ -56,6 +56,8 @@ private:
     GLuint m_fbo;
     GLuint colorBuffers[2];
     GLuint m_hdr_fbo;
+    GLuint m_composite_fbo;
+    GLuint m_composite_fbo_texture;
     int m_fbo_width;
     int m_fbo_height;
     GLuint m_fbo_texture;
@@ -104,6 +106,8 @@ private:
 
     double n_bodies;
     std::unordered_map<Qt::Key, bool> m_prevKeyMap;
+    int lut_index;
+
 
     std::vector<float> m_bufferData;
     // Tick Related Variables
