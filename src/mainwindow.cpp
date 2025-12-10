@@ -12,7 +12,7 @@
 void MainWindow::initialize() {
     realtime = new Realtime();
     aspectRatioWidget = new AspectRatioWidget(this);
-    aspectRatioWidget->setAspectWidget(realtime, 3.f/4.f);
+    aspectRatioWidget->setAspectWidget(realtime, 9.f/16.f);
     QHBoxLayout *hLayout = new QHBoxLayout; // horizontal alignment
     QVBoxLayout *vLayout = new QVBoxLayout(); // vertical alignment
     vLayout->setAlignment(Qt::AlignTop);
@@ -25,48 +25,15 @@ void MainWindow::initialize() {
     font.setPointSize(12);
     font.setBold(true);
 
-    // QLabel *focal_plane_label = new QLabel(); // Focal Plane label
-    // focal_plane_label->setText("Focal Plane:");
-    // QLabel *aperature_label = new QLabel(); // Aperature label
-    // aperature_label->setText("Aperature:");
-    // QLabel *focal_length_label = new QLabel(); // Focal Length label
-    // focal_length_label->setText("Focal Length:");
-
-    // QLabel *ec_label = new QLabel(); // Extra Credit label
-    // ec_label->setText("Extra Credit");
-    // ec_label->setFont(font);
-    // QLabel *param1_label = new QLabel(); // Parameter 1 label
-    // param1_label->setText("Parameter 1:");
-    // QLabel *param2_label = new QLabel(); // Parameter 2 label
-    // param2_label->setText("Parameter 2:");
-    // QLabel *near_label = new QLabel(); // Near plane label
-    // near_label->setText("Near Plane:");
-    // QLabel *far_label = new QLabel(); // Far plane label
-    // far_label->setText("Far Plane:");
-    // QLabel *exposure_label = new QLabel(); // Far plane label
-    // exposure_label->setText("Exposure:");
-    // QLabel *bloom_threshold = new QLabel(); // Far plane label
-    // bloom_threshold->setText("Bloom Threshold:");
-
-
-
     // Create file uploader for scene file
     uploadFile = new QPushButton();
-    uploadFile->setText(QStringLiteral("Upload Scene File"));
+    uploadFile->adjustSize();
+    uploadFile->setText(QStringLiteral("S"));
 
     uploadBump = new QPushButton();
-    uploadBump->setText(QStringLiteral("Upload Bump File"));
+    uploadBump->setText(QStringLiteral("B"));
+    uploadBump->adjustSize();
 
-    // QLabel *bump_depth_label = new QLabel(); //Bump depth
-    // bump_depth_label->setText("Bump depth: ");
-    // QGroupBox *bumpLayout= new QGroupBox(); // horizonal slider 1 alignment
-    // QHBoxLayout *b = new QHBoxLayout();
-
-    // bumpSlider = new QSlider(Qt::Orientation::Horizontal); // bump depth slider
-    // bumpSlider->setTickInterval(1);
-    // bumpSlider->setMinimum(-50);
-    // bumpSlider->setMaximum(50);
-    // bumpSlider->setValue(10);
 
     // bumpBox = new QSpinBox();
     // bumpBox->setMinimum(-50);
@@ -83,10 +50,6 @@ void MainWindow::initialize() {
 
     colorgrade = new QCheckBox("Color Grade");
     colorgrade->setChecked(false);
-
-
-    saveImage = new QPushButton();
-    saveImage->setText(QStringLiteral("Save Image"));
 
     // Creates the boxes containing the parameter sliders and number boxes
     // QGroupBox *p1Layout = new QGroupBox(); // horizonal slider 1 alignment
@@ -243,7 +206,6 @@ void MainWindow::initialize() {
     // vLayout->addWidget(bumpLayout);
     // // vLayout->addWidget(invert);
     // vLayout->addWidget(colorgrade);
-    vLayout->addWidget(saveImage);
 
     // vLayout->addWidget(focal_length_label);
     // vLayout->addWidget(focal_lengthLayout);
@@ -286,7 +248,6 @@ void MainWindow::connectUIElements() {
     //connectPerPixelFilter();
     //connectKernelBasedFilter();
     connectUploadFile();
-    connectSaveImage();
     // connectFocalPlane();
     // connectFocalLength();
     // connectAperature();

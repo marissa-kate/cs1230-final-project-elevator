@@ -7,6 +7,28 @@
 #include "utils/sceneparser.h"
 #include <QSettings>
 
+/**
+ * @brief main
+ * @param argc
+ * @param argv
+ * @return
+ * int main(int argc, char *argv[])
+{
+    QCoreApplication a(argc, argv);
+
+    QCommandLineParser parser;
+    parser.addHelpOption();
+    parser.addPositionalArgument("config", "Path of the config file.");
+    parser.process(a);
+
+    auto positionalArgs = parser.positionalArguments();
+    if (positionalArgs.size() != 1) {
+        std::cerr << "Not enough arguments. Please provide a path to a config file (.ini) as a command-line argument." << std::endl;
+        a.exit(1);
+        return 1;
+    }
+ */
+
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
@@ -19,16 +41,11 @@ int main(int argc, char *argv[]) {
     fmt.setProfile(QSurfaceFormat::CoreProfile);
     QSurfaceFormat::setDefaultFormat(fmt);
     QCommandLineParser parser;
+
     parser.addHelpOption();
     parser.addPositionalArgument("config", "Path of the config file.");
     parser.process(a);
 
-    // auto positionalArgs = parser.positionalArguments();
-    // if (positionalArgs.size() != 1) {
-    //     std::cerr << "Not enough arguments. Please provide a path to a config file (.ini) as a command-line argument." << std::endl;
-    //     a.exit(1);
-    //     return 1;
-    // }
 
 
     MainWindow w;
