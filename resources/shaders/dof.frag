@@ -33,7 +33,7 @@ void main() {
    if (abs(object_distance - plane_in_focus) < epsilon) {
       fragColor = final_color + vec4(0.8, 0.0, 0.0, 1.0f);
    } else {
-      fragColor = final_color; /*final_color;*/ /*textureLod(light_final_col, screen_space_uv, 0);*/ /*texture(light_final_col, screen_space_uv);*/  /*vec4(d);*/ /*final_color*/
+      fragColor = final_color; /*final_color;*/ /*textureLod(light_final_col, screen_space_uv, 0);*/ /*texture(normal, screen_space_uv);*/  /*vec4(d);*/ /*final_color*/
    }
    // fragColor = textureLod(light_final_col, screen_space_uv, 0);
 }

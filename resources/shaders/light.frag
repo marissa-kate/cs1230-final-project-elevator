@@ -100,13 +100,13 @@ void main() {
         fragColor +=  m_ks * m_lightColor[i] * cSpecular * shiny;
     }
 
-     // -------- FOG ---------
-     float dist = length(es_pos);
-     float fogFactor = (fog_maxDist - dist) / (fog_maxDist - fog_minDist);
-     fogFactor = clamp(fogFactor, 0.0, 1.0);
+     // // // -------- FOG ---------
+     // // float dist = length(es_pos);
+     // // float fogFactor = (fog_maxDist - dist) / (fog_maxDist - fog_minDist);
+     // // fogFactor = clamp(fogFactor, 0.0, 1.0);
 
-     // blend between fog and shaded color
-     fragColor = mix(fog_color, fragColor, fogFactor);
+     // // blend between fog and shaded color
+     // fragColor = mix(fog_color, fragColor, fogFactor);
 
      float brightness = dot(fragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
          if(brightness > bloomThreshold)

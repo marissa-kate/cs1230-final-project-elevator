@@ -8,13 +8,13 @@ struct Settings {
     std::string sceneFilePath;
     int shapeParameter1 = 1;
     int shapeParameter2 = 1;
-    float nearPlane = 0.1;
+    float nearPlane = 3.2;
     float farPlane = 100;
     float exposure = 0.5;
 
-    float plane_in_focus = 0.0f;
-    float aperature = 0.0f;
-    float focal_length = 0.0f;
+    float plane_in_focus = 1.0f;
+    float aperature = 1.0f;
+    float focal_length = 1.0f;
 
     float bloomThreshold = 0.4;
     bool perPixelFilter = false;

@@ -97,6 +97,7 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
         resources/shaders/color-grading.frag
         resources/shaders/color-grading.vert
         resources/shaders/texture.frag
+        resources/shaders/texture.vert
         resources/shaders/final.vert
         resources/shaders/final.frag
 

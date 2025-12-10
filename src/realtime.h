@@ -66,6 +66,8 @@ private:
     GLuint normal_fbo;
     GLuint ambinet_shininess_texture;
     GLuint albedo_spec_texture;
+    GLuint first_particle_texture;
+    GLuint second_particle_texture;
     GLuint second_depth_fbo;
     GLuint final_color;
     GLuint composite_color;

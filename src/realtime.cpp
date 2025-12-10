@@ -99,6 +99,7 @@ void Realtime::finish() {
     glDeleteTextures(1, &ambinet_shininess_texture);
     glDeleteTextures(1, &albedo_spec_texture);
     glDeleteTextures(1, &m_2d_lut);
+
     glDeleteRenderbuffers(1, &m_rbo);
     glDeleteFramebuffers(1, &m_fbo);
     glDeleteProgram(m_geometry_shader);
@@ -321,6 +322,11 @@ void Realtime::makeFBO(){
         // second depth texture
         store_texture(second_depth_fbo, m_fbo_width, m_fbo_height, GL_R32F, GL_RED, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_COLOR_ATTACHMENT6);
 
+        // store_texture(first_particle_texture, m_fbo_width, m_fbo_height, GL_RGBA32F, GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_COLOR_ATTACHMENT7);
+        // store_texture(second_particle_texture, m_fbo_width, m_fbo_height, GL_RGBA32F, GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_COLOR_ATTACHMENT8);
+
+
+
         // new texture for blur
         // store_texture(blur_texture, m_fbo_width, m_fbo_height, GL_RGBA32F, GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_COLOR_ATTACHMENT8);
         // // new texture for color grading
@@ -344,7 +350,7 @@ void Realtime::makeFBO(){
         glBindRenderbuffer(GL_RENDERBUFFER, m_rbo);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_fbo_width, m_fbo_height);
 
-        GLuint attachments[8] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6/*, GL_COLOR_ATTACHMENT7 *//*, GL_COLOR_ATTACHMENT8, GL_COLOR_ATTACHMENT9*/};
+        GLuint attachments[7] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6, /*GL_COLOR_ATTACHMENT7, GL_COLOR_ATTACHMENT8*//*, GL_COLOR_ATTACHMENT7 *//*, GL_COLOR_ATTACHMENT8, GL_COLOR_ATTACHMENT9*/};
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fbo_texture, 0);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_bright_texture, 0);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, position_fbo, 0);
@@ -358,7 +364,7 @@ void Realtime::makeFBO(){
 
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_rbo);
 
-        glDrawBuffers(8, attachments);
+        glDrawBuffers(7, attachments);
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
 
@@ -487,9 +493,9 @@ void Realtime::depth_of_field_pass() {
     glErrorCheck(__FILE__,__LINE__);
     pass_dof_uniform(m_dof_shader, znear_plane, "znear_plane");
     glErrorCheck(__FILE__,__LINE__);
-    pass_dof_uniform(m_dof_shader, plane_in_focus, "plane_in_focus");
-    pass_dof_uniform(m_dof_shader, aperature, "aperature");
-    pass_dof_uniform(m_dof_shader, focal_length, "focal_length");
+    pass_dof_uniform(m_dof_shader, settings.plane_in_focus, "plane_in_focus");
+    pass_dof_uniform(m_dof_shader, settings.aperature, "aperature");
+    pass_dof_uniform(m_dof_shader, settings.focal_length, "focal_length");
 
     GLint sreen_space_resolution_loc = glGetUniformLocation(m_dof_shader, "screen_space_resolution");
     glUniform2fv(sreen_space_resolution_loc, 1, &glm::vec2(m_fbo_width, m_fbo_height)[0]);
@@ -514,12 +520,13 @@ void Realtime::depth_of_field_pass() {
 
 void Realtime::paintGL() {
     // 1. Calculate viewport and projection matrix
-    glViewport(0, 0, size().width() * m_devicePixelRatio, size().height() * m_devicePixelRatio);
-    cam.calculatePerspectiveMatrix(settings.nearPlane, settings.farPlane, cam.getHeightAngle(), aspect);
 
     // 2. Bind FBO and render the main scene
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-    glViewport(0, 0, m_fbo_width, m_fbo_height);
+    glViewport(0, 0, size().width() * m_devicePixelRatio, size().height() * m_devicePixelRatio);
+    cam.calculatePerspectiveMatrix(settings.nearPlane, settings.farPlane, cam.getHeightAngle(), aspect);
+
+
     glErrorCheck(__FILE__, __LINE__);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -549,30 +556,36 @@ void Realtime::paintGL() {
 
     //--- B. Render particles (Corrected part) ---
     // Enable blending and disable depth write for semi-transparent/additive rendering
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE); // Additive blending (gets brighter when overlapped)
-    glDepthMask(GL_FALSE);             // Disable writing to depth buffer (so transparent objects don't occlude each other)
-    glDisable(GL_CULL_FACE);
-    glUseProgram(m_particle_shader);
 
-    // Send time uniform (for sparkle animation)
-    glUniform1f(glGetUniformLocation(m_particle_shader, "u_time"), m_simTime);
 
-    for (auto& system : m_particleSystems) {
-        // Render using m_view and m_proj updated in drawPrimitives
-        system->draw(m_particle_shader, m_view, m_proj);
-    }
-    glUseProgram(0);
+    // if (system->m_particles.empty()) {
+    //     glEnable(GL_BLEND);
+    //     glBlendFunc(GL_SRC_ALPHA, GL_ONE); // Additive blending (gets brighter when overlapped)
+    //     glDepthMask(GL_FALSE);             // Disable writing to depth buffer (so transparent objects don't occlude each other)
+    //     glDisable(GL_CULL_FACE);
 
-    // Restore settings (Important: rigid bodies will look transparent in the next frame if forgotten)
-    glDepthMask(GL_TRUE);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_BLEND);
-    glEnable(GL_CULL_FACE);
+    //     glUseProgram(m_particle_shader);
+
+    //     // Send time uniform (for sparkle animation)
+    //     glUniform1f(glGetUniformLocation(m_particle_shader, "u_time"), m_simTime);
+
+    //     for (auto& system : m_particleSystems) {
+    //         // Render using m_view and m_proj updated in drawPrimitives
+    //         system->draw(m_particle_shader, m_view, m_proj);
+    //     }
+    //     glUseProgram(0);
+
+    // // }
+
+    // // Restore settings (Important: rigid bodies will look transparent in the next frame if forgotten)
+    // glDepthMask(GL_TRUE);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // glDisable(GL_BLEND);
+    // glEnable(GL_CULL_FACE);
     // ---------------------------------------
 
     // 3. Blur (Bloom) processing
-    glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
+    // glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
     blurBrightTexture();
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_composite_fbo);
@@ -623,9 +636,6 @@ void Realtime::paintGL() {
     glErrorCheck(__FILE__,__LINE__);
 
     depth_of_field_pass();
-
-    glBindVertexArray(0);
-    glUseProgram(0);
 
 //     glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
 //     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -714,7 +724,7 @@ void Realtime::bindTexture(){
 void Realtime::drawPrimitives(){
     //Draw geometry
     glUseProgram(m_geometry_shader);
-
+    glErrorCheck(__FILE__,__LINE__);
     m_view = cam.getViewMatrix();
     glErrorCheck(__FILE__,__LINE__);
     m_proj = cam.getPerspectiveMatrix();
@@ -737,23 +747,6 @@ void Realtime::drawPrimitives(){
         glDisable(GL_TEXTURE_2D);
         glErrorCheck(__FILE__,__LINE__);
     }*/
-
-
-    glUniformMatrix4fv(glGetUniformLocation(m_phong_shader, "m_view"), 1, GL_FALSE, &m_view[0][0]);
-    glUniformMatrix4fv(glGetUniformLocation(m_phong_shader, "m_proj"), 1, GL_FALSE, &m_proj[0][0]);
-    glUniform4fv(glGetUniformLocation(m_phong_shader, "camera_pos"), 1, &camera_pos[0]);
-
-    inputs.sendLightUniformData(m_phong_shader);
-    inputs.sendGlobalUniformData(m_phong_shader);
-
-    glUniform1f(glGetUniformLocation(m_phong_shader, "fog_minDist"), 0.0f);
-    glUniform1f(glGetUniformLocation(m_phong_shader, "fog_maxDist"), 25.0f);
-
-    glm::vec4 fogColor = glm::vec4(0, 0, 0, 1.0f);
-    glUniform4fv(glGetUniformLocation(m_phong_shader, "fog_color"), 1, &fogColor[0]);
-
-    glUniform1f(glGetUniformLocation(m_phong_shader, "bloomThreshold"), settings.bloomThreshold);
-
     //Draw geometry
     std::vector<RenderShapeData> shapes = inputs.getPrimitives();
     for(RenderShapeData &shape: shapes){
@@ -1008,9 +1001,6 @@ void Realtime::settingsChanged() {
 
     zfar_plane = settings.farPlane;
     znear_plane = settings.nearPlane;
-    aperature = settings.aperature;
-    focal_length = settings.focal_length;
-    plane_in_focus = settings.plane_in_focus;
 
     makeFBO();
     doneCurrent();
@@ -1161,6 +1151,14 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
         paramUpdate();
     }
+
+    if(m_keyMap[Qt::Key_Z]) settings.aperature-=0.1;
+    if(m_keyMap[Qt::Key_X])  settings.aperature+=0.1;
+    if(m_keyMap[Qt::Key_C])  settings.plane_in_focus-=0.1;
+    if(m_keyMap[Qt::Key_V])  settings.plane_in_focus+=0.1;
+    if(m_keyMap[Qt::Key_5])  settings.focal_length-=1.0;
+    if(m_keyMap[Qt::Key_6])  settings.focal_length+=1.0;
+    std::cout<<"plane: "<<settings.plane_in_focus<<", aperture: "<<settings.aperature<<std::endl;
 
     if(m_keyMap[Qt::Key_Comma]) settings.exposure+=0.05;
 

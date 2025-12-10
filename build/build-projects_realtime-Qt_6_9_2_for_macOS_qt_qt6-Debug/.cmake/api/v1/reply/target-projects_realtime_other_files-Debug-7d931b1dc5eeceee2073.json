@@ -163,6 +163,54 @@
 				"file" : 0,
 				"line" : 2172,
 				"parent" : 23
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 2437,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 2172,
+				"parent" : 25
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 2437,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 2172,
+				"parent" : 27
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 2437,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 2172,
+				"parent" : 29
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 2437,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 2172,
+				"parent" : 31
 			}
 		]
 	},
@@ -195,7 +243,11 @@
 				7,
 				8,
 				9,
-				10
+				10,
+				11,
+				12,
+				13,
+				14
 			]
 		}
 	],
@@ -219,42 +271,62 @@
 		},
 		{
 			"backtrace" : 10,
-			"path" : "resources/shaders/texture.vert",
+			"path" : "resources/shaders/light.frag",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 12,
-			"path" : "resources/shaders/texture.frag",
+			"path" : "resources/shaders/light.vert",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 14,
-			"path" : "resources/shaders/final.vert",
+			"path" : "resources/shaders/dof.frag",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 16,
-			"path" : "resources/shaders/final.frag",
+			"path" : "resources/shaders/dof.vert",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 18,
-			"path" : "resources/shaders/particle.vert",
+			"path" : "resources/shaders/color-grading.frag",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 20,
-			"path" : "resources/shaders/particle.frag",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 22,
 			"path" : "resources/shaders/color-grading.vert",
 			"sourceGroupIndex" : 1
 		},
 		{
+			"backtrace" : 22,
+			"path" : "resources/shaders/texture.frag",
+			"sourceGroupIndex" : 1
+		},
+		{
 			"backtrace" : 24,
-			"path" : "resources/shaders/color-grading.frag",
+			"path" : "resources/shaders/texture.vert",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 26,
+			"path" : "resources/shaders/final.vert",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 28,
+			"path" : "resources/shaders/final.frag",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 30,
+			"path" : "resources/shaders/particle.vert",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 32,
+			"path" : "resources/shaders/particle.frag",
 			"sourceGroupIndex" : 1
 		}
 	],
