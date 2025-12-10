@@ -662,6 +662,10 @@ void Realtime::keyPressEvent(QKeyEvent *event) {
 void Realtime::keyReleaseEvent(QKeyEvent *event) {
     m_keyMap[Qt::Key(event->key())] = false;
 }
+bool Realtime::keyJustPressed(Qt::Key key,
+                              const std::unordered_map<Qt::Key, bool>& prev) {
+    return (m_keyMap[key] && !prev.at(key));
+}
 
 void Realtime::mousePressEvent(QMouseEvent *event) {
     if (event->buttons().testFlag(Qt::LeftButton)) {
@@ -685,8 +689,19 @@ void Realtime::mouseMoveEvent(QMouseEvent *event) {
         update(); // asks for a PaintGL() call to occur
     }
 }
+void Realtime::paramUpdate(){
+    setupVBO(m_cone_vao, m_cone_vbo, PrimitiveType::PRIMITIVE_CONE);
+    setupVBO(m_cube_vao, m_cube_vbo, PrimitiveType::PRIMITIVE_CUBE);
+    setupVBO(m_cyl_vao, m_cyl_vbo, PrimitiveType::PRIMITIVE_CYLINDER);
+    setupVBO(m_sphere_vao, m_sphere_vbo, PrimitiveType::PRIMITIVE_SPHERE);
+    cam.calculatePerspectiveMatrix((float)settings.nearPlane, (float) settings.farPlane, cam.getHeightAngle(),
+                                   aspect);
+    makeFBO();
+}
 
 void Realtime::timerEvent(QTimerEvent *event) {
+    std::unordered_map<Qt::Key, bool> prevKeys = m_prevKeyMap;
+    m_prevKeyMap = m_keyMap;
     if (m_pendingScene) return;
     int elapsedms   = m_elapsedTimer.elapsed();
     float deltaTime = elapsedms * 0.001f;
@@ -745,7 +760,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
         glm::mat4 S = glm::scale(glm::mat4(1.0f), rb.scale);   // scale
         glm::mat4 R = glm::mat4_cast(rb.q);                     // rotation
         glm::mat4 T = glm::translate(glm::mat4(1.0f), rb.x);
-        inputs.getPrimitives()[i].ctm = T * R* S;
+        inputs.getPrimitives()[i].ctm = T * R * S;
     }
 
     m_elapsedTimer.restart();
@@ -758,24 +773,43 @@ void Realtime::timerEvent(QTimerEvent *event) {
     if (m_keyMap[Qt::Key_H]) cam.translateCamera(Qt::Key_Control, deltaTime);
 
     // //tessellation
-    // if(m_keyMap[Qt::Key_T]) settings.shapeParameter1+=1; settingsChanged();
-    // if(m_keyMap[Qt::Key_Y])settings.shapeParameter1-=1;settingsChanged();
-    // if(m_keyMap[Qt::Key_D]) settings.shapeParameter2+=1 ;settingsChanged();
-    // if(m_keyMap[Qt::Key_F])settings.shapeParameter2-=1;settingsChanged();
+    if (keyJustPressed(Qt::Key_T, prevKeys)) {
+        settings.shapeParameter1 += 1;
+        settings.shapeParameter2 += 1;
+        paramUpdate();
+    }
 
-    // if(m_keyMap[Qt::Key_M])settings.exposure+=0.1;
-    // if(m_keyMap[Qt::Key_Comma])settings.exposure-=0.1;
+    if (keyJustPressed(Qt::Key_Y, prevKeys)) {
+        settings.shapeParameter1 -= 1;
+        settings.shapeParameter2 -= 1;
+        paramUpdate();
+    }
 
-    // if(m_keyMap[Qt::Key_7])settings.bloomThreshold+=0.1;
-    // if(m_keyMap[Qt::Key_8])settings.bloomThreshold-=0.1;
+    // if (keyJustPressed(Qt::Key_D, prevKeys)) {
 
-    // if(m_keyMap[Qt::Key_A])settings.bumpDepth+=5;
-    // if(m_keyMap[Qt::Key_S])settings.bumpDepth-=5;
+    //     paramUpdate();
+    // }
+
+    // if (keyJustPressed(Qt::Key_F, prevKeys)) {
+    //     settings.shapeParameter2 -= 1;
+    //     paramUpdate();
+    // }
+
+    if(m_keyMap[Qt::Key_Comma])settings.exposure+=0.1;
+    if(m_keyMap[Qt::Key_M])settings.exposure-=0.1;
+
+    if(m_keyMap[Qt::Key_7])settings.bloomThreshold+=0.1;
+    if(m_keyMap[Qt::Key_8])settings.bloomThreshold-=0.1;
+
+    if(m_keyMap[Qt::Key_A])settings.bumpDepth+=5;
+    if(m_keyMap[Qt::Key_S])settings.bumpDepth-=5;
 
 
     camera_pos = glm::vec4(cam.pos, 1.0);
     update(); // triggers paintGL()
 }
+
+
 
 void Realtime::saveViewportImage(std::string filePath) {
     // Make sure we have the right context and everything has been drawn

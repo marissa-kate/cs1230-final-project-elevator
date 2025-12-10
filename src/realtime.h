@@ -83,6 +83,9 @@ private:
     GLuint m_phong_shader;
     GLuint m_blur_shader;
     GLuint m_composite_shader;
+    void paramUpdate();
+    int shapeParameter1 = 1;
+    int shapeParameter2 = 1;
 
 
     //color-grading
@@ -100,6 +103,7 @@ private:
     glm::mat4 m_view;
 
     double n_bodies;
+    std::unordered_map<Qt::Key, bool> m_prevKeyMap;
 
     std::vector<float> m_bufferData;
     // Tick Related Variables
@@ -108,6 +112,8 @@ private:
     // Input Related Variables
     bool m_mouseDown = false;                           // Stores state of left mouse button
     glm::vec2 m_prev_mouse_pos;                         // Stores mouse position
+    bool keyJustPressed(Qt::Key key,
+                        const std::unordered_map<Qt::Key, bool>& prev);
     std::unordered_map<Qt::Key, bool> m_keyMap;         // Stores whether keys are pressed or not
 
     // Device Correction Variables
