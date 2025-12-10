@@ -489,9 +489,9 @@ void Realtime::depth_of_field_pass() {
     pass_dof_sampler2D_uniforms(m_dof_shader, second_depth_fbo, GL_TEXTURE6, "depth", 6);
     glErrorCheck(__FILE__,__LINE__);
 
-    pass_dof_uniform(m_dof_shader, zfar_plane, "zfar_plane");
+    pass_dof_uniform(m_dof_shader, settings.farPlane, "zfar_plane");
     glErrorCheck(__FILE__,__LINE__);
-    pass_dof_uniform(m_dof_shader, znear_plane, "znear_plane");
+    pass_dof_uniform(m_dof_shader, settings.nearPlane, "znear_plane");
     glErrorCheck(__FILE__,__LINE__);
     pass_dof_uniform(m_dof_shader, settings.plane_in_focus, "plane_in_focus");
     pass_dof_uniform(m_dof_shader, settings.aperature, "aperature");
@@ -1158,7 +1158,12 @@ void Realtime::timerEvent(QTimerEvent *event) {
     if(m_keyMap[Qt::Key_V])  settings.plane_in_focus+=0.1;
     if(m_keyMap[Qt::Key_5])  settings.focal_length-=1.0;
     if(m_keyMap[Qt::Key_6])  settings.focal_length+=1.0;
-    std::cout<<"plane: "<<settings.plane_in_focus<<", aperture: "<<settings.aperature<<std::endl;
+    if(m_keyMap[Qt::Key_Period])  settings.nearPlane-=1;
+    if(m_keyMap[Qt::Key_Slash])  settings.nearPlane+=1;
+if(m_keyMap[Qt::Key_Minus])  settings.farPlane-=1;
+if(m_keyMap[Qt::Key_Equal])  settings.farPlane+=1;
+
+    std::cout<<"plane: "<<settings.plane_in_focus<<", aperture: "<<settings.aperature<<", focal-length: "<<settings.focal_length<<std::endl;
 
     if(m_keyMap[Qt::Key_Comma]) settings.exposure+=0.05;
 

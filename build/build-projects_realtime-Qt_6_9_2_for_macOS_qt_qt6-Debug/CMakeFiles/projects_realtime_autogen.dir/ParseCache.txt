@@ -9,8 +9,8 @@
 /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/mainwindow.cpp
 /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/shapes/Cone.cpp
 /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/utils/scenefilereader.cpp
-/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/utils/inputs.h
 /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/main.cpp
+/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/utils/inputs.h
 /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/utils/scenefilereader.h
 /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/lsystem.cpp
 /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/shapes/Cylinder.cpp
@@ -23,10 +23,8 @@
 /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/realtime.h
 /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/shapes/Cube.h
 /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/utils/sceneparser.h
-/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/camera/camera.h
-/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/particlesystem.h
-/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/settings.cpp
-/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/utils/shaderloader.h
+/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/utils/phys.h
+/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/shapes/Primitive.h
 /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/audiocapture.h
  mmc:Q_OBJECT
  mdp:/Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/Availability.h
@@ -1063,6 +1061,10 @@
  mdp:/Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/qtmultimedia-config.h
  mdp:/Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/qtmultimediaexports.h
  mdp:/Users/marissashaffer/Qt/6.9.2/macos/lib/QtMultimedia.framework/Versions/A/Headers/qtmultimediaglobal.h
+/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/utils/shaderloader.h
+/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/camera/camera.h
+/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/particlesystem.h
+/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/settings.cpp
 /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/utils/aspectratiowidget/aspectratiowidget.hpp
  mmc:Q_OBJECT
  mdp:/Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/Availability.h
@@ -2139,8 +2141,6 @@
  mdp:/Users/marissashaffer/Qt/6.9.2/macos/lib/QtWidgets.framework/Versions/A/Headers/qtwidgetsexports.h
  mdp:/Users/marissashaffer/Qt/6.9.2/macos/lib/QtWidgets.framework/Versions/A/Headers/qtwidgetsglobal.h
  mdp:/Users/marissashaffer/Qt/6.9.2/macos/lib/QtWidgets.framework/Versions/A/Headers/qwidget.h
-/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/utils/phys.h
-/Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/shapes/Primitive.h
 /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/lsystem.h
 /Users/marissashaffer/Desktop/cs/cs1230/cs1230-final-project-elevator/src/mainwindow.h
  mmc:Q_OBJECT

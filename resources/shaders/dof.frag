@@ -29,7 +29,7 @@ void main() {
    float c = coc(object_distance);
    float mip = clamp(c, 0.0, 7.0);
    vec4 final_color = textureLod(light_final_col, screen_space_uv, mip);
-   float epsilon = 0.01;
+   float epsilon = 0.1;
    if (abs(object_distance - plane_in_focus) < epsilon) {
       fragColor = final_color + vec4(0.8, 0.0, 0.0, 1.0f);
    } else {
