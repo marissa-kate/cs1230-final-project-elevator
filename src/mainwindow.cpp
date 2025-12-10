@@ -24,27 +24,29 @@ void MainWindow::initialize() {
     QFont font;
     font.setPointSize(12);
     font.setBold(true);
-    QLabel *ec_label = new QLabel(); // Extra Credit label
-    ec_label->setText("Extra Credit");
-    ec_label->setFont(font);
-    QLabel *param1_label = new QLabel(); // Parameter 1 label
-    param1_label->setText("Parameter 1:");
-    QLabel *param2_label = new QLabel(); // Parameter 2 label
-    param2_label->setText("Parameter 2:");
+
     QLabel *focal_plane_label = new QLabel(); // Focal Plane label
     focal_plane_label->setText("Focal Plane:");
     QLabel *aperature_label = new QLabel(); // Aperature label
     aperature_label->setText("Aperature:");
     QLabel *focal_length_label = new QLabel(); // Focal Length label
     focal_length_label->setText("Focal Length:");
-    QLabel *near_label = new QLabel(); // Near plane label
-    near_label->setText("Near Plane:");
-    QLabel *far_label = new QLabel(); // Far plane label
-    far_label->setText("Far Plane:");
-    QLabel *exposure_label = new QLabel(); // Far plane label
-    exposure_label->setText("Exposure:");
-    QLabel *bloom_threshold = new QLabel(); // Far plane label
-    bloom_threshold->setText("Bloom Threshold:");
+
+    // QLabel *ec_label = new QLabel(); // Extra Credit label
+    // ec_label->setText("Extra Credit");
+    // ec_label->setFont(font);
+    // QLabel *param1_label = new QLabel(); // Parameter 1 label
+    // param1_label->setText("Parameter 1:");
+    // QLabel *param2_label = new QLabel(); // Parameter 2 label
+    // param2_label->setText("Parameter 2:");
+    // QLabel *near_label = new QLabel(); // Near plane label
+    // near_label->setText("Near Plane:");
+    // QLabel *far_label = new QLabel(); // Far plane label
+    // far_label->setText("Far Plane:");
+    // QLabel *exposure_label = new QLabel(); // Far plane label
+    // exposure_label->setText("Exposure:");
+    // QLabel *bloom_threshold = new QLabel(); // Far plane label
+    // bloom_threshold->setText("Bloom Threshold:");
 
 
 
@@ -55,26 +57,26 @@ void MainWindow::initialize() {
     uploadBump = new QPushButton();
     uploadBump->setText(QStringLiteral("Upload Bump File"));
 
-    QLabel *bump_depth_label = new QLabel(); //Bump depth
-    bump_depth_label->setText("Bump depth: ");
-    QGroupBox *bumpLayout= new QGroupBox(); // horizonal slider 1 alignment
-    QHBoxLayout *b = new QHBoxLayout();
+    // QLabel *bump_depth_label = new QLabel(); //Bump depth
+    // bump_depth_label->setText("Bump depth: ");
+    // QGroupBox *bumpLayout= new QGroupBox(); // horizonal slider 1 alignment
+    // QHBoxLayout *b = new QHBoxLayout();
 
-    bumpSlider = new QSlider(Qt::Orientation::Horizontal); // bump depth slider
-    bumpSlider->setTickInterval(1);
-    bumpSlider->setMinimum(-50);
-    bumpSlider->setMaximum(50);
-    bumpSlider->setValue(10);
+    // bumpSlider = new QSlider(Qt::Orientation::Horizontal); // bump depth slider
+    // bumpSlider->setTickInterval(1);
+    // bumpSlider->setMinimum(-50);
+    // bumpSlider->setMaximum(50);
+    // bumpSlider->setValue(10);
 
-    bumpBox = new QSpinBox();
-    bumpBox->setMinimum(-50);
-    bumpBox->setMaximum(50);
-    bumpBox->setSingleStep(1);
-    bumpBox->setValue(10);
+    // bumpBox = new QSpinBox();
+    // bumpBox->setMinimum(-50);
+    // bumpBox->setMaximum(50);
+    // bumpBox->setSingleStep(1);
+    // bumpBox->setValue(10);
 
-    b->addWidget(bumpSlider);
-    b->addWidget(bumpBox);
-    bumpLayout->setLayout(b);
+    // b->addWidget(bumpSlider);
+    // b->addWidget(bumpBox);
+    // bumpLayout->setLayout(b);
 
     invert = new QCheckBox("Invert");  //post processing
     invert->setChecked(false);      // default
@@ -87,44 +89,85 @@ void MainWindow::initialize() {
     saveImage->setText(QStringLiteral("Save Image"));
 
     // Creates the boxes containing the parameter sliders and number boxes
-    QGroupBox *p1Layout = new QGroupBox(); // horizonal slider 1 alignment
-    QHBoxLayout *l1 = new QHBoxLayout();
-    QGroupBox *p2Layout = new QGroupBox(); // horizonal slider 2 alignment
-    QHBoxLayout *l2 = new QHBoxLayout();
+    // QGroupBox *p1Layout = new QGroupBox(); // horizonal slider 1 alignment
+    // QHBoxLayout *l1 = new QHBoxLayout();
+    // QGroupBox *p2Layout = new QGroupBox(); // horizonal slider 2 alignment
+    // QHBoxLayout *l2 = new QHBoxLayout();
 
-    // Create slider controls to control parameters
-    p1Slider = new QSlider(Qt::Orientation::Horizontal); // Parameter 1 slider
-    p1Slider->setTickInterval(1);
-    p1Slider->setMinimum(1);
-    p1Slider->setMaximum(25);
-    p1Slider->setValue(1);
+    // // Create slider controls to control parameters
+    // p1Slider = new QSlider(Qt::Orientation::Horizontal); // Parameter 1 slider
+    // p1Slider->setTickInterval(1);
+    // p1Slider->setMinimum(1);
+    // p1Slider->setMaximum(25);
+    // p1Slider->setValue(1);
 
-    p1Box = new QSpinBox();
-    p1Box->setMinimum(1);
-    p1Box->setMaximum(25);
-    p1Box->setSingleStep(1);
-    p1Box->setValue(1);
+    // p1Box = new QSpinBox();
+    // p1Box->setMinimum(1);
+    // p1Box->setMaximum(25);
+    // p1Box->setSingleStep(1);
+    // p1Box->setValue(1);
 
-    p2Slider = new QSlider(Qt::Orientation::Horizontal); // Parameter 2 slider
-    p2Slider->setTickInterval(1);
-    p2Slider->setMinimum(1);
-    p2Slider->setMaximum(25);
-    p2Slider->setValue(1);
+    // p2Slider = new QSlider(Qt::Orientation::Horizontal); // Parameter 2 slider
+    // p2Slider->setTickInterval(1);
+    // p2Slider->setMinimum(1);
+    // p2Slider->setMaximum(25);
+    // p2Slider->setValue(1);
 
-    p2Box = new QSpinBox();
-    p2Box->setMinimum(1);
-    p2Box->setMaximum(25);
-    p2Box->setSingleStep(1);
-    p2Box->setValue(1);
+    // p2Box = new QSpinBox();
+    // p2Box->setMinimum(1);
+    // p2Box->setMaximum(25);
+    // p2Box->setSingleStep(1);
+    // p2Box->setValue(1);
+
+    // // Adds the slider and number box to the parameter layouts
+    // l1->addWidget(p1Slider);
+    // l1->addWidget(p1Box);
+    // p1Layout->setLayout(l1);
+
+    // l2->addWidget(p2Slider);
+    // l2->addWidget(p2Box);
+    // p2Layout->setLayout(l2);
+
+    // // Creates the boxes containing the camera sliders and number boxes
+    // QGroupBox *nearLayout = new QGroupBox(); // horizonal near slider alignment
+    // QHBoxLayout *lnear = new QHBoxLayout();
+    // QGroupBox *farLayout = new QGroupBox(); // horizonal far slider alignment
+    // QHBoxLayout *lfar = new QHBoxLayout();
+
+    // // Create slider controls to control near/far planes
+    // nearSlider = new QSlider(Qt::Orientation::Horizontal); // Near plane slider
+    // nearSlider->setTickInterval(1);
+    // nearSlider->setMinimum(1);
+    // nearSlider->setMaximum(1000);
+    // nearSlider->setValue(10);
+
+    // nearBox = new QDoubleSpinBox();
+    // nearBox->setMinimum(0.01f);
+    // nearBox->setMaximum(10.f);
+    // nearBox->setSingleStep(0.1f);
+    // nearBox->setValue(0.1f);
+
+    // farSlider = new QSlider(Qt::Orientation::Horizontal); // Far plane slider
+    // farSlider->setTickInterval(1);
+    // farSlider->setMinimum(1000);
+    // farSlider->setMaximum(10000);
+    // farSlider->setValue(10000);
+
+    // farBox = new QDoubleSpinBox();
+    // farBox->setMinimum(10.f);
+    // farBox->setMaximum(100.f);
+    // farBox->setSingleStep(0.1f);
+    // farBox->setValue(100.f);
 
     // Adds the slider and number box to the parameter layouts
-    l1->addWidget(p1Slider);
-    l1->addWidget(p1Box);
-    p1Layout->setLayout(l1);
+    // lnear->addWidget(nearSlider);
+    // lnear->addWidget(nearBox);
+    // nearLayout->setLayout(lnear);
 
-    l2->addWidget(p2Slider);
-    l2->addWidget(p2Box);
-    p2Layout->setLayout(l2);
+    // lfar->addWidget(farSlider);
+    // lfar->addWidget(farBox);
+    // farLayout->setLayout(lfar);
+
 
     // Creates the boxes containing the camera sliders and number boxes
     QGroupBox *aperLayout = new QGroupBox(); // horizonal near slider alignment
@@ -133,10 +176,10 @@ void MainWindow::initialize() {
     QHBoxLayout *foc_plane = new QHBoxLayout();
     QGroupBox *focal_lengthLayout = new QGroupBox(); // horizonal near slider alignment
     QHBoxLayout *foc_len = new QHBoxLayout();
-    QGroupBox *nearLayout = new QGroupBox(); // horizonal near slider alignment
-    QHBoxLayout *lnear = new QHBoxLayout();
-    QGroupBox *farLayout = new QGroupBox(); // horizonal far slider alignment
-    QHBoxLayout *lfar = new QHBoxLayout();
+    // QGroupBox *nearLayout = new QGroupBox(); // horizonal near slider alignment
+    // QHBoxLayout *lnear = new QHBoxLayout();
+    // QGroupBox *farLayout = new QGroupBox(); // horizonal far slider alignment
+    // QHBoxLayout *lfar = new QHBoxLayout();
 
     // Create slider controls to control near/far planes
     focal_length_slider = new QSlider(Qt::Orientation::Horizontal); // focal length slider
@@ -175,29 +218,7 @@ void MainWindow::initialize() {
     aperatureBox->setSingleStep(0.1f);
     aperatureBox->setValue(1.f);
 
-    nearSlider = new QSlider(Qt::Orientation::Horizontal); // Near plane slider
-    nearSlider->setTickInterval(1);
-    nearSlider->setMinimum(1);
-    nearSlider->setMaximum(1000);
-    nearSlider->setValue(10);
 
-    nearBox = new QDoubleSpinBox();
-    nearBox->setMinimum(0.01f);
-    nearBox->setMaximum(10.f);
-    nearBox->setSingleStep(0.1f);
-    nearBox->setValue(0.1f);
-
-    farSlider = new QSlider(Qt::Orientation::Horizontal); // Far plane slider
-    farSlider->setTickInterval(1);
-    farSlider->setMinimum(1000);
-    farSlider->setMaximum(10000);
-    farSlider->setValue(10000);
-
-    farBox = new QDoubleSpinBox();
-    farBox->setMinimum(10.f);
-    farBox->setMaximum(100.f);
-    farBox->setSingleStep(0.1f);
-    farBox->setValue(100.f);
 
     // Adds the slider and number box to the parameter layouts
     foc_plane->addWidget(focal_plane_slider);
@@ -212,65 +233,18 @@ void MainWindow::initialize() {
     aper->addWidget(aperatureBox);
     aperLayout->setLayout(aper);
 
-    lnear->addWidget(nearSlider);
-    lnear->addWidget(nearBox);
-    nearLayout->setLayout(lnear);
-
-    lfar->addWidget(farSlider);
-    lfar->addWidget(farBox);
-    farLayout->setLayout(lfar);
-
-    QGroupBox *exposureLayout = new QGroupBox();
-    QHBoxLayout *lexposure = new QHBoxLayout();
-    QGroupBox *bloomLayout = new QGroupBox();
-    QHBoxLayout *lbloom = new QHBoxLayout();
-
-    exposureSlider = new QSlider(Qt::Orientation::Horizontal);
-    exposureSlider->setTickInterval(1);
-    exposureSlider->setMinimum(0);
-    exposureSlider->setMaximum(100);   // maps to 0.00–1.00
-    exposureSlider->setValue(50);      // default 0.5
-
-    exposureBox = new QDoubleSpinBox();
-    exposureBox->setMinimum(0.0);
-    exposureBox->setMaximum(1.0);
-    exposureBox->setSingleStep(0.01);
-    exposureBox->setDecimals(2);
-    exposureBox->setValue(0.5);
-
-    bloomSlider = new QSlider(Qt::Orientation::Horizontal);
-    bloomSlider->setTickInterval(1);
-    bloomSlider->setMinimum(0);
-    bloomSlider->setMaximum(100);     // 0–100 → 0.00–1.00
-    bloomSlider->setValue(100);       // default = 1.0
-
-    bloomBox = new QDoubleSpinBox();
-    bloomBox->setMinimum(0.0);
-    bloomBox->setMaximum(1.0);
-    bloomBox->setSingleStep(0.01);
-    bloomBox->setDecimals(2);
-    bloomBox->setValue(1.0);
-
-    lexposure->addWidget(exposureSlider);
-    lexposure->addWidget(exposureBox);
-    exposureLayout->setLayout(lexposure);
-
-    lbloom->addWidget(bloomSlider);
-    lbloom->addWidget(bloomBox);
-    bloomLayout->setLayout(lbloom);
+    // lbloom->addWidget(bloomSlider);
+    // lbloom->addWidget(bloomBox);
+    // bloomLayout->setLayout(lbloom);
 
     vLayout->addWidget(uploadFile);
     vLayout->addWidget(uploadBump);
-    vLayout->addWidget(bump_depth_label);
-    vLayout->addWidget(bumpLayout);
-    // vLayout->addWidget(invert);
+    // vLayout->addWidget(bump_depth_label);
+    // vLayout->addWidget(bumpLayout);
+    // // vLayout->addWidget(invert);
     // vLayout->addWidget(colorgrade);
     vLayout->addWidget(saveImage);
 
-    vLayout->addWidget(param1_label);
-    vLayout->addWidget(p1Layout);
-    vLayout->addWidget(param2_label);
-    vLayout->addWidget(p2Layout);
     vLayout->addWidget(focal_length_label);
     vLayout->addWidget(focal_lengthLayout);
     vLayout->addWidget(focal_plane_label);
@@ -278,27 +252,28 @@ void MainWindow::initialize() {
     vLayout->addWidget(aperature_label);
     vLayout->addWidget(aperLayout);
 
-    vLayout->addWidget(near_label);
-    vLayout->addWidget(nearLayout);
-    vLayout->addWidget(far_label);
-    vLayout->addWidget(farLayout);
 
-    vLayout->addWidget(exposure_label);
-    vLayout->addWidget(exposureLayout);
-    vLayout->addWidget(bloom_threshold);
-    vLayout->addWidget(bloomLayout);
+    // vLayout->addWidget(near_label);
+    // vLayout->addWidget(nearLayout);
+    // vLayout->addWidget(far_label);
+    // vLayout->addWidget(farLayout);
 
-    connectUIElements();
+    // vLayout->addWidget(exposure_label);
+    // vLayout->addWidget(exposureLayout);
+    // vLayout->addWidget(bloom_threshold);
+    // vLayout->addWidget(bloomLayout);
 
-    // Set default values of 5 for tesselation parameters
-    onValChangeP1(5);
-    onValChangeP2(5);
+     connectUIElements();
 
-    // Set default values for near and far planes
-    onValChangeNearBox(0.1f);
-    onValChangeFarBox(10.f);
-    onValChangeBloomBox(0.3f);
-    onValChangeExposureBox(0.5f);
+    // // Set default values of 5 for tesselation parameters
+    // onValChangeP1(5);
+    // onValChangeP2(5);
+
+    // // Set default values for near and far planes
+    // onValChangeNearBox(0.1f);
+    // onValChangeFarBox(10.f);
+    // onValChangeBloomBox(0.3f);
+    // onValChangeExposureBox(0.5f);
 }
 
 void MainWindow::finish() {
@@ -312,19 +287,21 @@ void MainWindow::connectUIElements() {
     //connectKernelBasedFilter();
     connectUploadFile();
     connectSaveImage();
-    connectParam1();
-    connectParam2();
     connectFocalPlane();
     connectFocalLength();
     connectAperature();
-    connectNear();
-    connectFar();
-    connectExposure();
-    connectBloom();
+
+
+    // connectParam1();
+    // connectParam2();
+    // connectNear();
+    // connectFar();
+    // connectExposure();
+    // connectBloom();
     connectUploadBump();
-    connectBump();
-    connectInvert();
-    connectColor();
+    // connectBump();
+    // connectInvert();
+    // connectColor();
 
 }
 

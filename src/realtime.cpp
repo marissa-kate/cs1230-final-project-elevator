@@ -8,9 +8,25 @@
 #include "utils/shaderloader.h"
 #include "settings.h"
 #include <glm/gtc/quaternion.hpp>
+#include <random>
 #include "utils/phys.h"
 
 std::vector<RigidBody> Bodies;
+QString LUTs[] = {"resources/70 CGC LUTs/Look LUTs/3Strip.cube", "resources/70 CGC LUTs/Look LUTs/70s.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Amelie.cube", "resources/70 CGC LUTs/Look LUTs/Aviator.cube", "resources/70 CGC LUTs/Look LUTs/Blade Runner.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Bleach.cube", "resources/70 CGC LUTs/Look LUTs/Brooklyn.cube","resources/70 CGC LUTs/Look LUTs/Celadon.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Chamoisee.cube", "resources/70 CGC LUTs/Look LUTs/Cubanismo.cube",  "resources/70 CGC LUTs/Look LUTs/Drive.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Duotone.cube", "resources/70 CGC LUTs/Look LUTs/Emulsion.cube","resources/70 CGC LUTs/Look LUTs/Enemy.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Enhance.cube","resources/70 CGC LUTs/Look LUTs/Fashion.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Glacier.cube","resources/70 CGC LUTs/Look LUTs/Godfather.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Grand Budapest.cube","resources/70 CGC LUTs/Look LUTs/Grime.cube","resources/70 CGC LUTs/Look LUTs/Grit.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Hannibal.cube","resources/70 CGC LUTs/Look LUTs/Her.cube", "resources/70 CGC LUTs/Look LUTs/Mad Max.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Matrix V1.cube","resources/70 CGC LUTs/Look LUTs/Matrix V2.cube", "resources/70 CGC LUTs/Look LUTs/Mint.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Moonrise Kingdom.cube","resources/70 CGC LUTs/Look LUTs/Ochre.cube", "resources/70 CGC LUTs/Look LUTs/Punch.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Revenant.cube","resources/70 CGC LUTs/Look LUTs/Rhythm.cube","resources/70 CGC LUTs/Look LUTs/Seven.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Spy.cube", "resources/70 CGC LUTs/Look LUTs/Stranger Things.cube", "resources/70 CGC LUTs/Look LUTs/Summer.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Teal and Orange.cube","resources/70 CGC LUTs/Look LUTs/Thriller.cube","resources/70 CGC LUTs/Look LUTs/Vinteo.cube",
+                  "resources/70 CGC LUTs/Look LUTs/Wonder Woman.cube"};
 // ================== Rendering the Scene!
 
 Realtime::Realtime(QWidget *parent)
@@ -20,15 +36,40 @@ Realtime::Realtime(QWidget *parent)
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
     m_keyMap[Qt::Key_W]       = false;
+    m_keyMap[Qt::Key_Q]       = false;
+    m_keyMap[Qt::Key_E]       = false;
+    m_keyMap[Qt::Key_R]       = false;
+    m_keyMap[Qt::Key_T]       = false;
+    m_keyMap[Qt::Key_Y]       = false;
+    m_keyMap[Qt::Key_U]       = false;
+    m_keyMap[Qt::Key_I]       = false;
+
+    m_keyMap[Qt::Key_1]       = false;
+    m_keyMap[Qt::Key_2]       = false;
+    m_keyMap[Qt::Key_3]       = false;
+    m_keyMap[Qt::Key_4]       = false;
+    m_keyMap[Qt::Key_5]       = false;
+    m_keyMap[Qt::Key_6]       = false;
+    m_keyMap[Qt::Key_7]       = false;
+    m_keyMap[Qt::Key_8]       = false;
+
     m_keyMap[Qt::Key_A]       = false;
     m_keyMap[Qt::Key_S]       = false;
     m_keyMap[Qt::Key_D]       = false;
-    m_keyMap[Qt::Key_Control] = false;
-    m_keyMap[Qt::Key_Space]   = false;
-    m_keyMap[Qt::Key_Up]       = false;
-    m_keyMap[Qt::Key_Down]       = false;
-    m_keyMap[Qt::Key_Left]       = false;
-    m_keyMap[Qt::Key_Right]       = false;
+    m_keyMap[Qt::Key_F]       = false;
+    m_keyMap[Qt::Key_G]       = false;
+    m_keyMap[Qt::Key_H]       = false;
+    m_keyMap[Qt::Key_J]       = false;
+    m_keyMap[Qt::Key_K]       = false;
+
+    m_keyMap[Qt::Key_Z]       = false;
+    m_keyMap[Qt::Key_X]       = false;
+    m_keyMap[Qt::Key_C]       = false;
+    m_keyMap[Qt::Key_V]       = false;
+    m_keyMap[Qt::Key_B]       = false;
+    m_keyMap[Qt::Key_N]       = false;
+    m_keyMap[Qt::Key_M]       = false;
+    m_keyMap[Qt::Key_Comma]       = false;
 }
 
 void Realtime::finish() {
@@ -57,6 +98,7 @@ void Realtime::finish() {
     glDeleteTextures(1, &normal_fbo);
     glDeleteTextures(1, &ambinet_shininess_texture);
     glDeleteTextures(1, &albedo_spec_texture);
+    glDeleteTextures(1, &m_2d_lut);
     glDeleteRenderbuffers(1, &m_rbo);
     glDeleteFramebuffers(1, &m_fbo);
     glDeleteProgram(m_geometry_shader);
@@ -65,7 +107,18 @@ void Realtime::finish() {
     glDeleteProgram(m_blur_shader);
     glDeleteProgram(m_composite_shader);
     glDeleteProgram(m_phong_shader);
+    glDeleteProgram(m_color_shader);
+    glDeleteProgram(m_particle_shader);
     this->doneCurrent();
+}
+
+int getLUTIndex(){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, 39);
+
+    int value = dist(gen);
+    return value;
 }
 
 void Realtime::initializeGL() {
@@ -158,8 +211,10 @@ void Realtime::initializeGL() {
     glUniform1i(glGetUniformLocation(m_color_shader, "u_texture"), 0);
     glUseProgram(0);
 
+    lut_index = getLUTIndex();
     //load lut
-    QString filepath = "resources/70 CGC LUTs/Look LUTs/Grand Budapest.cube";
+    QString filepath = LUTs[lut_index];
+    std::cout<<"loading: "<<filepath.toStdString()<<std::endl;
 
     loadCubeLUT(filepath);
 
@@ -175,18 +230,24 @@ void Realtime::initializeGL() {
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    // Task 7: Unbind kitten texture
-    // glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_3D, 1);
+    glBindTexture(GL_TEXTURE_3D, 0);
 
     // Task 10: Set the texture.frag uniform for our texture
     glUseProgram(m_color_shader);
     glUniform1i(glGetUniformLocation(m_color_shader, "lut"), 1);
     glUseProgram(0);
 
+
+    m_audioCapture = new AudioCapture(this);
+
+    // particle shaders
+    m_particle_shader = ShaderLoader::createShaderProgram(
+        "resources/shaders/particle.vert",
+        "resources/shaders/particle.frag"
+        );
 }
 void Realtime::loadCubeLUT(const QString& path) {
-
+    m_lut_data.clear();
     QFile file(path);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
@@ -268,6 +329,7 @@ void Realtime::makeFBO(){
         // depth buffer
         store_texture(first_depth_fbo, m_fbo_width, m_fbo_height, GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_DEPTH_ATTACHMENT);
 
+        //m_fbo
         glGenFramebuffers(1, &m_fbo);
         glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 
@@ -299,6 +361,21 @@ void Realtime::makeFBO(){
         glDrawBuffers(8, attachments);
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
+
+    //     //composite FBO
+    // GLuint composite_attachments[1] = {GL_COLOR_ATTACHMENT0};
+    //     glGenFramebuffers(1, &m_composite_fbo);
+    //     glGenTextures(1, &m_composite_fbo_texture);
+    //     glBindFramebuffer(GL_FRAMEBUFFER, m_composite_fbo);
+    //     glBindTexture(GL_TEXTURE_2D, m_composite_fbo_texture);
+    //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_fbo_width, m_fbo_height, 0, GL_RGBA, GL_FLOAT, nullptr);
+    //     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    //     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_composite_fbo_texture, 0);
+    //     glDrawBuffers(1, composite_attachments);
+    //     glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
+
 
         // ---------- Ping-pong FBOs for blur ----------
         glGenFramebuffers(2, pingpong_fbo);
@@ -436,11 +513,12 @@ void Realtime::depth_of_field_pass() {
 }
 
 void Realtime::paintGL() {
+    // 1. Calculate viewport and projection matrix
     glViewport(0, 0, size().width() * m_devicePixelRatio, size().height() * m_devicePixelRatio);
-    cam.calculatePerspectiveMatrix(settings.nearPlane, settings.farPlane, cam.getHeightAngle(),  aspect);
+    cam.calculatePerspectiveMatrix(settings.nearPlane, settings.farPlane, cam.getHeightAngle(), aspect);
 
+    // 2. Bind FBO and render the main scene
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-
     glViewport(0, 0, m_fbo_width, m_fbo_height);
     glErrorCheck(__FILE__, __LINE__);
 
@@ -456,15 +534,51 @@ void Realtime::paintGL() {
     glErrorCheck(__FILE__,__LINE__);
 
     //blur pass
-    blurBrightTexture();
-    glErrorCheck(__FILE__,__LINE__);
+    // blurBrightTexture();
+    // glErrorCheck(__FILE__,__LINE__);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, m_composite_fbo);
-
-    glClear(GL_COLOR_BUFFER_BIT);
-    glErrorCheck(__FILE__, __LINE__);
+    // glClear(GL_COLOR_BUFFER_BIT);
+    // glErrorCheck(__FILE__, __LINE__);
 
     // Final rendering pass
+
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // --- A. Render physical objects (rigid bodies) ---
+    // m_view and m_proj are updated inside this function
+
+    //--- B. Render particles (Corrected part) ---
+    // Enable blending and disable depth write for semi-transparent/additive rendering
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE); // Additive blending (gets brighter when overlapped)
+    glDepthMask(GL_FALSE);             // Disable writing to depth buffer (so transparent objects don't occlude each other)
+    glDisable(GL_CULL_FACE);
+    glUseProgram(m_particle_shader);
+
+    // Send time uniform (for sparkle animation)
+    glUniform1f(glGetUniformLocation(m_particle_shader, "u_time"), m_simTime);
+
+    for (auto& system : m_particleSystems) {
+        // Render using m_view and m_proj updated in drawPrimitives
+        system->draw(m_particle_shader, m_view, m_proj);
+    }
+    glUseProgram(0);
+
+    // Restore settings (Important: rigid bodies will look transparent in the next frame if forgotten)
+    glDepthMask(GL_TRUE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_BLEND);
+    glEnable(GL_CULL_FACE);
+    // ---------------------------------------
+
+    // 3. Blur (Bloom) processing
+    glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
+    blurBrightTexture();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_composite_fbo);
+    // Clear the screen
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     glUseProgram(m_composite_shader);
 
     glErrorCheck(__FILE__,__LINE__);
@@ -483,9 +597,12 @@ void Realtime::paintGL() {
     glErrorCheck(__FILE__,__LINE__);
     glBindTexture(GL_TEXTURE_2D, pingpong_colorBuffers[0]); // final blurred bloom
     glErrorCheck(__FILE__,__LINE__);
+
+    // Render full-screen quad
     glBindVertexArray(m_fullscreen_vao);
     glErrorCheck(__FILE__,__LINE__);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+
     glErrorCheck(__FILE__,__LINE__);
     glBindVertexArray(0);
 
@@ -507,6 +624,13 @@ void Realtime::paintGL() {
 
     depth_of_field_pass();
 
+    glBindVertexArray(0);
+    glUseProgram(0);
+
+//     glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
+//     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//     paintTexture(m_composite_fbo_texture, true);
+// >>>>>>> 11eaa30b6ce016f275f57bdd17164934f6f3f624
 }
 
 void Realtime::paintTexture(GLuint texture, bool filter){
@@ -548,24 +672,18 @@ void Realtime::paintTexture(GLuint texture, bool filter){
 }
 
 void Realtime::bindTexture(){
+    glUseProgram(m_phong_shader);
     if (settings.hasTexture){
         // QString filepath = QString("/Users/vhcch/Desktop/Vivian/brown/cs1230/project-6-final-project-gear-up-vhchen29/scenefiles/bump-mapping/topleft.png");
 
         m_obj_texture_image = settings.bumpTexture;
 
-        // Task 2: Format image to fit OpenGL
-        // m_texture_image = m_texture_image.convertToFormat(QImage::Format_Grayscale8).mirrored();
-
-        // Task 3: Generate texture
         glGenTextures(1, &m_obj_texture);
 
-        // Task 9: Set the active texture slot to texture slot 0
         glActiveTexture(GL_TEXTURE0);
 
-        // Task 4: Bind texture
         glBindTexture(GL_TEXTURE_2D, m_obj_texture);
 
-        // Task 5: Load image into  texture
         glTexImage2D(GL_TEXTURE_2D,0, GL_RED, m_obj_texture_image.width(), m_obj_texture_image.height(), 0, GL_RED, GL_UNSIGNED_BYTE,
                      m_obj_texture_image.bits());
 
@@ -573,7 +691,6 @@ void Realtime::bindTexture(){
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        // Task 7: Unbind texture
         glBindTexture(GL_TEXTURE_2D, 0);
 
         glUseProgram(m_geometry_shader);
@@ -589,6 +706,7 @@ void Realtime::bindTexture(){
     glUseProgram(m_geometry_shader);
     glUniform1i(glGetUniformLocation(m_geometry_shader, "hasTexture"), settings.hasTexture);
     glUniform1i(glGetUniformLocation(m_geometry_shader, "bump_depth"), settings.bumpDepth);
+
     glUseProgram(0);
 
 }
@@ -620,6 +738,23 @@ void Realtime::drawPrimitives(){
         glErrorCheck(__FILE__,__LINE__);
     }*/
 
+
+    glUniformMatrix4fv(glGetUniformLocation(m_phong_shader, "m_view"), 1, GL_FALSE, &m_view[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(m_phong_shader, "m_proj"), 1, GL_FALSE, &m_proj[0][0]);
+    glUniform4fv(glGetUniformLocation(m_phong_shader, "camera_pos"), 1, &camera_pos[0]);
+
+    inputs.sendLightUniformData(m_phong_shader);
+    inputs.sendGlobalUniformData(m_phong_shader);
+
+    glUniform1f(glGetUniformLocation(m_phong_shader, "fog_minDist"), 0.0f);
+    glUniform1f(glGetUniformLocation(m_phong_shader, "fog_maxDist"), 25.0f);
+
+    glm::vec4 fogColor = glm::vec4(0, 0, 0, 1.0f);
+    glUniform4fv(glGetUniformLocation(m_phong_shader, "fog_color"), 1, &fogColor[0]);
+
+    glUniform1f(glGetUniformLocation(m_phong_shader, "bloomThreshold"), settings.bloomThreshold);
+
+    //Draw geometry
     std::vector<RenderShapeData> shapes = inputs.getPrimitives();
     for(RenderShapeData &shape: shapes){
         glUniformMatrix4fv(glGetUniformLocation(m_geometry_shader, "m_model"), 1, GL_FALSE, &shape.ctm[0][0]);
@@ -840,6 +975,13 @@ void Realtime::sceneChanged() {
     for (int i = 0; i < shapes.size(); i++) {
         Bodies[i] = *shapes[i].rb;
     }
+    //particlssss
+    m_particleSystems.clear();
+    for (const auto& emitterData : metaData.particles) {
+        auto system = std::make_unique<ParticleSystem>(emitterData);
+        system->init();
+        m_particleSystems.push_back(std::move(system));
+    }
     n_bodies = shapes.size();
     cam = inputs.getCamera();
     doneCurrent();
@@ -872,6 +1014,7 @@ void Realtime::settingsChanged() {
 
     makeFBO();
     doneCurrent();
+    //particles
     m_pendingSettingsUpdate = false;
 
     update(); // asks for a PaintGL() call to occur
@@ -885,6 +1028,10 @@ void Realtime::keyPressEvent(QKeyEvent *event) {
 
 void Realtime::keyReleaseEvent(QKeyEvent *event) {
     m_keyMap[Qt::Key(event->key())] = false;
+}
+bool Realtime::keyJustPressed(Qt::Key key,
+                              const std::unordered_map<Qt::Key, bool>& prev) {
+    return (m_keyMap[key] && !prev.at(key));
 }
 
 void Realtime::mousePressEvent(QMouseEvent *event) {
@@ -909,11 +1056,23 @@ void Realtime::mouseMoveEvent(QMouseEvent *event) {
         update(); // asks for a PaintGL() call to occur
     }
 }
+void Realtime::paramUpdate(){
+    setupVBO(m_cone_vao, m_cone_vbo, PrimitiveType::PRIMITIVE_CONE);
+    setupVBO(m_cube_vao, m_cube_vbo, PrimitiveType::PRIMITIVE_CUBE);
+    setupVBO(m_cyl_vao, m_cyl_vbo, PrimitiveType::PRIMITIVE_CYLINDER);
+    setupVBO(m_sphere_vao, m_sphere_vbo, PrimitiveType::PRIMITIVE_SPHERE);
+    cam.calculatePerspectiveMatrix((float)settings.nearPlane, (float) settings.farPlane, cam.getHeightAngle(),
+                                   aspect);
+    makeFBO();
+}
 
 void Realtime::timerEvent(QTimerEvent *event) {
+    std::unordered_map<Qt::Key, bool> prevKeys = m_prevKeyMap;
+    m_prevKeyMap = m_keyMap;
     if (m_pendingScene) return;
     int elapsedms   = m_elapsedTimer.elapsed();
     float deltaTime = elapsedms * 0.001f;
+    m_simTime += deltaTime; //particle
     double t0 = elapsedms * 0.001;
     double t1 = t0 + deltaTime;
     int len = STATE_SIZE * n_bodies;
@@ -931,16 +1090,30 @@ void Realtime::timerEvent(QTimerEvent *event) {
         const float rotate = 1.0f;
 
         // Movement (XZ plane)
-        if (m_keyMap[Qt::Key_Up]) rb.inputForce.z -= move;
-        if (m_keyMap[Qt::Key_Down]) rb.inputForce.z += move;
-        if (m_keyMap[Qt::Key_Left]) rb.inputForce.x -= move;
-        if (m_keyMap[Qt::Key_Right]) rb.inputForce.x += move;
+        if (m_keyMap[Qt::Key_B]) rb.inputForce.z -= move;
+        if (m_keyMap[Qt::Key_N]) rb.inputForce.z += move;
+
+        if (m_keyMap[Qt::Key_U]) rb.inputForce.x -= move;
+        if (m_keyMap[Qt::Key_I]) rb.inputForce.x += move;
 
         // Rotation (yaw torque)
-        if (m_keyMap[Qt::Key_Q]) rb.inputTorque.y += rotate;
-        if (m_keyMap[Qt::Key_E]) rb.inputTorque.y -= rotate;
-        if (m_keyMap[Qt::Key_Z]) rb.inputTorque.x -= rotate;
-        if (m_keyMap[Qt::Key_C]) rb.inputTorque.z += rotate;
+        if (m_keyMap[Qt::Key_J]) rb.inputTorque.y += rotate;
+        if (m_keyMap[Qt::Key_K]) rb.inputTorque.y -= rotate;
+
+        if (m_keyMap[Qt::Key_E]) rb.inputTorque.z -= rotate;
+        if (m_keyMap[Qt::Key_R]) rb.inputTorque.z += rotate;
+
+        if (m_keyMap[Qt::Key_D]) rb.inputTorque.x += rotate;
+        if (m_keyMap[Qt::Key_F]) rb.inputTorque.x -= rotate;
+    }
+
+
+    //sound particles
+    float audioLevel = m_audioCapture ? m_audioCapture->getLevel() : 0.0f;
+    float audioFreq = m_audioCapture ? m_audioCapture->getFrequency() : 0.0f;
+
+    for (auto& system : m_particleSystems) {
+        system->update(deltaTime, audioLevel, audioFreq);
     }
 
     Phys::Bodies_to_Array(y0, n_bodies, &Bodies[0]);
@@ -959,19 +1132,69 @@ void Realtime::timerEvent(QTimerEvent *event) {
         glm::mat4 S = glm::scale(glm::mat4(1.0f), rb.scale);   // scale
         glm::mat4 R = glm::mat4_cast(rb.q);                     // rotation
         glm::mat4 T = glm::translate(glm::mat4(1.0f), rb.x);
-        inputs.getPrimitives()[i].ctm = T * R* S;
+        inputs.getPrimitives()[i].ctm = T * R * S;
     }
 
     m_elapsedTimer.restart();
-    if (m_keyMap[Qt::Key_W]) cam.translateCamera(Qt::Key_W, deltaTime);
-    if (m_keyMap[Qt::Key_S]) cam.translateCamera(Qt::Key_S, deltaTime);
-    if (m_keyMap[Qt::Key_A]) cam.translateCamera(Qt::Key_A, deltaTime);
-    if (m_keyMap[Qt::Key_D]) cam.translateCamera(Qt::Key_D, deltaTime);
-    if (m_keyMap[Qt::Key_Space]) cam.translateCamera(Qt::Key_Space, deltaTime);
-    if (m_keyMap[Qt::Key_Control]) cam.translateCamera(Qt::Key_Control, deltaTime);
+    //camera
+    if (m_keyMap[Qt::Key_Q]) cam.translateCamera(Qt::Key_W, deltaTime);
+    if (m_keyMap[Qt::Key_W]) cam.translateCamera(Qt::Key_S, deltaTime);
+    if (m_keyMap[Qt::Key_G]) cam.translateCamera(Qt::Key_A, deltaTime);
+    if (m_keyMap[Qt::Key_H]) cam.translateCamera(Qt::Key_D, deltaTime);
+    if (m_keyMap[Qt::Key_1]) cam.translateCamera(Qt::Key_Space, deltaTime);
+    if (m_keyMap[Qt::Key_2]) cam.translateCamera(Qt::Key_Control, deltaTime);
+
+    // //tessellation
+    if (keyJustPressed(Qt::Key_Y, prevKeys)) {
+        settings.shapeParameter1 += 1;
+        settings.shapeParameter2 += 1;
+        paramUpdate();
+    }
+
+    if (keyJustPressed(Qt::Key_T, prevKeys)) {
+        if(settings.shapeParameter1 >3){
+        settings.shapeParameter1 -= 1;
+        }
+        if(settings.shapeParameter2>3){
+        settings.shapeParameter2 -= 1;
+        }
+
+        paramUpdate();
+    }
+
+    if(m_keyMap[Qt::Key_Comma]) settings.exposure+=0.05;
+
+    if(m_keyMap[Qt::Key_M]){
+            if(settings.exposure>=0.1)settings.exposure-=0.05;}
+
+    if(m_keyMap[Qt::Key_7])settings.bloomThreshold+=0.05;
+    if(m_keyMap[Qt::Key_8])settings.bloomThreshold-=0.05;
+
+    if(m_keyMap[Qt::Key_A])settings.bumpDepth+=3;
+    if(m_keyMap[Qt::Key_S])settings.bumpDepth-=3;
+
+    if (keyJustPressed(Qt::Key_3, prevKeys)) {
+        lut_index = getLUTIndex();
+        loadCubeLUT(LUTs[lut_index]);
+        std::cout<<"loaded: "<<LUTs[lut_index].toStdString()<<std::endl;
+        glDeleteTextures(1, &m_2d_lut);
+        glGenTextures(1, &m_2d_lut);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_3D, m_2d_lut);
+        glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, m_lut_size, m_lut_size, m_lut_size, 0, GL_RGB, GL_FLOAT, m_lut_data.data());
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_3D, 0);
+        glUseProgram(m_color_shader);
+        glUniform1i(glGetUniformLocation(m_color_shader, "lut"), 1);
+        glUseProgram(0);
+    }
+
     camera_pos = glm::vec4(cam.pos, 1.0);
     update(); // triggers paintGL()
 }
+
+
 
 void Realtime::saveViewportImage(std::string filePath) {
     // Make sure we have the right context and everything has been drawn

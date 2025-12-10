@@ -1,0 +1,26 @@
+{
+    "globalData": { "ambientCoeff": 0.5, "diffuseCoeff": 0.5, "specularCoeff": 0.5, "transparentCoeff": 0 },
+    "cameraData": { "position": [0, 2, 8], "focus": [0, 1, 0], "up": [0, 1, 0], "heightAngle": 45 },
+    "groups": [
+        {
+            "name": "root",
+            "lights": [ { "type": "point", "color": [1, 1, 1], "attenuationCoeff": [1, 0, 0] } ],
+            "particles": [
+                {
+                    "name": "NarrowPoplar",
+                    "position": [-2.0, -2.0, 0.0],
+                    "velocity": [0, 0, 0], "color": [0.3, 0.8, 1.0, 0.8],
+                    "lifetime": 3.0, "maxParticles": 10000, "scale": 0.05, "audioReactive": false,
+                    "lsysAxiom": "X", "lsysRule": "F[+X][-X]FX", "lsysIter": 5, "lsysAngle": 15.0
+                },
+                {
+                    "name": "WideBush",
+                    "position": [2.0, -2.0, 0.0],
+                    "velocity": [0, 0, 0], "color": [1.0, 0.6, 0.2, 0.8],
+                    "lifetime": 3.0, "maxParticles": 10000, "scale": 0.05, "audioReactive": false,
+                    "lsysAxiom": "X", "lsysRule": "F[+X][-X]FX", "lsysIter": 5, "lsysAngle": 45.0
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+{
+    "globalData": { "ambientCoeff": 0.5, "diffuseCoeff": 0.5, "specularCoeff": 0.5, "transparentCoeff": 0 },
+    "cameraData": { "position": [0, 1, 8], "focus": [0, 0.5, 0], "up": [0, 1, 0], "heightAngle": 45 },
+    "groups": [
+        {
+            "name": "root",
+            "lights": [ { "type": "point", "color": [1, 1, 1], "attenuationCoeff": [1, 0, 0] } ],
+            "particles": [
+                {
+                    "name": "SingleTrunk",
+                    "position": [-2.0, -2.0, 0.0],
+                    "velocity": [0, 0, 0], "color": [1.0, 1.0, 1.0, 0.8],
+                    "lifetime": 3.0, "maxParticles": 8000, "scale": 0.05, "audioReactive": false,
+                    "lsysAxiom": "X", "lsysRule": "F[+X][-X]FX", "lsysIter": 5, "lsysAngle": 25.0
+                },
+                {
+                    "name": "GrassClump",
+                    "position": [2.0, -2.0, 0.0],
+                    "velocity": [0, 0, 0], "color": [0.5, 1.0, 0.5, 0.8],
+                    "lifetime": 3.0, "maxParticles": 12000, "scale": 0.05, "audioReactive": false,
+                    "lsysAxiom": "X+X+X", "lsysRule": "F[+X]F[-X]+X", "lsysIter": 4, "lsysAngle": 20.0
+                }
+            ]
+        }
+    ]
+}

@@ -14,6 +14,8 @@
 #include <QOpenGLWidget>
 #include <QTime>
 #include <QTimer>
+#include "audiocapture.h"
+#include "particlesystem.h"
 
 class Realtime : public QOpenGLWidget
 {
@@ -55,6 +57,7 @@ private:
     GLuint m_composite_fbo;
     GLuint colorBuffers[2];
     GLuint m_hdr_fbo;
+    GLuint m_composite_fbo_texture;
     int m_fbo_width;
     int m_fbo_height;
     GLuint m_fbo_texture;
@@ -118,6 +121,9 @@ private:
     GLuint m_phong_shader;
     GLuint m_blur_shader;
     GLuint m_composite_shader;
+    void paramUpdate();
+    int shapeParameter1 = 1;
+    int shapeParameter2 = 1;
 
     GLuint m_dof_shader;
 
@@ -136,6 +142,9 @@ private:
     glm::mat4 m_view;
 
     double n_bodies;
+    std::unordered_map<Qt::Key, bool> m_prevKeyMap;
+    int lut_index;
+
 
     std::vector<float> m_bufferData;
     // Tick Related Variables
@@ -144,6 +153,8 @@ private:
     // Input Related Variables
     bool m_mouseDown = false;                           // Stores state of left mouse button
     glm::vec2 m_prev_mouse_pos;                         // Stores mouse position
+    bool keyJustPressed(Qt::Key key,
+                        const std::unordered_map<Qt::Key, bool>& prev);
     std::unordered_map<Qt::Key, bool> m_keyMap;         // Stores whether keys are pressed or not
 
     // Device Correction Variables
@@ -152,4 +163,13 @@ private:
     float  m_angleX;
     float  m_angleY;
     float  m_zoom;
+
+
+    //particle
+    std::vector<std::unique_ptr<ParticleSystem>> m_particleSystems;
+    GLuint m_particle_shader;
+    float m_simTime = 0.0f;
+
+    // audio
+    AudioCapture* m_audioCapture = nullptr;
 };

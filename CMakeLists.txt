@@ -19,6 +19,7 @@ find_package(Qt6 REQUIRED COMPONENTS Gui)
 find_package(Qt6 REQUIRED COMPONENTS OpenGL)
 find_package(Qt6 REQUIRED COMPONENTS OpenGLWidgets)
 find_package(Qt6 REQUIRED COMPONENTS Xml)
+find_package(Qt6 REQUIRED COMPONENTS Multimedia) # 追加: オーディオ機能用
 
 # Allows you to include files from within those directories, without prefixing their filepaths
 include_directories(src)
@@ -26,37 +27,49 @@ include_directories(src)
 # Specifies .cpp and .h files to be passed to the compiler
 add_executable(${PROJECT_NAME}
     src/main.cpp
-
     src/realtime.cpp
-    src/mainwindow.cpp
-    src/settings.cpp
-    src/utils/scenefilereader.cpp
-    src/utils/sceneparser.cpp
-
-    src/mainwindow.h
     src/realtime.h
+    src/mainwindow.cpp
+    src/mainwindow.h
+    src/settings.cpp
     src/settings.h
-    src/utils/scenedata.h
+
+    # Utils
+    src/utils/scenefilereader.cpp
     src/utils/scenefilereader.h
+    src/utils/sceneparser.cpp
     src/utils/sceneparser.h
+    src/utils/scenedata.h
     src/utils/shaderloader.h
     src/utils/aspectratiowidget/aspectratiowidget.hpp
-    src/shapes/Cone.cpp src/shapes/Cone.h src/shapes/Cube.cpp src/shapes/Cube.h src/shapes/Cylinder.cpp src/shapes/Cylinder.h src/shapes/Sphere.cpp src/shapes/Sphere.h
-    src/camera/camera.cpp src/camera/camera.h
-    src/inputs.h src/inputs.cpp
-    src/shapes/Primitive.h
-    src/utils/phys.h
+
+    # Physics
     src/utils/phys.cpp
+    src/utils/phys.h
+    src/utils/inputs.cpp
+    src/utils/inputs.h
 
+    # Shapes
+    src/shapes/Primitive.h
+    src/shapes/Cone.cpp src/shapes/Cone.h
+    src/shapes/Cube.cpp src/shapes/Cube.h
+    src/shapes/Cylinder.cpp src/shapes/Cylinder.h
+    src/shapes/Sphere.cpp src/shapes/Sphere.h
 
+    # Camera
+    src/camera/camera.cpp src/camera/camera.h
+
+    # Added Features (Particles, Audio, LSystem)
+    src/audiocapture.cpp src/audiocapture.h
+    src/particlesystem.cpp src/particlesystem.h
+    src/lsystem.cpp src/lsystem.h
 )
 
 # GLM: this creates its library and allows you to `#include "glm/..."`
 add_subdirectory(glm)
 
 # GLEW: this creates its library and allows you to `#include "GL/glew.h"`
-add_library(StaticGLEW STATIC glew/src/glew.c
-)
+add_library(StaticGLEW STATIC glew/src/glew.c)
 include_directories(${PROJECT_NAME} PRIVATE glew/include)
 
 # Specifies libraries to be linked (Qt components, glew, etc)
@@ -66,10 +79,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt::OpenGL
     Qt::OpenGLWidgets
     Qt::Xml
+    Qt::Multimedia # added
     StaticGLEW
 )
 
-# Specifies other files
+# Specifies other files (Shaders)
 qt6_add_resources(${PROJECT_NAME} "Resources"
     PREFIX
         "/"
@@ -85,6 +99,12 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
         resources/shaders/texture.frag
         resources/shaders/final.vert
         resources/shaders/final.frag
+
+        # Added Shaders
+        resources/shaders/particle.vert
+        resources/shaders/particle.frag
+        resources/shaders/color-grading.vert
+        resources/shaders/color-grading.frag
 )
 
 # GLEW: this provides support for Windows (including 64-bit)

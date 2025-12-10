@@ -1,0 +1,81 @@
+# ninja log v6
+2031	3620	1765180616816960500	CMakeFiles/projects_realtime.dir/src/audiocapture.cpp.o	c7185ffcec2e698e
+1090	3166	1765221885260163682	CMakeFiles/projects_realtime.dir/src/particlesystem.cpp.o	5830e7ed1536c0ee
+1089	3159	1765221885259789139	CMakeFiles/projects_realtime.dir/src/utils/inputs.cpp.o	c61e69b25def488b
+1089	3923	1765221885259362595	CMakeFiles/projects_realtime.dir/src/utils/scenefilereader.cpp.o	2a29b7f33800490a
+1088	3932	1765221885258875135	CMakeFiles/projects_realtime.dir/src/mainwindow.cpp.o	ba87ab790b0f690c
+1087	3698	1765221885257902298	CMakeFiles/projects_realtime.dir/src/main.cpp.o	6807fd193b5ac6a6
+3530	5723	1765168471558456131	CMakeFiles/projects_realtime.dir/src/inputs.cpp.o	a5c09f90362b1246
+1087	3749	1765221885257447130	CMakeFiles/projects_realtime.dir/projects_realtime_autogen/mocs_compilation.cpp.o	d536f11b9fe79a3c
+1088	3985	1765221885258073632	CMakeFiles/projects_realtime.dir/src/realtime.cpp.o	cf280d5324948edc
+3985	4190	1765221888155402485	projects_realtime	e27269dc69010c24
+1089	3692	1765221885259516638	CMakeFiles/projects_realtime.dir/src/utils/sceneparser.cpp.o	361ab9a4d5e91f86
+858	2731	1765180615644242468	CMakeFiles/projects_realtime.dir/src/settings.cpp.o	67eeadc6f712aea8
+2273	2316	1765180617058563861	CMakeFiles/projects_realtime.dir/.qt/rcc/qrc_Resources.cpp.o	19584d81fb38c763
+373	445	1765168468402053445	libStaticGLEW.a	f116949c4d6bf10b
+1090	3108	1765221885260037723	CMakeFiles/projects_realtime.dir/src/camera/camera.cpp.o	6e155eb93b71800a
+869	2053	1765180615654529512	CMakeFiles/projects_realtime.dir/src/shapes/Cube.cpp.o	a91b18da7dde934b
+869	2272	1765180615654693596	CMakeFiles/projects_realtime.dir/src/shapes/Cylinder.cpp.o	f01c82546bf47f53
+866	2003	1765180615651658999	CMakeFiles/projects_realtime.dir/src/shapes/Cone.cpp.o	8a1fd31a3e5aaf65
+32	1086	1765221885224748000	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/projects_realtime_autogen/mocs_compilation.cpp	5dc2c257f98281ae
+80	373	1765168468108289069	CMakeFiles/StaticGLEW.dir/glew/src/glew.c.o	69fb6f09c24f94f2
+32	1086	1765221885224748000	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/projects_realtime_autogen/timestamp	5dc2c257f98281ae
+32	1086	1765221885224748000	projects_realtime_autogen/mocs_compilation.cpp	5dc2c257f98281ae
+20	54	1765180614805867192	StaticGLEW_autogen/timestamp	e291cd50ca3df01b
+20	54	1765180614805867192	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/StaticGLEW_autogen/mocs_compilation.cpp	e291cd50ca3df01b
+804	855	1765180615638957654	.qt/rcc/qrc_Resources.cpp	8c1c629e2ee98cce
+2058	3170	1765180616844086990	CMakeFiles/projects_realtime.dir/src/lsystem.cpp.o	dffd5007c24ad425
+804	855	1765180615638957654	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/.qt/rcc/qrc_Resources.cpp	8c1c629e2ee98cce
+79	113	1765168468107067851	CMakeFiles/StaticGLEW.dir/StaticGLEW_autogen/mocs_compilation.cpp.o	1d2e88d8a08154c9
+32	1086	1765221885224748000	projects_realtime_autogen/timestamp	5dc2c257f98281ae
+864	2031	1765180615650291994	CMakeFiles/projects_realtime.dir/src/utils/phys.cpp.o	dd0b37a874aece01
+20	54	1765180614805867192	StaticGLEW_autogen/mocs_compilation.cpp	e291cd50ca3df01b
+20	54	1765180614805867192	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/StaticGLEW_autogen/timestamp	e291cd50ca3df01b
+983	2058	1765180615768720748	CMakeFiles/projects_realtime.dir/src/shapes/Sphere.cpp.o	e10d8dd9617e7406
+21	50	1765222317821167113	.qt/rcc/qrc_Resources.cpp	8c1c629e2ee98cce
+21	50	1765222317821167113	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/.qt/rcc/qrc_Resources.cpp	8c1c629e2ee98cce
+50	253	1765222317822019784	CMakeFiles/projects_realtime.dir/.qt/rcc/qrc_Resources.cpp.o	19584d81fb38c763
+254	442	1765222318025773776	projects_realtime	e27269dc69010c24
+28	60	1765222654939350316	.qt/rcc/qrc_Resources.cpp	8c1c629e2ee98cce
+28	60	1765222654939350316	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/.qt/rcc/qrc_Resources.cpp	8c1c629e2ee98cce
+60	210	1765222654940622238	CMakeFiles/projects_realtime.dir/.qt/rcc/qrc_Resources.cpp.o	19584d81fb38c763
+210	372	1765222655090671127	projects_realtime	e27269dc69010c24
+11	51	1765222747775393395	projects_realtime_autogen/timestamp	5dc2c257f98281ae
+11	51	1765222747775393395	projects_realtime_autogen/mocs_compilation.cpp	5dc2c257f98281ae
+11	51	1765222747775393395	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/projects_realtime_autogen/timestamp	5dc2c257f98281ae
+11	51	1765222747775393395	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/projects_realtime_autogen/mocs_compilation.cpp	5dc2c257f98281ae
+51	73	1765222747835959819	.qt/rcc/qrc_Resources.cpp	8c1c629e2ee98cce
+51	73	1765222747835959819	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/.qt/rcc/qrc_Resources.cpp	8c1c629e2ee98cce
+73	216	1765222747837060449	CMakeFiles/projects_realtime.dir/.qt/rcc/qrc_Resources.cpp.o	19584d81fb38c763
+73	651	1765222747836880406	CMakeFiles/projects_realtime.dir/src/particlesystem.cpp.o	5830e7ed1536c0ee
+651	796	1765222748415339827	projects_realtime	e27269dc69010c24
+12	58	1765222922369098959	projects_realtime_autogen/timestamp	5dc2c257f98281ae
+12	58	1765222922369098959	projects_realtime_autogen/mocs_compilation.cpp	5dc2c257f98281ae
+12	58	1765222922369098959	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/projects_realtime_autogen/timestamp	5dc2c257f98281ae
+12	58	1765222922369098959	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/projects_realtime_autogen/mocs_compilation.cpp	5dc2c257f98281ae
+59	662	1765222922415496615	CMakeFiles/projects_realtime.dir/src/particlesystem.cpp.o	5830e7ed1536c0ee
+58	1120	1765222922415297697	CMakeFiles/projects_realtime.dir/src/utils/scenefilereader.cpp.o	2a29b7f33800490a
+1120	1280	1765222923476715547	projects_realtime	e27269dc69010c24
+12	52	1765223155083332561	projects_realtime_autogen/timestamp	5dc2c257f98281ae
+12	52	1765223155083332561	projects_realtime_autogen/mocs_compilation.cpp	5dc2c257f98281ae
+12	52	1765223155083332561	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/projects_realtime_autogen/timestamp	5dc2c257f98281ae
+12	52	1765223155083332561	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/projects_realtime_autogen/mocs_compilation.cpp	5dc2c257f98281ae
+53	631	1765223155123493607	CMakeFiles/projects_realtime.dir/src/particlesystem.cpp.o	5830e7ed1536c0ee
+632	774	1765223155702340278	projects_realtime	e27269dc69010c24
+12	55	1765223278381378041	projects_realtime_autogen/timestamp	5dc2c257f98281ae
+12	55	1765223278381378041	projects_realtime_autogen/mocs_compilation.cpp	5dc2c257f98281ae
+12	55	1765223278381378041	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/projects_realtime_autogen/timestamp	5dc2c257f98281ae
+12	55	1765223278381378041	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/projects_realtime_autogen/mocs_compilation.cpp	5dc2c257f98281ae
+55	877	1765223278424840392	CMakeFiles/projects_realtime.dir/src/particlesystem.cpp.o	5830e7ed1536c0ee
+55	2458	1765223278424655392	CMakeFiles/projects_realtime.dir/src/utils/scenefilereader.cpp.o	2a29b7f33800490a
+2459	2840	1765223280827952783	projects_realtime	e27269dc69010c24
+12	54	1765223432163724598	projects_realtime_autogen/timestamp	5dc2c257f98281ae
+12	54	1765223432163724598	projects_realtime_autogen/mocs_compilation.cpp	5dc2c257f98281ae
+12	54	1765223432163724598	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/projects_realtime_autogen/timestamp	5dc2c257f98281ae
+12	54	1765223432163724598	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/projects_realtime_autogen/mocs_compilation.cpp	5dc2c257f98281ae
+9	46	1765223446100465937	projects_realtime_autogen/timestamp	5dc2c257f98281ae
+9	46	1765223446100465937	projects_realtime_autogen/mocs_compilation.cpp	5dc2c257f98281ae
+9	46	1765223446100465937	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/projects_realtime_autogen/timestamp	5dc2c257f98281ae
+9	46	1765223446100465937	/Users/yohtakitagawa/SFC-CNS Dropbox/Yohta Kitagawa/Mac/Documents/Codes/csci1230/cs1230-final-project-elevator/projects_realtime_autogen/mocs_compilation.cpp	5dc2c257f98281ae
+46	1020	1765223446137102343	CMakeFiles/projects_realtime.dir/src/utils/scenefilereader.cpp.o	2a29b7f33800490a
+1020	1176	1765223447111087696	projects_realtime	e27269dc69010c24

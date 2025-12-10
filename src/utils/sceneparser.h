@@ -21,6 +21,8 @@ struct RenderData {
 
     std::vector<SceneLightData> lights;
     std::vector<RenderShapeData> shapes;
+
+    std::vector<SceneParticleEmitter> particles;
 };
 
 class SceneParser {
