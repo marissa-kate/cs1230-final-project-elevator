@@ -31,9 +31,10 @@ void main() {
    vec4 final_color = textureLod(light_final_col, screen_space_uv, mip);
    float epsilon = 0.1;
    if (abs(object_distance - plane_in_focus) < epsilon) {
-      fragColor = final_color + vec4(0.8, 0.0, 0.0, 1.0f);
+      fragColor = final_color + texture(normal, screen_space_uv);
+   } else if (abs(object_distance - plane_in_focus) < epsilon - 0.05) {
+      fragColor = final_color+ texture(normal, screen_space_uv) / 2; /*final_color;*/ /*textureLod(light_final_col, screen_space_uv, 0);*/ /*texture(normal, screen_space_uv);*/  /*vec4(d);*/ /*final_color*/
    } else {
-      fragColor = final_color; /*final_color;*/ /*textureLod(light_final_col, screen_space_uv, 0);*/ /*texture(normal, screen_space_uv);*/  /*vec4(d);*/ /*final_color*/
+      fragColor = final_color;
    }
-   // fragColor = textureLod(light_final_col, screen_space_uv, 0);
 }

@@ -7,6 +7,13 @@
 #include "utils/sceneparser.h"
 #include <QSettings>
 
+/**
+ * @brief main
+ * @param argc
+ * @param argv
+ * @return
+ * int main(int argc, char *argv[])**/
+
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
@@ -19,6 +26,7 @@ int main(int argc, char *argv[]) {
     fmt.setProfile(QSurfaceFormat::CoreProfile);
     QSurfaceFormat::setDefaultFormat(fmt);
     QCommandLineParser parser;
+
     parser.addHelpOption();
     parser.addPositionalArgument("config", "Path of the config file.");
     parser.process(a);

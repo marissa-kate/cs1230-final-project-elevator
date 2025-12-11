@@ -12,7 +12,7 @@
 void MainWindow::initialize() {
     realtime = new Realtime();
     aspectRatioWidget = new AspectRatioWidget(this);
-    aspectRatioWidget->setAspectWidget(realtime, 3.f/4.f);
+    aspectRatioWidget->setAspectWidget(realtime, 9.f/16.f);
     QHBoxLayout *hLayout = new QHBoxLayout; // horizontal alignment
     QVBoxLayout *vLayout = new QVBoxLayout(); // vertical alignment
     vLayout->setAlignment(Qt::AlignTop);
@@ -24,10 +24,8 @@ void MainWindow::initialize() {
     QFont font;
     font.setPointSize(12);
     font.setBold(true);
-
     vLayout->addWidget(uploadFile);
     vLayout->addWidget(uploadBump);
-
     connectUIElements();
 }
 
@@ -94,25 +92,3 @@ void MainWindow::onUploadBump() {
 
     realtime->sceneChanged();
 }
-
-void MainWindow::onSaveImage() {
-    if (settings.sceneFilePath.empty()) {
-        std::cout << "No scene file loaded." << std::endl;
-        return;
-    }
-    std::string sceneName = settings.sceneFilePath.substr(0, settings.sceneFilePath.find_last_of("."));
-    sceneName = sceneName.substr(sceneName.find_last_of("/")+1);
-    QString filePath = QFileDialog::getSaveFileName(this, tr("Save Image"),
-                                                    QDir::currentPath()
-                                                        .append(QDir::separator())
-                                                        .append("student_outputs")
-                                                        .append(QDir::separator())
-                                                        .append("realtime")
-                                                        .append(QDir::separator())
-                                                        .append("required")
-                                                        .append(QDir::separator())
-                                                        .append(sceneName), tr("Image Files (*.png)"));
-    std::cout << "Saving image to: \"" << filePath.toStdString() << "\"." << std::endl;
-    realtime->saveViewportImage(filePath.toStdString());
-}
-
