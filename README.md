@@ -26,9 +26,13 @@ Ethan also managed our pipeline, determining the total number of FBOs and textur
 ## Yohta
 - Audio Reactive class
 Using Qt MultiMedia, the microphone signals are integrated into the code. The code in Audioreact.cpp then calculated the volume using FFT methods, then that value is used for particle velocity inside of particle.cpp
-- Particle
+- Particles
+Using particlesystem.cpp and particle.vert and frag, particles function independently and are merged simply.
 - Camera paths
-- L systems for proj 7
+- L systems
+  Same as proj 6
+
+
 ## Vivian
 - Bump-mapping
 Updated primitives to return VBOs with UV values and UV derivatives. Within the shader, the UV values and derivatives were taken in, along with a 0-1 color value of the single-channel image, to modify the direction and length of the surface normal, which in turn modified the way lighting affected the surface. 
