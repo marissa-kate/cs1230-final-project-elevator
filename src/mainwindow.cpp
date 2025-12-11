@@ -90,7 +90,7 @@ void MainWindow::onUploadBump() {
 
     std::cout << "Loaded bumpfile: \"" << configFilePath.toStdString() << "\"." << std::endl;
 
-    realtime->bindTexture();
+    realtime->bindObjectTexture();
 
     realtime->sceneChanged();
 }

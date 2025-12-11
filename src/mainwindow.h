@@ -20,27 +20,9 @@ public:
 
 private:
     void connectUIElements();
-    void connectParam1();
-    void connectParam2();
-    void connectFocalLength();
-    void connectFocalPlane();
-    void connectAperature();
-    void connectNear();
-    void connectFar();
-    void connectExposure();
-    void connectBloom();
     void connectUploadBump();
-    void connectBump();
-    void connectInvert();
-    void connectColor();
-
-    // From old Project 6
-    // void connectPerPixelFilter();
-    // void connectKernelBasedFilter();
-
     void connectUploadFile();
     void connectSaveImage();
-    void connectExtraCredit();
 
     Realtime *realtime;
     AspectRatioWidget *aspectRatioWidget;
@@ -82,33 +64,6 @@ private:
     QCheckBox *ec4;
 
 private slots:
-    // From old Project 6
-    // void onPerPixelFilter();
-    // void onKernelBasedFilter();
-
     void onUploadFile();
-    void onSaveImage();
     void onUploadBump();
-    void onBumpChange(int newValue);
-    void onInvertChange(int state);
-    void onColorChange(int state);
-    void onValChangeP1(int newValue);
-    void onValChangeP2(int newValue);
-
-    // dof stuff:
-    void onValChangeAperatureSlider(int newValue);
-    void onValChangeAperatureBox(double newValue);
-    void onValChangeFocalPlaneSlider(int newValue);
-    void onValChangeFocalPlaneBox(double newValue);
-    void onValChangeFocalLengthSlider(int newValue);
-    void onValChangeFocalLengthBox(double newValue);
-
-    void onValChangeNearSlider(int newValue);
-    void onValChangeFarSlider(int newValue);
-    void onValChangeNearBox(double newValue);
-    void onValChangeFarBox(double newValue);
-    void onValChangeExposureBox(double newValue);
-    void onValChangeBloomBox(double newValue);
-    void onValChangeExposureSlider(int newValue);
-    void onValChangeBloomSlider(int newValue);
 };
