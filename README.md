@@ -38,7 +38,7 @@ Pipeline Overview:
 
 (bind default fbo)
 
-**Depth of Field Pass** (DOF shader) - generates mipmaps of info stored in the final color texture, and then  the second depth texture from the first geometry pass to calculate the circle of confusion to get the corresponding mipmapped color from the information stored in the final color texture. Outputs final color to screen!
+**Depth of Field Pass** (DOF shader) - generates mipmaps of info stored in the final color texture, and then samples information stored in the second depth texture from the first geometry pass to calculate the circle of confusion to get the corresponding mipmapped color from the information stored in the final color texture. Outputs final color to screen!
 
 
 ## Ethan
