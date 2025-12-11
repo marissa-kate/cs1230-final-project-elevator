@@ -358,29 +358,10 @@ void Realtime::makeFBO(){
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, ambinet_shininess_texture, 0);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, albedo_spec_texture, 0);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, GL_TEXTURE_2D, second_depth_fbo, 0);
-        // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT7, GL_TEXTURE_2D, final_color, 0);
-        // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT8, GL_TEXTURE_2D, blur_texture, 0);
-        // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT9, GL_TEXTURE_2D, color_grading_texture, 0);
 
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_rbo);
-
         glDrawBuffers(7, attachments);
-
         glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
-
-    //     //composite FBO
-    // GLuint composite_attachments[1] = {GL_COLOR_ATTACHMENT0};
-    //     glGenFramebuffers(1, &m_composite_fbo);
-    //     glGenTextures(1, &m_composite_fbo_texture);
-    //     glBindFramebuffer(GL_FRAMEBUFFER, m_composite_fbo);
-    //     glBindTexture(GL_TEXTURE_2D, m_composite_fbo_texture);
-    //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, m_fbo_width, m_fbo_height, 0, GL_RGBA, GL_FLOAT, nullptr);
-    //     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    //     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    //     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_composite_fbo_texture, 0);
-    //     glDrawBuffers(1, composite_attachments);
-    //     glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
 
 
         // ---------- Ping-pong FBOs for blur ----------
@@ -483,16 +464,16 @@ void Realtime::depth_of_field_pass() {
     glBindVertexArray(m_fullscreen_vao);
 
     pass_dof_sampler2D_uniforms(m_dof_shader, normal_fbo, GL_TEXTURE3, "normal", 3);
-    glErrorCheck(__FILE__,__LINE__);
+
     pass_dof_sampler2D_uniforms(m_dof_shader, final_color, GL_TEXTURE7, "light_final_col", 7);
-    glErrorCheck(__FILE__,__LINE__);
+
     pass_dof_sampler2D_uniforms(m_dof_shader, second_depth_fbo, GL_TEXTURE6, "depth", 6);
-    glErrorCheck(__FILE__,__LINE__);
+
 
     pass_dof_uniform(m_dof_shader, settings.farPlane, "zfar_plane");
-    glErrorCheck(__FILE__,__LINE__);
+
     pass_dof_uniform(m_dof_shader, settings.nearPlane, "znear_plane");
-    glErrorCheck(__FILE__,__LINE__);
+
     pass_dof_uniform(m_dof_shader, settings.plane_in_focus, "plane_in_focus");
     pass_dof_uniform(m_dof_shader, settings.aperature, "aperature");
     pass_dof_uniform(m_dof_shader, settings.focal_length, "focal_length");
@@ -511,11 +492,11 @@ void Realtime::depth_of_field_pass() {
     glUniformMatrix4fv(view_matrix_loc, 1, GL_FALSE, &m_view[0][0]);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    glErrorCheck(__FILE__,__LINE__);
+
     glBindVertexArray(0);
-    glErrorCheck(__FILE__,__LINE__);
+
     glUseProgram(0);
-    glErrorCheck(__FILE__,__LINE__);
+
 }
 
 void Realtime::paintGL() {
@@ -526,121 +507,74 @@ void Realtime::paintGL() {
     glViewport(0, 0, size().width() * m_devicePixelRatio, size().height() * m_devicePixelRatio);
     cam.calculatePerspectiveMatrix(settings.nearPlane, settings.farPlane, cam.getHeightAngle(), aspect);
 
-
-    glErrorCheck(__FILE__, __LINE__);
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glErrorCheck(__FILE__, __LINE__);
 
     // geometry pass (without lights)
     drawPrimitives();
-    glErrorCheck(__FILE__,__LINE__);
 
     // phong pass
     drawLights();
-    glErrorCheck(__FILE__,__LINE__);
-
-    //blur pass
-    // blurBrightTexture();
-    // glErrorCheck(__FILE__,__LINE__);
-
-    // glClear(GL_COLOR_BUFFER_BIT);
-    // glErrorCheck(__FILE__, __LINE__);
-
-    // Final rendering pass
-
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // --- A. Render physical objects (rigid bodies) ---
-    // m_view and m_proj are updated inside this function
 
     //--- B. Render particles (Corrected part) ---
     // Enable blending and disable depth write for semi-transparent/additive rendering
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE); // Additive blending (gets brighter when overlapped)
+        glDepthMask(GL_FALSE);             // Disable writing to depth buffer (so transparent objects don't occlude each other)
+        glDisable(GL_CULL_FACE);
 
+        glUseProgram(m_particle_shader);
 
-    // if (system->m_particles.empty()) {
-    //     glEnable(GL_BLEND);
-    //     glBlendFunc(GL_SRC_ALPHA, GL_ONE); // Additive blending (gets brighter when overlapped)
-    //     glDepthMask(GL_FALSE);             // Disable writing to depth buffer (so transparent objects don't occlude each other)
-    //     glDisable(GL_CULL_FACE);
+        // Send time uniform (for sparkle animation)
+        glUniform1f(glGetUniformLocation(m_particle_shader, "u_time"), m_simTime);
 
-    //     glUseProgram(m_particle_shader);
+        for (auto& system : m_particleSystems) {
+            // Render using m_view and m_proj updated in drawPrimitives
+            system->draw(m_particle_shader, m_view, m_proj);
+        }
+        glUseProgram(0);
 
-    //     // Send time uniform (for sparkle animation)
-    //     glUniform1f(glGetUniformLocation(m_particle_shader, "u_time"), m_simTime);
+    // }
 
-    //     for (auto& system : m_particleSystems) {
-    //         // Render using m_view and m_proj updated in drawPrimitives
-    //         system->draw(m_particle_shader, m_view, m_proj);
-    //     }
-    //     glUseProgram(0);
+    // Restore settings (Important: rigid bodies will look transparent in the next frame if forgotten)
+    glDepthMask(GL_TRUE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_BLEND);
+    glEnable(GL_CULL_FACE);
 
-    // // }
-
-    // // Restore settings (Important: rigid bodies will look transparent in the next frame if forgotten)
-    // glDepthMask(GL_TRUE);
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // glDisable(GL_BLEND);
-    // glEnable(GL_CULL_FACE);
-    // ---------------------------------------
 
     // 3. Blur (Bloom) processing
     // glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
     blurBrightTexture();
 
+    //composite pass
     glBindFramebuffer(GL_FRAMEBUFFER, m_composite_fbo);
-    // Clear the screen
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     glUseProgram(m_composite_shader);
-
-    glErrorCheck(__FILE__,__LINE__);
     glUniform1i(glGetUniformLocation(m_composite_shader, "scene"), 0);
-    glErrorCheck(__FILE__,__LINE__);
     glUniform1i(glGetUniformLocation(m_composite_shader, "bloomBlur"), 1);
-    glErrorCheck(__FILE__,__LINE__);
     glUniform1f(glGetUniformLocation(m_composite_shader, "exposure"), settings.exposure);
-    glErrorCheck(__FILE__,__LINE__);
+
 
     glActiveTexture(GL_TEXTURE0);
-    glErrorCheck(__FILE__,__LINE__);
     glBindTexture(GL_TEXTURE_2D, m_fbo_texture); // original scene
-    glErrorCheck(__FILE__,__LINE__);
     glActiveTexture(GL_TEXTURE1);
-    glErrorCheck(__FILE__,__LINE__);
     glBindTexture(GL_TEXTURE_2D, pingpong_colorBuffers[0]); // final blurred bloom
-    glErrorCheck(__FILE__,__LINE__);
 
     // Render full-screen quad
     glBindVertexArray(m_fullscreen_vao);
-    glErrorCheck(__FILE__,__LINE__);
     glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    glErrorCheck(__FILE__,__LINE__);
     glBindVertexArray(0);
 
     //final color grading pass:
-
     paintTexture(composite_color, true);
 
     //depth of field pass
-
-
     glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
-
     glBindTexture(GL_TEXTURE_2D, final_color); //generate mipmaps
-    glErrorCheck(__FILE__,__LINE__);
     glGenerateMipmap(GL_TEXTURE_2D);
-    glErrorCheck(__FILE__,__LINE__);
     glBindTexture(GL_TEXTURE_2D, 0);
-    glErrorCheck(__FILE__,__LINE__);
 
+    //DOF
     depth_of_field_pass();
-
-//     glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
-//     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//     paintTexture(m_composite_fbo_texture, true);
-// >>>>>>> 11eaa30b6ce016f275f57bdd17164934f6f3f624
 }
 
 void Realtime::paintTexture(GLuint texture, bool filter){
@@ -724,42 +658,42 @@ void Realtime::bindTexture(){
 void Realtime::drawPrimitives(){
     //Draw geometry
     glUseProgram(m_geometry_shader);
-    glErrorCheck(__FILE__,__LINE__);
+
     m_view = cam.getViewMatrix();
-    glErrorCheck(__FILE__,__LINE__);
+
     m_proj = cam.getPerspectiveMatrix();
-    glErrorCheck(__FILE__,__LINE__);
+
 
     glUniformMatrix4fv(glGetUniformLocation(m_geometry_shader, "m_view"), 1, GL_FALSE, &m_view[0][0]);
-    glErrorCheck(__FILE__,__LINE__);
+
     glUniformMatrix4fv(glGetUniformLocation(m_geometry_shader, "m_proj"), 1, GL_FALSE, &m_proj[0][0]);
-    glErrorCheck(__FILE__,__LINE__);
+
 
     glUniform1i(glGetUniformLocation(m_geometry_shader, "bump_depth"), settings.bumpDepth);
-    glErrorCheck(__FILE__,__LINE__);
+
 
     if (settings.hasTexture) {
         glActiveTexture(GL_TEXTURE0);
-        glErrorCheck(__FILE__,__LINE__);
+
         glBindTexture(GL_TEXTURE_2D, m_obj_texture);
-        glErrorCheck(__FILE__,__LINE__);
+
     } /*else {
         glDisable(GL_TEXTURE_2D);
-        glErrorCheck(__FILE__,__LINE__);
+
     }*/
     //Draw geometry
     std::vector<RenderShapeData> shapes = inputs.getPrimitives();
     for(RenderShapeData &shape: shapes){
         glUniformMatrix4fv(glGetUniformLocation(m_geometry_shader, "m_model"), 1, GL_FALSE, &shape.ctm[0][0]);
-        glErrorCheck(__FILE__,__LINE__);
+
         glUniform1f(glGetUniformLocation(m_geometry_shader, "m_shininess"), fmax(shape.primitive.material.shininess, 1.0));
-        glErrorCheck(__FILE__,__LINE__);
+
         glUniform4fv(glGetUniformLocation(m_geometry_shader, "cAmbient"), 1, &shape.primitive.material.cAmbient[0]);
-        glErrorCheck(__FILE__,__LINE__);
+
         glUniform4fv(glGetUniformLocation(m_geometry_shader, "cDiffuse"), 1, &shape.primitive.material.cDiffuse[0]);
-        glErrorCheck(__FILE__,__LINE__);
+
         glUniform4fv(glGetUniformLocation(m_geometry_shader, "cSpecular"), 1, &shape.primitive.material.cSpecular[0]);
-        glErrorCheck(__FILE__,__LINE__);
+
 
         GLuint vaoAddress, vboAddress, vertexCount = 0;
         switch(shape.primitive.type){
@@ -787,11 +721,11 @@ void Realtime::drawPrimitives(){
             break;
         }
         glBindBuffer(GL_ARRAY_BUFFER, vboAddress);
-        glErrorCheck(__FILE__,__LINE__);
+
         glBindVertexArray(vaoAddress);
-        glErrorCheck(__FILE__,__LINE__);
+
         glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-        glErrorCheck(__FILE__,__LINE__);
+
     }
 }
 
@@ -835,82 +769,7 @@ void Realtime::drawLights(){
     glUseProgram(0);
 }
 
-// void Realtime::drawPrimitives(){
-//     glUseProgram(m_phong_shader);
-//     m_view = cam.getViewMatrix();
-//     m_proj = cam.getPerspectiveMatrix();
-//     glUniform1i(glGetUniformLocation(m_phong_shader, "bump_depth"), settings.bumpDepth);
-
-//     if (settings.hasTexture) {
-//         glActiveTexture(GL_TEXTURE0);
-//         glBindTexture(GL_TEXTURE_2D, m_obj_texture);
-//     } else {
-//         glDisable(GL_TEXTURE_2D);
-//     }
-
-//     glUniformMatrix4fv(glGetUniformLocation(m_phong_shader, "m_view"), 1, GL_FALSE, &m_view[0][0]);
-//     glUniformMatrix4fv(glGetUniformLocation(m_phong_shader, "m_proj"), 1, GL_FALSE, &m_proj[0][0]);
-//     glUniform4fv(glGetUniformLocation(m_phong_shader, "camera_pos"), 1, &camera_pos[0]);
-
-//     inputs.sendLightUniformData(m_phong_shader);
-//     inputs.sendGlobalUniformData(m_phong_shader);
-
-//     glUniform1f(glGetUniformLocation(m_phong_shader, "fog_minDist"), 5.0f);
-//     glUniform1f(glGetUniformLocation(m_phong_shader, "fog_maxDist"), 25.0f);
-
-//     glm::vec4 fogColor = glm::vec4(0, 0, 0, 1.0f);
-//     glUniform4fv(glGetUniformLocation(m_phong_shader, "fog_color"), 1, &fogColor[0]);
-
-//     glUniform1f(glGetUniformLocation(m_phong_shader, "bloomThreshold"), settings.bloomThreshold);
-
-//     //Draw geometry
-//     std::vector<RenderShapeData> shapes = inputs.getPrimitives();
-//     for(RenderShapeData &shape: shapes){
-//         glUniformMatrix4fv(glGetUniformLocation(m_phong_shader, "m_model"), 1, GL_FALSE, &shape.ctm[0][0]);
-//         glUniform1f(glGetUniformLocation(m_phong_shader, "m_shininess"), fmax(shape.primitive.material.shininess, 1.0));
-//         glUniform4fv(glGetUniformLocation(m_phong_shader, "cAmbient"), 1, &shape.primitive.material.cAmbient[0]);
-//         glUniform4fv(glGetUniformLocation(m_phong_shader, "cDiffuse"), 1, &shape.primitive.material.cDiffuse[0]);
-//         glUniform4fv(glGetUniformLocation(m_phong_shader, "cSpecular"), 1, &shape.primitive.material.cSpecular[0]);
-
-//         GLuint vaoAddress, vboAddress, vertexCount = 0;
-//         switch(shape.primitive.type){
-//         case PrimitiveType::PRIMITIVE_CUBE:
-//             vboAddress = m_cube_vbo;
-//             vaoAddress = m_cube_vao;
-//             vertexCount = m_cube_vertexCount;
-//             break;
-//         case PrimitiveType::PRIMITIVE_CONE:
-//             vboAddress = m_cone_vbo;
-//             vaoAddress = m_cone_vao;
-//             vertexCount = m_cone_vertexCount;
-//             break;
-//         case PrimitiveType::PRIMITIVE_CYLINDER:
-//             vboAddress = m_cyl_vbo;
-//             vaoAddress = m_cyl_vao;
-//             vertexCount = m_cyl_vertexCount;
-//             break;
-//         case PrimitiveType::PRIMITIVE_SPHERE:
-//             vboAddress = m_sphere_vbo;
-//             vaoAddress = m_sphere_vao;
-//             vertexCount = m_sphere_vertexCount;
-//             break;
-//         case PrimitiveType::PRIMITIVE_MESH:
-//             break;
-//         }
-//         glBindBuffer(GL_ARRAY_BUFFER, vboAddress);
-//         glBindVertexArray(vaoAddress);
-//         glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-//     }
-//     glBindVertexArray(0);
-//     glBindBuffer(GL_ARRAY_BUFFER, 0);
-// }
-
 void Realtime::blurBrightTexture() {
-    // glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
-
-    // glDisable(GL_DEPTH_TEST);
-    // glDepthMask(GL_FALSE);
-
     bool horizontal = true, first_iteration = true;
     int amount = 20; // blur passes
 
@@ -929,16 +788,10 @@ void Realtime::blurBrightTexture() {
         horizontal = !horizontal;
         if(first_iteration) first_iteration = false;
     }
-    // glBindFramebuffer(GL_FRAMEBUFFER, m_defaultFBO);
-    // glViewport(0, 0, m_fbo_width, m_fbo_height);
-
-    // glDepthMask(GL_TRUE);
-    // glEnable(GL_DEPTH_TEST);
     glUseProgram(0);
 }
 
 void Realtime::resizeGL(int w, int h) {
-    // Tells OpenGL how big the screen is
     glViewport(0, 0, size().width() * m_devicePixelRatio, size().height() * m_devicePixelRatio);
     aspect = (float)(size().width() * m_devicePixelRatio)
              / (float)(size().height() * m_devicePixelRatio);

@@ -23,14 +23,6 @@ int main(int argc, char *argv[]) {
     parser.addPositionalArgument("config", "Path of the config file.");
     parser.process(a);
 
-    // auto positionalArgs = parser.positionalArguments();
-    // if (positionalArgs.size() != 1) {
-    //     std::cerr << "Not enough arguments. Please provide a path to a config file (.ini) as a command-line argument." << std::endl;
-    //     a.exit(1);
-    //     return 1;
-    // }
-
-
     MainWindow w;
     w.initialize();
     w.resize(800, 600);
