@@ -52,7 +52,9 @@ Implemented with RK4 method and quaternions for rotation. Additionally, I added 
 Screen space bloom alters the phong shader to output two texture color attachments and employs ping-pong buffers to blur the bright sections of the image, and then overlay it in the composite pass.
 
 # Collaboration/References: 
+- Deeth buffers - Daniel Ritchie and TAs!!
 - Deferred-lighting: https://learnopengl.com/Advanced-Lighting/Deferred-Shading
+- G Buffers: https://learnopengl.com/Advanced-Lighting/Deferred-Shading  and  lab 11!
 - Depth of Field: https://developer.nvidia.com/gpugems/gpugems/part-iv-image-processing/chapter-23-depth-field-survey-techniques
 - Bump-mapping 
 https://history.siggraph.org/learning/efficient-bump-mapping-hardware-by-peercy-airey-and-cabral/ 
