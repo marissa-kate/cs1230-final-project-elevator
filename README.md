@@ -21,19 +21,23 @@ Pipeline Overview:
 **Physics & Textures are applied within the shapes at rendering time** 
 
 (bind geometry + lighting fbo)
+
 **Geometry Pass** (geometry shader) - stores information into position, normal, material-dependent, and depth texture (store depth attachment into color attachment, and then later sample depth stored in color attachment to save the depth calculated during object-shape binding).
 **Phong Lighting Pass** (phong shader) - samples information from textures stored from geometry pass to calculate lighting; stores information into color and blur textures
 **Particle Pass** (particle shader) 
 
 (bind pingpong-fbos)
+
 **Screen Space Bloom Pass Looped** (blur shader) - stores information into a ping-pong color texture for bloom
 
 (bind composite_fbos)
+
 **Composite Pass** (composite shader) - samples information from textures stored from the screen space bloom pass and the Phong lighting pass; stores information into the composite/colorgrading texture
 **Post Processing Pass** (color grading shader) - samples information from the texture stored from the composite pass to apply color grading; stores information into the final color texture
 
 
 (bind default fbo)
+
 **Depth of Field Pass** (DOF shader) - generates mipmaps of info stored in the final color texture, and then  the second depth texture from the first geometry pass to calculate the circle of confusion to get the corresponding mipmapped color from the information stored in the final color texture. Outputs final color to screen!
 
 
