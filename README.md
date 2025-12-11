@@ -8,20 +8,54 @@ The four of us each are assigned to certain key inputs, and based on inputs from
 
 # Design Choices: 
 Pipeline Overview:
+
+**Initialize textures in three FBOs**: m_fbo, ppingpong fbos, and composite fbos.
+
+- m_fbo creates 8 textures: store colors, blur color, object normals, object position, material information (cDfifuse, cAmbient, cSpecular, shininess), and second depth (as color attachment). Also includes a 9th texture for depth as depth attachment.
+  
+- pinpong-fbos each creates 1 texture: stores pingpong color buffer
+  
+- m_composite_fbo creates 2 textures: compopsite_color (combined final color and blur), and final_color texture (combined composite_color and color grading)
+
+  
 Physics & Textures are applied within the shapes at rendering time 
-Geometry Pass (geometry shader)
-Phong Lighting Pass (phong shader)
-Particle Pass (particle shader)
-Screen Space Bloom Pass Looped (blur shader)
-Post Processing Pass (color grading shader)
-Depth of Field Pass (DOF shader)
+
+
+(bind geometry + lighting fbo)
+
+**1. Geometry Pass** (geometry shader) - stores information into position, normal, material-dependent, and depth texture.
+
+**2. Phong Lighting Pass** (phong shader) - samples information from textures stored from geometry pass to calculate lighting; stores information into color and blur textures
+
+**3. Particle Pass** (particle shader) 
+
+
+(bind pingpong-fbos)
+
+**4. Screen Space Bloom Pass Looped** (blur shader) - stores information into a ping-pong color texture for bloom
+
+
+(bind composite_fbos)
+
+**5. Composite Pass** (composite shader) - samples information from textures stored from the screen space bloom pass and the Phong lighting pass; stores information into the composite/colorgrading texture
+
+**6. Post Processing Pass** (color grading shader) - samples information from the texture stored from the composite pass to apply color grading; stores information into the final color texture
+
+
+(bind default fbo)
+
+**7. Depth of Field Pass** (DOF shader) - generates mipmaps of info stored in the final color texture, and then  the second depth texture from the first geometry pass to calculate the circle of confusion to get the corresponding mipmapped color from the information stored in the final color texture. Outputs final color to screen!
+
+
+**8. Yay!!**
+
 
 ## Ethan
 - Depth-Buffers
 - G-Buffers
-- Depth of Field
+- Depth of Field - the red laser observed in the video is the calculated focal plane; the red line appears by adding red to the final color if the object distance subtracted from the focal plane is less than epsilon (this is ideally where the focal plane meets the object distance, and where our "intended" focus is).
 - Deferred Lighting
-Ethan also managed our pipeline, determining the total number of FBOs and textures needed to complete our passes. 
+Ethan also managed our pipeline, determining the total number of FBOs and textures needed to complete our passes.
 
 ## Yohta
 - Audio Reactive class
@@ -31,7 +65,6 @@ Using particlesystem.cpp and particle.vert and frag, particles function independ
 - Camera paths
 - L systems
   Same as proj 6
-
 
 ## Vivian
 - Bump-mapping
