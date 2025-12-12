@@ -28,7 +28,7 @@ Pipeline Overview:
 
 (bind pingpong-fbos)
 
-- **Screen Space Bloom Pass Looped** (blur shader) - stores information into a ping-pong color texture for bloom
+- **Screen Space Bloom Pass Looped** (blur shader) - samples bright color texture stored during the phong pass and its own pingpong textures; stores information iteratively into a ping-pong color texture for bloom
 
 (bind composite_fbo)
 
