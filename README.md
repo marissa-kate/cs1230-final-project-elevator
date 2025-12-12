@@ -22,7 +22,7 @@ Pipeline Overview:
 
 (bind geometry + lighting fbo)
 
-- **Geometry Pass** (geometry shader) - stores information into position, normal, material-dependent, and texture. Samples information from the depth attachment stored during the depth test; stores the depth value into the texture (color attachment). (Do this to save the depth calculated during object-shape binding and not accidentally sample depth calculated while bound to fullscreen UV from depth test). 
+- **Geometry Pass** (geometry shader) - stores information into position, normal, and material-dependent textures. Samples information from the depth attachment stored during the depth test; stores the depth value into the texture (color attachment). (Do this to save the depth calculated during object-shape binding and not accidentally sample depth calculated while bound to fullscreen UV from depth test). 
 - **Phong Lighting Pass** (phong shader) - samples information from textures stored from geometry pass to calculate lighting; stores information into color and bright textures
 - **Particle Pass** (particle shader) 
 
