@@ -33,7 +33,7 @@ Pipeline Overview:
 (bind composite_fbo)
 
 - **Composite Pass** (composite shader) - samples information from pingppong texture stored during the screen space bloom pass and the information from the original color texture stored during Phong lighting pass; stores information into the composite/colorgrading texture
-- **Post Processing Pass** (color grading shader) - samples information from the composite texture stored during the composite pass to apply color grading; stores information into the final color texture
+- **Post Processing Pass** (color grading shader) - samples information from the composite texture stored during the composite pass to apply color grading and the LUT; stores information into the final color texture
 
 
 (bind default fbo) (our default was set to 5)
