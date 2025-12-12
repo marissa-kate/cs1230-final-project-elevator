@@ -40,7 +40,7 @@ Pipeline Overview:
 
 - **Depth of Field Pass** (DOF shader) - generates mipmaps of info stored in the final color texture during composite pass, and samples information from the second depth texture stored during the first geometry pass to calculate the circle of confusion to get the corresponding mipmapped color from the information stored in the final color texture. Outputs final color to screen!
 
-We required this many FBOs because the order in which we perform our passes was less flexible. We must first perform lighting to apply bloom, and then we must have the lighting calculated after bloom stored in a texture for depth of field to generate mipmaps. Any new information we wrote to an FBO after previously binding to the pingpong fbos would result in black; we resolved this issue by binding a new fbo after the pingpong fbos.
+We required this many FBOs because the order in which we perform our passes was less flexible. We must first perform lighting to apply bloom, and then we must have the lighting calculated after bloom stored in a texture for depth of field to generate mipmaps. Any new information we wrote to an FBO after previously binding to the pingpong fbos would result in black; we resolved this issue by writing to a new fbo after the pingpong fbos.
 
 ## Ethan
 - Depth-Buffers
