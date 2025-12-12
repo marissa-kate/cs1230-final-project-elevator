@@ -22,7 +22,7 @@ Pipeline Overview:
 
 (bind geometry + lighting fbo)
 
-- **Geometry Pass** (geometry shader) - stores information into position, normal, material-dependent, and depth texture (store value from depth attachment into color attachment, and then later sample depth stored in color attachment to save the depth calculated during object-shape binding).
+- **Geometry Pass** (geometry shader) - stores information into position, normal, material-dependent, and texture. Samples information from the depth attachment stored during the depth test; stores the depth value into the texture (color attachment). (Do this to save the depth calculated during object-shape binding and not accidentally sample depth calculated while bound to fullscreen UV from depth test). 
 - **Phong Lighting Pass** (phong shader) - samples information from textures stored from geometry pass to calculate lighting; stores information into color and bright textures
 - **Particle Pass** (particle shader) 
 
@@ -33,12 +33,12 @@ Pipeline Overview:
 (bind composite_fbo)
 
 - **Composite Pass** (composite shader) - samples information from pingppong texture stored during the screen space bloom pass and the information from the original color texture stored during Phong lighting pass; stores information into the composite/colorgrading texture
-- **Post Processing Pass** (color grading shader) - samples information from the composite texture stored from the composite pass to apply color grading; stores information into the final color texture
+- **Post Processing Pass** (color grading shader) - samples information from the composite texture stored during the composite pass to apply color grading; stores information into the final color texture
 
 
 (bind default fbo)
 
-- **Depth of Field Pass** (DOF shader) - generates mipmaps of info stored in the final color texture, and samples information stored in the second depth texture from the first geometry pass to calculate the circle of confusion to get the corresponding mipmapped color from the information stored in the final color texture. Outputs final color to screen!
+- **Depth of Field Pass** (DOF shader) - generates mipmaps of info stored in the final color texture during composite pass, and samples information from the second depth texture stored during the first geometry pass to calculate the circle of confusion to get the corresponding mipmapped color from the information stored in the final color texture. Outputs final color to screen!
 
 
 ## Ethan
