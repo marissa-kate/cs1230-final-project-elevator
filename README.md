@@ -13,7 +13,7 @@ Pipeline Overview:
 
 - m_fbo creates 8 textures: store colors, blur color, object normals, object position, material information (cDfifuse, cAmbient, cSpecular, shininess), and second depth (as color attachment). Also includes a 9th texture for depth as depth attachment.
   
-- pinpong-fbos each creates 1 texture: stores pingpong color buffer
+- pinpong-fbos each creates 1 texture: stores pingpong color texture (blur)
   
 - m_composite_fbo creates 2 textures: compopsite_color (combined final color and blur), and final_color texture (combined composite_color and color grading)
 
