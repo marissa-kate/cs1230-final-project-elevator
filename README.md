@@ -11,7 +11,7 @@ Pipeline Overview:
 
 - **Initialize textures in three FBOs**: m_fbo, ppingpong fbos, and composite fbos.
 
-- m_fbo creates 8 textures: store colors, object normals, object position, material information (cDfifuse, cAmbient, cSpecular, shininess), and second depth (as color attachment). Also includes a 9th texture for depth as depth attachment.
+- m_fbo creates 7 textures: store colors, object normals, object position, material information (cDfifuse, cAmbient, cSpecular, shininess), and second depth (as color attachment). Also includes a 8th texture for depth as depth attachment.
   
 - pinpong-fbos each creates 1 texture: stores pingpong color texture (blur)
   
