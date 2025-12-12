@@ -30,7 +30,7 @@ Pipeline Overview:
 
 - **Screen Space Bloom Pass Looped** (blur shader) - stores information into a ping-pong color texture for bloom
 
-(bind composite_fbos)
+(bind composite_fbo)
 
 - **Composite Pass** (composite shader) - samples information from textures stored from the screen space bloom pass and the Phong lighting pass; stores information into the composite/colorgrading texture
 - **Post Processing Pass** (color grading shader) - samples information from the texture stored from the composite pass to apply color grading; stores information into the final color texture
