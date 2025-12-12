@@ -11,7 +11,7 @@ Pipeline Overview:
 
 - **Initialize textures in three FBOs**: m_fbo, ppingpong fbos, and composite fbos.
 
-- m_fbo creates 8 textures: store colors, blur color, object normals, object position, material information (cDfifuse, cAmbient, cSpecular, shininess), and second depth (as color attachment). Also includes a 9th texture for depth as depth attachment.
+- m_fbo creates 8 textures: store colors, object normals, object position, material information (cDfifuse, cAmbient, cSpecular, shininess), and second depth (as color attachment). Also includes a 9th texture for depth as depth attachment.
   
 - pinpong-fbos each creates 1 texture: stores pingpong color texture (blur)
   
@@ -23,7 +23,7 @@ Pipeline Overview:
 (bind geometry + lighting fbo)
 
 - **Geometry Pass** (geometry shader) - stores information into position, normal, material-dependent, and depth texture (store value from depth attachment into color attachment, and then later sample depth stored in color attachment to save the depth calculated during object-shape binding).
-- **Phong Lighting Pass** (phong shader) - samples information from textures stored from geometry pass to calculate lighting; stores information into color and blur textures
+- **Phong Lighting Pass** (phong shader) - samples information from textures stored from geometry pass to calculate lighting; stores information into color and bright textures
 - **Particle Pass** (particle shader) 
 
 (bind pingpong-fbos)
