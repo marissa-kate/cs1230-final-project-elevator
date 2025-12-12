@@ -36,7 +36,7 @@ Pipeline Overview:
 - **Post Processing Pass** (color grading shader) - samples information from the composite texture stored during the composite pass to apply color grading; stores information into the final color texture
 
 
-(bind default fbo)
+(bind default fbo) (our default was set to 5)
 
 - **Depth of Field Pass** (DOF shader) - generates mipmaps of info stored in the final color texture during composite pass, and samples information from the second depth texture stored during the first geometry pass to calculate the circle of confusion to get the corresponding mipmapped color from the information stored in the final color texture. Outputs final color to screen!
 
